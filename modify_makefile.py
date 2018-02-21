@@ -32,7 +32,7 @@ text = text.replace("gcc", "g++")
 
 # ALOHAL DEFINE OF STM FAMILY
 position = (text.find("-DSTM32F"))
-define = "-DSTM32F" + text[position + len("-DSTM32F")] + " \\\n"
+define = "-DSTM32_F" + text[position + len("-DSTM32F")] + " \\\n"
 position = (text.find("C_DEFS =  \\")) + len("C_DEFS =  \\") + 1
 text = text[:position] + define + text[position:]
 
