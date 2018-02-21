@@ -8,12 +8,16 @@
 
 using namespace std;
 
+#include "gpio/pin.hpp"
 
 void ftoa(float f,char *buf);
-
 string itoa(int a);
+
 int stoi(string s_val);
 
+string to_string(int number);
+string to_string(uint number);
+string to_string(float number);
 
 
 
