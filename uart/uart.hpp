@@ -22,39 +22,9 @@
 
 #include "misc/text_transform.hpp"
 #include "gpio/pin.hpp"
-
+#include "globals.hpp"
 
 using namespace std;
-
-// -----Select Enabled UART-----
-#define UART1 huart1;
-// #define UART2 huart2;
-#define UART3 huart3;
-// #define UART4 huart4;
-
-class UART;
-
-#ifdef UART1
-extern UART_HandleTypeDef huart1;
-extern UART UART_1;
-#endif
-
-#ifdef UART2
-extern UART_HandleTypeDef huart2;
-extern UART UART_2;
-#endif
-
-#ifdef UART3
-extern UART_HandleTypeDef huart3;
-extern UART UART_3;
-#endif
-
-#ifdef UART4
-extern UART_HandleTypeDef huart4;
-extern UART UART_4;
-#endif
-
-
 
 void UART1_IT_Handler();
 void UART2_IT_Handler();
@@ -75,6 +45,7 @@ public:
     UART(){ };
     int Send(string message); // send strinh over UART
     int Send(int message);    // send number over UART
+    int Send(uint message);    // send number over UART
 
     int Load(int count); // read specified number of chars from HW buffer to UART_buffer
     int Receive();       // Receive IT Callback -> Insert into
