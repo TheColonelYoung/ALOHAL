@@ -36,10 +36,7 @@ UART::UART(UART_HandleTypeDef *UART_Handler_set){
 }
 
 int UART::Send(string message){
-
-    if (HAL_UART_Transmit_IT(UART_Handler, (unsigned char *) message.c_str(), message.length()) != HAL_OK){
-        //Pin('C',14).Toggle();
-    }
+    if (HAL_UART_Transmit_IT(UART_Handler, (unsigned char *) message.c_str(), message.length()) != HAL_OK) { }
     return message.length();
 }
 
@@ -50,7 +47,7 @@ int UART::Send(int number){
 }
 
 int UART::Send(uint number){
-    return Send((int)number);
+    return Send((int) number);
 }
 
 int UART::Load(int count){
@@ -72,8 +69,8 @@ void UART1_IT_Handler(){
 void UART2_IT_Handler(){ }
 
 void UART3_IT_Handler(){
-    //UART_1.Send(UART_3.UART_buffer.length());
-    //ESP_Receive();
+    // UART_1.Send(UART_3.UART_buffer.length());
+    // ESP_Receive();
 }
 
 void UART4_IT_Handler(){ }
@@ -106,5 +103,5 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
-    Pin('C',14).Toggle();
+    // Pin('C',14).Toggle();
 }
