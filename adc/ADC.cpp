@@ -45,7 +45,7 @@ int AD_C::Set_resolution(int resolution){
             return -1;
     }
     if (HAL_ADC_Init(&hadc) != HAL_OK) {
-        Pin('C', 14).Toggle();
+        // Pin('C', 14).Toggle();
     }
     resolution = resolution;
     return resolution;
@@ -92,6 +92,11 @@ uint AD_C::Voltage_u(){
 
 uint AD_C::Supply_voltage(){
     return supply_voltage;
+}
+
+float AD_C::Percentage(){
+    Measure();
+    return ((float) Voltage() / supply_voltage * 100.0);
 }
 
 int AD_C::Set_channel(int chan){

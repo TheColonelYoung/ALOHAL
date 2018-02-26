@@ -41,15 +41,15 @@ class AD_C {
     uint16_t ADC_val;       // Value measured by ADC
 
     uint supply_voltage = 3300; // in milivolts
-    uint resolution = 12;
+    uint resolution     = 12;
 
 
 public:
     AD_C() = default;
     AD_C(ADC_HandleTypeDef *handler);
 
-    int Set_channel(int chan);          // Set actual channel, allowed values: 0-15
-    int Set_channel(string chan);       // Allowed values: VREF(16), TEMP(17), VBAT(18)
+    int Set_channel(int chan);    // Set actual channel, allowed values: 0-15
+    int Set_channel(string chan); // Allowed values: VREF(16), TEMP(17), VBAT(18)
     int Set_resolution(int resolution);
 
     void Set_value(uint16_t value); // Set measured value
@@ -61,6 +61,7 @@ public:
 
     uint Supply_voltage(); // Supply voltage in miliVolts;
     uint16_t Value();      // Measured value in register
+    float Percentage();    // Return Value on pin in comparision with power supply, for potentiometr
 
     float Voltage_v(); // Measured voltage in Volts
     uint Voltage();    // In miliVolts
