@@ -41,7 +41,6 @@ string itoa(int a){
     return string(buffer);
 }
 
-
 string to_string(int number){
     char buffer[32];
     sprintf(buffer, "%d", number);
@@ -76,4 +75,8 @@ string to_string(float number){
         dp--;
     }
     return string(buffer);
+}
+
+string to_string(double number){
+    return to_string((float)number);
 }
