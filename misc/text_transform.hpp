@@ -2,13 +2,9 @@
 #define TEXT_TRANSFORM_H
 
 #include <string>
-#include <cstring>
 #include <cstdio>
-#include <cstdlib>
 
 using namespace std;
-
-#include "gpio/pin.hpp"
 
 void ftoa(float f,char *buf);
 string itoa(int a);
