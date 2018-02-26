@@ -2,9 +2,6 @@
 #define USB_VCP_H
 
 #include <string>
-#include <cstring>
-#include <cstdio>
-#include <cstdlib>
 #include <vector>
 
 #ifdef STM32_F0
