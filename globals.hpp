@@ -1,10 +1,9 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#include <cstdint>
+typedef unsigned int uint;
 
-#include "uart/uart.hpp"
-#include "adc/ADC.hpp"
+#include <cstdint>
 
 void ALOHAL_init();
 
@@ -22,6 +21,7 @@ void ALOHAL_init();
 class AD_C;
 
 #ifdef ADC_1_EN
+#include "adc/ADC.hpp"
 extern ADC_HandleTypeDef hadc;
 extern AD_C ADC_1;
 #endif
@@ -30,21 +30,25 @@ extern AD_C ADC_1;
 class UART;
 
 #ifdef UART_1_EN
+#include "uart/uart.hpp"
 extern UART_HandleTypeDef huart1;
 extern UART UART1;
 #endif
 
 #ifdef UART_2_EN
+#include "uart/uart.hpp"
 extern UART_HandleTypeDef huart2;
 extern UART UART2;
 #endif
 
 #ifdef UART_3_EN
+#include "uart/uart.hpp"
 extern UART_HandleTypeDef huart3;
 extern UART UART3;
 #endif
 
 #ifdef UART_4_EN
+#include "uart/uart.hpp"
 extern UART_HandleTypeDef huart4;
 extern UART UART4;
 #endif
