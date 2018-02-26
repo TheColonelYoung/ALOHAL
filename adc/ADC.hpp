@@ -6,22 +6,26 @@
 # include "stm32f0xx_hal_adc.h"
 #elif STM32_F1
 # include "stm32f1xx_hal.h"
+# include "stm32f1xx_hal_adc.h"
 #elif STM32_F3
 # include "stm32f3xx_hal.h"
+# include "stm32f3xx_hal_adc.h"
 #elif STM32_F4
 # include "stm32f4xx_hal.h"
+# include "stm32f4xx_hal_adc.h"
 #elif STM32_F7
 # include "stm32f7xx_hal.h"
+# include "stm32f7xx_hal_adc.h"
 #endif // ifdef STM32_F0
 
 using namespace std;
 
-#include <cstdint>
 #include <string>
-#include <memory>
 
 #include "gpio/pin.hpp"
 #include "globals.hpp"
+
+typedef unsigned int uint;
 
 #define ADC_REF_VOLTAGE  2.89 // voltage of external reference
 #define VREFINT_CAL_ADDR ((uint16_t *)((uint32_t) 0x1FFFF7BA))
@@ -42,7 +46,6 @@ class AD_C {
 
     uint supply_voltage = 3300; // in milivolts
     uint resolution     = 12;
-
 
 public:
     AD_C() = default;
