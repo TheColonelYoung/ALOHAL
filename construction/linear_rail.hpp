@@ -18,15 +18,13 @@
 #include <vector>
 
 #include "globals.hpp"
-#include "gpio/pin.hpp"
-#include "construction/linear_rail.hpp"
 #include "gpio/endstop.hpp"
-#include "motor/StepperMotor"
+#include "motor/StepperMotor.hpp"
 
 
-using namespace std
+using namespace std;
 
-enum Direction {Right, Left}
+enum Direction {Right, Left};
 
 class Linear_rail {
 
@@ -35,12 +33,12 @@ class Linear_rail {
     StepperMotor motor;
 
 public:
-    Eyrina();
+    Linear_rail()=default;
 
     vector<int> Endstop_read();
     int Endstop_read(Direction endstop_side);
 
-    Move(Axis axis,Direction direction, long distance);
+    int Move(long distance);
 
     void Endstop_hit_left();
     void Endstop_hit_right();
