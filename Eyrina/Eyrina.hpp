@@ -18,15 +18,11 @@
 #include <vector>
 
 #include "globals.hpp"
-#include "gpio/pin.hpp"
 #include "construction/linear_rail.hpp"
-#include "gpio/endstop.hpp"
 
+using namespace std;
 
-using namespace std
-
-enum Axis { X, Y, Z, F}
-enum Direction {Right, Left}
+enum Axis { X, Y, Z, F};
 
 class Eyrina {
     vector<Linear_rail> rails;
@@ -37,8 +33,8 @@ class Eyrina {
 public:
     Eyrina();
 
-    int Move_axis(Axis axis,Direction direction, long distance);
-    int Rotate_axis(Axis axis,Direction direction, long degrees );
+    int Move_axis(Axis axis, long distance);
+    int Rotate_axis(Axis axis, float degrees );
 
 };
 
