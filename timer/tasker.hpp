@@ -53,12 +53,12 @@
 # include "stm32f7xx_hal.h"
 #endif
 
-#include "timer/timers.hpp"
+#include "timer/timer.hpp"
 #include "misc/text_transform.hpp"
 
 // libraries nedded for function of tasker events and DEBUG
-#include "gpio/pin.h"
-#include "uart/uart.h"
+#include "gpio/pin.hpp"
+#include "uart/uart.hpp"
 
 //#include "USB_VCP.h"
 
