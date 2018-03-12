@@ -36,6 +36,7 @@ public:
 
     inline void Toggle();
     inline void Set(bool value);
+    inline bool Read();
 };
 
 #endif // ifndef PIN_H

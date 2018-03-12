@@ -21,9 +21,10 @@ class Endstop {
     Pin input_pin;
 
 public:
-    Endstop();
+    Endstop() =default;
     Endstop(Pin input);
 
+    int Set_pin(Pin new_pin);
     bool Read();
 };
 
