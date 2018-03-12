@@ -27,13 +27,9 @@ using namespace std;
 
 typedef unsigned int uint;
 
-#define ADC_REF_VOLTAGE  2.89 // voltage of external reference
+
 #define VREFINT_CAL_ADDR ((uint16_t *)((uint32_t) 0x1FFFF7BA))
-
 #define ADC_CHANNEL_CONCAT(channel) (ADC_CHANNEL_ ## channel)
-
-// uint16_t VREFINT_CAL = *((uint16_t*)VREFINT_CAL_ADDR); // VREFINT calibration value
-// VDD = 3.3 * (VREFINT_CAL / VREFINT_DATA)
 
 class AD_C {
     ADC_HandleTypeDef *handler;
