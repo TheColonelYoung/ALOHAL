@@ -82,7 +82,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
     #ifdef UART_1_EN
     if (huart->Instance == USART1) {
         UART1.Load();
-        // UART1.IRQ.Notify();
+        UART1.IRQ.Notify();
     }
     #endif
     #ifdef UART_2_EN

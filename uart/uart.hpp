@@ -24,7 +24,7 @@
 #include "globals.hpp"
 #include "misc/text_transform.hpp"
 #include "gpio/pin.hpp"
-//#include "irq/irq_handler.hpp"
+#include "irq/irq_handler.hpp"
 
 
 using namespace std;
@@ -50,7 +50,8 @@ private:
     int buffer_end = 0;
 
 public:
-    //IRQ_handler IRQ;
+    IRQ_handler IRQ;
+
     string UART_buffer = "";
     bool busy = false;
 
@@ -71,5 +72,6 @@ public:
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart);
+
 
 #endif // ifndef UART_H

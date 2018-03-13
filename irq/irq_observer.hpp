@@ -16,8 +16,6 @@
 #endif
 
 #include <functional>
-#include "globals.hpp"
-#include "gpio/pin.hpp"
 
 using namespace std;
 
@@ -27,10 +25,12 @@ public:
     virtual ~IRQ_observer_base()= default;
     virtual void Register(){}
     virtual void Run(){}
+    virtual void *Get_origin_object() = 0;
 };
 
 template <typename observer_class>
 class IRQ_observer: public IRQ_observer_base{
+    void * pointer_to_origin;
     observer_class object;
     void (observer_class::*method_pointer)();
     function<void(observer_class&)> callback;
@@ -39,25 +39,19 @@ public:
     IRQ_observer()= default;
 
     void Register(observer_class& object_set, void (observer_class::*method_pointer_set)()){
+        pointer_to_origin = &object_set;
         object = object_set;
         method_pointer = method_pointer_set;
     }
 
-    void Run(){
+    void Run() override{
         (object.*method_pointer)();
+    }
+
+    void *Get_origin_object() override{
+        return pointer_to_origin;
     }
 };
 
-class Print1 {
-public:
-    Print1() = default;
-    void Send(){ UART1.Send(5); }
-};
-
-class Print2 {
-public:
-    Print2() = default;
-    void Send(){ UART1.Send(10); }
-};
 
 #endif // ifndef IRQ_OBSERVER_HPP
