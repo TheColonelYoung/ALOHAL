@@ -28,14 +28,15 @@ void Pin_set(char port, int pin, bool value);
 void Pin_tog(char port, int pin);
 
 class Pin {
-	char port;
-	int pin_number;
+    char port;
+    int pin_number;
 
 public:
-	Pin(char port_set = 'X', int pin_number_set = 0);
+    Pin(char port_set = 'X', int pin_number_set = 0);
 
-	void Toggle();
-	void Set(bool value);
+    inline void Toggle();
+    inline void Set(bool value);
+    inline bool Read();
 };
 
 #endif // ifndef PIN_H

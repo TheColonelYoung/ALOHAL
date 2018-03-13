@@ -14,7 +14,7 @@
 #endif
 
 
-#include "timer/timers.hpp"
+#include "timer/timer.hpp"
 #include "gpio/pin.hpp"
 
 #include <vector>

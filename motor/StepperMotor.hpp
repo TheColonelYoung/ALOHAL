@@ -11,7 +11,7 @@
  *
  * --------------------BUGS--------------------
  *
- *++++++++++++++++++++++TODO++++++++++++++++++++
+ **++++++++++++++++++++++TODO++++++++++++++++++++
  *
  **********************************************/
 #ifndef STEPPERMOTOR_H
@@ -37,8 +37,8 @@
 # include "stm32f7xx_hal_uart.h"
 #endif // ifdef STM32_F0
 
-#include "gpio/pin.h"
-//#include "tasker.h"
+#include "gpio/pin.hpp"
+// #include "tasker.h"
 
 // libraries nedded for running of efects this library and DEBUG
 
@@ -63,20 +63,21 @@ private:
 
 
 protected:
-	int _id;             // unique ID for every motor
+    int _id; // unique ID for every motor
 
 public:
-	bool direction = 0; //
-	int speed;          // actual speed in degrees in second
-	int steps;          // number of remaning steps
+    bool direction = 0;
+    int speed; // actual speed in degrees in second
+    int steps; // number of remaning steps
 
 public:
-	void Step();              // make one step by direction
-	void Direction(bool dir); // set direction 1-left, 0-right
-	void Set_speed(int dps);  // new speed in degree per second
-	int Get_ID();             // return ID of motor
-	void Start();             // start stepper motor rotation
-	void Stop();              // stop steper motor rotation
+    void Step();              // make one step by direction
+    void Direction(bool dir); // set direction 1-left, 0-right
+    void Set_speed(int dps);  // new speed in degree per second
+    int Get_ID();             // return ID of motor
+    void Start();             // start stepper motor rotation
+    void Stop();              // stop steper motor rotation
+    int Move(long steps, bool direction);
 };
 
 #endif // ifndef SM_H
