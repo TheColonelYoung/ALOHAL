@@ -28,4 +28,4 @@ public:
     bool Read();
 };
 
-#endif // ifndef PIN_H
+#endif

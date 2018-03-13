@@ -38,7 +38,6 @@ HAL_TIM_Base_Start_IT(&htimX);
 #include "stm32f7xx_hal_tim.h"
 #endif
 
-#include "gpio/pin.hpp"
 #include "globals.hpp"
 #include "timer/PWM.hpp"
 
@@ -53,9 +52,17 @@ int TIM_set_time(TIM_HandleTypeDef *htim,float useconds);
 int TIM_get_prescaler(TIM_HandleTypeDef *htim);
 int TIM_get_time(TIM_HandleTypeDef *htim);
 
+class PWM_channel{
+    int _index;
+    uint32_t _address;
+public:
+    PWM_channel(int index,uint32_t address);
+
+};
+
 class Timer{
     int size;
-    vector<PWM_channel> channels;
+    vector<PWM_channel> channel;
     TIM_HandleTypeDef* handler;
 
 public:
@@ -65,7 +72,7 @@ public:
 
     void IRQ_Overflow();
 
-    inline int Channel_count(){ return channels.size();}
+    inline int Channel_count(){ return channel.size();}
 
     void Time_set(float useconds);
 
@@ -75,14 +82,19 @@ public:
     inline void Prescaler_set(uint16_t new_prescaler);
     inline uint16_t Prescaler_get();
 
+    inline void Start();
+    inline void Stop();
+
+    inline void Enable_IRQ();
+    inline void Disable_IRQ();
 };
 
-class PWM_channel{
-    int _index
-public:
-    PWM_channel();
 
-};
-
+/*              CHANNELS
+TIM_CHANNEL_1                      0x00000000U
+TIM_CHANNEL_2                      0x00000004U
+TIM_CHANNEL_3                      0x00000008U
+TIM_CHANNEL_4                      0x0000000CU
+TIM_CHANNEL_ALL                    0x00000018U*/
 
 #endif

@@ -43,8 +43,23 @@ Timer::Timer(TIM_HandleTypeDef *handler, int size, int channels){
     this->handler  = handler;
     this->size     = size;
 
-    for(int i = 0; i < channels; i++){
-        channels.push_back(PWM_channel());
+    for(int i = 1; i <= channels; i++){
+        uint32_t address = 0;
+        switch (i) {
+            case 1:
+                address = 0x0;
+                break;
+            case 2:
+                address = 0x4;
+                break;
+            case 3:
+                address = 0x8;
+                break;
+            case 4:
+                address = 0xC;
+                break;
+        }
+        channel.push_back(PWM_channel(i,address));
     }
 }
 
@@ -73,6 +88,23 @@ uint16_t Timer::Prescaler_get(){
     return handler->Instance->PSC;
 }
 
-PWM_channel::PWM_channel(int index){
+void Timer::Start(){
+    HAL_TIM_Base_Start(handler);
+}
+
+void Timer::Stop(){
+    HAL_TIM_Base_Stop(handler);
+}
+
+void Timer::Enable_IRQ(){
+    HAL_TIM_Base_Start_IT(handler);
+}
+
+void Timer::Disable_IRQ(){
+    HAL_TIM_Base_Stop_IT(handler);
+}
+
+PWM_channel::PWM_channel(int index, uint32_t address){
     this->_index = index;
+    this->_address = address;
 }

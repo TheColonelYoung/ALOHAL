@@ -23,7 +23,6 @@
 #include <vector>
 #include "globals.hpp"
 #include "misc/text_transform.hpp"
-#include "gpio/pin.hpp"
 #include "irq/irq_handler.hpp"
 
 
