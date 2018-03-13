@@ -15,7 +15,7 @@ string to_string(int number);
 string to_string(uint number);
 string to_string(float number);
 string to_string(double number);
-
+string to_string(uint32_t number);
 
 
 

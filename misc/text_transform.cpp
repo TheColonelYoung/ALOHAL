@@ -51,6 +51,12 @@ string to_string(uint number){
     return to_string((int)number);
 }
 
+string to_string(uint32_t number){
+    char buffer[20];
+    sprintf(buffer, "0x%08x", number);
+    return string(buffer);
+}
+
 string to_string(float number){
     char buffer[10];
     int pos = 0, ix, dp, num;

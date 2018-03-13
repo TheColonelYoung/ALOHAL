@@ -55,7 +55,7 @@ public:
     UART(UART_HandleTypeDef *UART_Handler_set);
     UART(){ };
 
-    int Send(string message); // send strinh over UART
+    int Send(string message); // send string over UART
     int Send(int message);    // send number over UART
     int Send(uint message);    // send number over UART
 
