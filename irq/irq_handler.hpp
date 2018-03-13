@@ -1,7 +1,7 @@
 #ifndef IRQ_HANDLER_HPP
 #define IRQ_HANDLER_HPP
 
-//------------------LIBRARY_INCLUDES--------------
+// ------------------LIBRARY_INCLUDES--------------
 
 #ifdef STM32_F0
 # include "stm32f0xx_hal.h"
@@ -18,15 +18,15 @@
 using namespace std;
 
 #include <vector>
+#include <string>
 
 #include "irq_observer.hpp"
-#include "gpio/pin.hpp"
 
-class IRQ_handler{
+class IRQ_handler {
 public:
     vector<IRQ_observer_base *> observers;
 
-    IRQ_handler() =default;
+    IRQ_handler() = default;
 
     template <class registrator_class>
     void Register(registrator_class& object, void (registrator_class::*method_pointer_set)()){
@@ -35,21 +35,19 @@ public:
         observers.emplace_back(obs);
     }
 
-    template <class registrator_class>
-    void Unregister(registrator_class& object){
+    void Register(void (*function_pointer_set)(void));
 
-        for(uint i = 0; i < observers.size(); i++){
+    template <class unregistrator_class>
+    void Unregister(unregistrator_class& object){
+        for (uint i = 0; i < observers.size(); i++) {
             if (&object == observers[i]->Get_origin_object()) {
                 delete(observers[i]);
-                observers.erase(observers.begin()+i);
+                observers.erase(observers.begin() + i);
             }
         }
     }
 
-    /*void Register(void (*function_pointer_set)(void));*/
-
     int Notify();
-
 };
 
-#endif
+#endif // ifndef IRQ_HANDLER_HPP
