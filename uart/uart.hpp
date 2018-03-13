@@ -37,8 +37,6 @@ void UART4_IT_Handler();
 
 class UART {
 private:
-
-
     UART_HandleTypeDef *UART_Handler;
 
     unsigned char *UART_buffer_temp;
