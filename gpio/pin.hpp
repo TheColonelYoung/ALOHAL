@@ -19,7 +19,6 @@
 #define ASCII_BASE        (65)
 #define PORT_START_ADRESS ((int) GPIOA)
 
-
 #define pin_set_m(port_name, pin_number, value) HAL_GPIO_WritePin(GPIO ## port_name, GPIO_PIN_ ## pin_number, value ? GPIO_PIN_RESET : GPIO_PIN_SET);
 
 #define pin_tog_m(port_name, pin_number)        HAL_GPIO_TogglePin(GPIO ## port_name, GPIO_PIN_ ## pin_number);
@@ -34,9 +33,9 @@ class Pin {
 public:
     Pin(char port_set = 'X', int pin_number_set = 0);
 
-    inline void Toggle();
-    inline void Set(bool value);
-    inline bool Read();
+    void Toggle();
+    void Set(bool value);
+    bool Read();
 };
 
 #endif // ifndef PIN_H
