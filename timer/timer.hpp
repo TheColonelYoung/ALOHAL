@@ -1,26 +1,6 @@
 #ifndef TIMERS_H
 #define TIMERS_H
 
-/*
-Instert to main.c before Main
-
---> USER CODE BEGIN 0
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	Timer_IT_PeriodElapsedCallback(htim);
-}
---> USER CODE END 0
-
- AND
-
---> USER CODE BEGIN 2
-
-HAL_TIM_Base_Start_IT(&htimX);
-
--->USER CODE END 2
-
- */
-
 #ifdef STM32_F0
 # include "stm32f0xx_hal.h"
 #include "stm32f0xx_hal_tim.h"

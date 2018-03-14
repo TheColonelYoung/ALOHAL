@@ -6,6 +6,11 @@ void ALOHAL_init(){
     ADC_1 = AD_C(&hadc);
     #endif
 
+    //FLASH
+    #ifdef FLASH_EN
+    Flash = Flash_mem();
+    #endif
+
     // UART
     #ifdef UART_1_EN
     UART1 = UART(&huart1);
@@ -45,6 +50,12 @@ void ALOHAL_init(){
     TIM_8 = Timer(&htim8);
     #endif
 } // ALOHAL_init
+
+
+//FLASH
+#ifdef FLASH_EN
+Flash_mem Flash;
+#endif
 
 // ADC
 #ifdef ADC_1_EN

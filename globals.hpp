@@ -26,6 +26,16 @@ void ALOHAL_init();
 // #define TIM_7_EN
 // #define TIM_8_EN
 
+#define FLASH_EN
+
+class Flash_mem;
+//FLASH
+# ifdef FLASH_EN
+#  include "flash/flash.hpp"
+extern Flash_mem Flash;
+# endif
+
+
 // ADC
 class AD_C;
 
