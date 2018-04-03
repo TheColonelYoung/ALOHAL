@@ -1,34 +1,89 @@
-#ifndef STEPPER_H
-#define STEPPER_H
+/*
+ * Author:	TCY
+ * Name:	Base stepper motor library for STM32
+ * E-mail:	TheColonelYoung(at)gmail(dot)com
+ * Date:	27.7.2017
+ * Description:
+ *
+ * ????????????????????HELP????????????????????
+ *
+ * !!!!!!!!!!!!!!!!!!!!WARNING!!!!!!!!!!!!!!!!!
+ *
+ * --------------------BUGS--------------------
+ *
+ *********++++++++++++++++++++++TODO++++++++++++++++++++
+ *
+ **********************************************/
+#ifndef STEPPERMOTOR_H
+#define STEPPERMOTOR_H
 
+// c++ libraries
+
+// libraries needed for this library to run
+#ifdef STM32_F0
+# include "stm32f0xx_hal.h"
+# include "stm32f0xx_hal_uart.h"
+#elif defined STM32_F1
+# include "stm32f1xx_hal.h"
+# include "stm32f1xx_hal_uart.h"
+#elif defined STM32_F3
+# include "stm32f3xx_hal.h"
+# include "stm32f3xx_hal_uart.h"
+#elif defined STM32_F4
+# include "stm32f4xx_hal.h"
+# include "stm32f4xx_hal_uart.h"
+#elif defined STM32_F7
+# include "stm32f7xx_hal.h"
+# include "stm32f7xx_hal_uart.h"
+#endif // ifdef STM32_F0
+
+#include <cmath>
 
 #include "gpio/pin.hpp"
-#include "uart/uart.hpp"
-#include <math>
+#include "timer/timer.hpp"
 
-//#include "stm32f0xx_hal.h"
+using namespace std;
 
-//--------------------LIBRARY OPTIONS-------------------
-#define BASE_STEP_ANGLE 1.8
-#define MOTOR_NUMBER 14
-#define FREQ_CLK1 1000000
-#define THREAD_PITCH 1.25 //stoupání závitu, posun závitu při otočení o 360°
+enum SM_Directions { left = -1, stop = 0, right = 1 };
 
+class StepperMotor {
+protected:
+    SM_Directions direction = stop;
+    long steps = 0;    // number of remaning steps, -1 is infinite
+    float step_size;   // size of step in degrees
+    float speed   = 0; // actual speed in degrees in second
+    int step_time = 0; // time between two steps
 
+    bool acc_en       = false;
+    bool accelerating = false;
+    float acceleration; // in degrees per second square
+    double acc_initial_step;
+    double acc_step;
 
-int SM_out;
-int SM_steps;
+    Timer timer;
 
-int SM_step();
-int init_motor();
+protected:
+    void Set_timer(int step_length);
 
-//---------------MICROSTEPPING-------------
-//	Code	Step	Number	Accuracy(um)?
-//	000		1		0		10
-//	001		1/2		1		5
-//	010		1/4		2		2.5
-//	011		1/8		3		1.25
-//	100		1/16	4		0.625
-//	101		1/32	5		0.3125
+public:
+    StepperMotor() = default;
+    StepperMotor(float step_size, float speed);
+    StepperMotor(float step_size, float speed, float acceleration);
 
-#endif
+    int Acceleration(float acceleration);
+    void Acc_init_calc();
+    int Acc_increment_calc();
+    void Acc_step();
+
+    void Init();    // Enable IRQ, initiate calculations
+    void Stop();    // stop steper motor rotation
+    void Disable(); // disable IRQ, need Init for another run
+
+    virtual void Select_timer(Timer &timer) = 0; // assign timer for motor
+    virtual void Step() = 0;                     // make one step by direction
+
+    virtual long Move(double degrees, SM_Directions direction);
+    virtual int Speed(float speed);
+};
+
+#endif // ifndef SM_H
