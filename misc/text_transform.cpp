@@ -51,9 +51,13 @@ string to_string(uint number){
     return to_string((int)number);
 }
 
+string to_string(long number){
+    return to_string((int)number);
+}
+
 string to_string(uint32_t number){
     char buffer[20];
-    sprintf(buffer, "0x%08x", number);
+    sprintf(buffer, "0x%08x", static_cast<unsigned int>(number));
     return string(buffer);
 }
 
