@@ -1,8 +1,10 @@
 #include "pin.hpp"
 
+
 Pin::Pin(char port_set, int pin_number_set){
-    port       = port_set;
-    pin_number = pin_number_set;
+    port           = port_set;
+    pin_number     = pin_number_set;
+    IRQ.pin_number = (1 << pin_number);
 }
 
 void Pin::Toggle(){
@@ -15,6 +17,10 @@ void Pin::Set(bool value){
 
 bool Pin::Read(){
     return HAL_GPIO_ReadPin((GPIO_TypeDef *) (PORT_START_ADRESS + ((((int) port) - ASCII_BASE) * PORT_SIZE )), (uint16_t) 1 << pin_number);
+}
+
+bool Pin::operator == (const Pin& rhs){
+    return ((this->port == rhs.port) && (this->pin_number == rhs.pin_number));
 }
 
 // Base port adress:1207959552
