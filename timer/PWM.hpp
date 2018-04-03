@@ -30,7 +30,6 @@ class PWM {
 private:
 	int _ID;
 
-
 public:
 	TIM_HandleTypeDef _TIM_Handler;
 	Pin pwm_pin;

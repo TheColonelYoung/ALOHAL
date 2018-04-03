@@ -19,15 +19,15 @@
 #endif
 
 #include "globals.hpp"
-#include "timer/PWM.hpp"
+#include "irq/irq_handler.hpp"
 
 //---------------USED TIMERS-------------
 extern TIM_HandleTypeDef htim2;
 
 //timer 1 input CLK FREW
-#define TIM_FREQ 72000000
 
-void Timer_IT_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 int TIM_set_time(TIM_HandleTypeDef *htim,float useconds);
 int TIM_get_prescaler(TIM_HandleTypeDef *htim);
 int TIM_get_time(TIM_HandleTypeDef *htim);
@@ -46,27 +46,28 @@ class Timer{
     TIM_HandleTypeDef* handler;
 
 public:
+    IRQ_handler IRQ;
+
+public:
     Timer() =default;
     Timer(TIM_HandleTypeDef* handler);
     Timer(TIM_HandleTypeDef* handler,int size, int channels);
 
-    void IRQ_Overflow();
-
-    inline int Channel_count(){ return channel.size();}
+    int Channel_count(){ return channel.size();}
 
     void Time_set(float useconds);
 
-    inline void Counter_set(uint32_t new_counter);
-    inline uint32_t Counter_get();
+    void Counter_set(uint32_t new_counter);
+    uint32_t Counter_get();
 
-    inline void Prescaler_set(uint16_t new_prescaler);
-    inline uint16_t Prescaler_get();
+    void Prescaler_set(uint16_t new_prescaler);
+    uint16_t Prescaler_get();
 
-    inline void Start();
-    inline void Stop();
+    void Start();
+    void Stop();
 
-    inline void Enable_IRQ();
-    inline void Disable_IRQ();
+    void Enable_IRQ();
+    void Disable_IRQ();
 };
 
 
