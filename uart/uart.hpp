@@ -24,7 +24,6 @@
 #include "globals.hpp"
 #include "misc/text_transform.hpp"
 #include "irq/irq_handler.hpp"
-#include "gpio/pin.hpp"
 
 using namespace std;
 

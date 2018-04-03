@@ -79,7 +79,6 @@ int UART::Resend(){
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-    Pin('C', 14).Toggle();
     #ifdef UART_1_EN
     if (huart->Instance == USART1) {
         UART_1.Load();
