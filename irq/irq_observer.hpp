@@ -33,9 +33,10 @@ class IRQ_observer : public IRQ_observer_base {
     void *pointer_to_origin;
 
     observer_class object;
+    observer_class * object_ptr = nullptr;
     void (observer_class::*method_pointer)();
 
-    void (*function)(void) = 0;
+    void (*function)(void) = nullptr;
 
 public:
     IRQ_observer() = default;
@@ -46,6 +47,12 @@ public:
         method_pointer = method_pointer_set;
     }
 
+    void Register(observer_class* object_set, void (observer_class::*method_pointer_set)()){
+        pointer_to_origin = &object_set;
+        object_ptr        = object_set;
+        method_pointer = method_pointer_set;
+    }
+
     void Register(void (*function_pointer_set)(void)){
         function = function_pointer_set;
     }
@@ -53,7 +60,9 @@ public:
     void Run() override {
         if (function) {
             (*(function))();
-        } else {
+        } else if (object_ptr){
+            (*object_ptr.*method_pointer)();
+        }else {
             (object.*method_pointer)();
         }
     }

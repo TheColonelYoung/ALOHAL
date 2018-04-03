@@ -35,6 +35,13 @@ public:
         observers.emplace_back(obs);
     }
 
+    template <class registrator_class>
+    void Register(registrator_class* object, void (registrator_class::*method_pointer_set)()){
+        IRQ_observer<registrator_class> *obs = new IRQ_observer<registrator_class>();
+        obs->Register(object, method_pointer_set);
+        observers.emplace_back(obs);
+    }
+
     void Register(void (*function_pointer_set)(void));
 
     template <class unregistrator_class>
