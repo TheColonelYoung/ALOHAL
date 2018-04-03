@@ -32,7 +32,7 @@ UART::UART(UART_HandleTypeDef *UART_Handler_set){
     }
     #endif
 
-    HAL_UART_Receive_IT(UART_Handler, UART_buffer_temp, 1);
+    HAL_UART_Receive_IT(UART_Handler_set, UART_buffer_temp, 1);
 }
 
 int UART::Send(string message){
@@ -79,28 +79,33 @@ int UART::Resend(){
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+    Pin('C', 14).Toggle();
     #ifdef UART_1_EN
     if (huart->Instance == USART1) {
-        UART1.Load();
-        UART1.IRQ.Notify();
+        UART_1.Load();
+        UART_1.IRQ.Notify();
+        return;
     }
     #endif
     #ifdef UART_2_EN
     if (huart->Instance == USART2) {
-        UART2.Load();
-        UART2.IRQ.Notify();
+        UART_2.Load();
+        UART_2.IRQ.Notify();
+        return;
     }
     #endif
     #ifdef UART_3_EN
     if (huart->Instance == USART3) {
-        UART3.Load();
-        UART3.IRQ.Notify();
+        UART_3.Load();
+        UART_3.IRQ.Notify();
+        return;
     }
     #endif
     #ifdef UART_4_EN
     if (huart->Instance == USART4) {
-        UART4.Load();
-        UART4.IRQ.Notify();
+        UART_4.Load();
+        UART_4.IRQ.Notify();
+        return;
     }
     #endif
 }
@@ -108,22 +113,26 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
     #ifdef UART_1_EN
     if (huart->Instance == USART1) {
-        UART1.Resend();
+        UART_1.Resend();
+        return;
     }
     #endif
     #ifdef UART_2_EN
     if (huart->Instance == USART2) {
-        UART2.Resend();
+        UART_2.Resend();
+        return;
     }
     #endif
     #ifdef UART_3_EN
     if (huart->Instance == USART3) {
-        UART3.Resend();
+        UART_3.Resend();
+        return;
     }
     #endif
     #ifdef UART_4_EN
     if (huart->Instance == USART4) {
-        UART4.Resend();
+        UART_4.Resend();
+        return;
     }
     #endif
 }
