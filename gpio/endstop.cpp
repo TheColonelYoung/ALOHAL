@@ -1,10 +1,10 @@
 #include "endstop.hpp"
 
 bool Endstop::Read(){
-    return input_pin.Read();
+    return (Pin::Read() ^ inverted);
 }
 
-//TODO change registred IRQ
-int Endstop::New_pin(Pin new_pin){
-    input_pin = new_pin;
+bool Endstop::Invert(bool flag){
+    inverted = flag;
+    return inverted;
 }

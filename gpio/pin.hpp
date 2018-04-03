@@ -42,7 +42,7 @@ public:
 
     void Toggle();
     void Set(bool value);
-    bool Read();
+    virtual bool Read();
 };
 
 

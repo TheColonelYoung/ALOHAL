@@ -17,15 +17,19 @@
 
 #include "gpio/pin.hpp"
 
-class Endstop {
-    Pin input_pin;
+class Endstop: public Pin {
+    bool inverted = true;  //read value is opposite, so 1-means open
 
 public:
     Endstop() =default;
-    Endstop(Pin input);
+    using Pin::Pin;
 
-    int Set_pin(Pin new_pin);
-    bool Read();
+    void Toggle() =delete;
+    void Set(bool value) =delete;
+
+    bool Read() override;
+
+    bool Invert(bool flag); //Set invertation flag to given value
 };
 
 #endif
