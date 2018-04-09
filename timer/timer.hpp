@@ -24,9 +24,6 @@
 //---------------USED TIMERS-------------
 extern TIM_HandleTypeDef htim2;
 
-//timer 1 input CLK FREW
-
-
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 int TIM_set_time(TIM_HandleTypeDef *htim,float useconds);
 int TIM_get_prescaler(TIM_HandleTypeDef *htim);
@@ -35,6 +32,7 @@ int TIM_get_time(TIM_HandleTypeDef *htim);
 class PWM_channel{
     int _index;
     uint32_t _address;
+
 public:
     PWM_channel(int index,uint32_t address);
 
@@ -42,6 +40,10 @@ public:
 
 class Timer{
     int size;
+    bool optimize = false;
+    float uticks;
+    uint frequency;
+
     vector<PWM_channel> channel;
     TIM_HandleTypeDef* handler;
 
@@ -56,6 +58,7 @@ public:
     int Channel_count(){ return channel.size();}
 
     void Time_set(float useconds);
+    bool Optimize(bool flag); //set flag for optimizing of prescaler for actual time
 
     void Counter_set(uint32_t new_counter);
     uint32_t Counter_get();
@@ -68,6 +71,9 @@ public:
 
     void Enable_IRQ();
     void Disable_IRQ();
+
+private:
+    void Optimize_for(int time_us);  //opzimize prescaler for given time
 };
 
 

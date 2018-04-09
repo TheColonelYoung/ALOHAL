@@ -2,11 +2,11 @@
 
 int TIM_set_time(TIM_HandleTypeDef *htim, float useconds){
     int prescaler = htim->Instance->PSC + 1;
-    float tick    = 1.0 / (TIM_FREQ / prescaler );
+    float tick    = 1000000.0 / (TIM_FREQ / prescaler );
 
-    htim->Instance->ARR = useconds / (tick * 1000000);
+    htim->Instance->ARR = useconds / (tick);
 
-    return 1;
+    return htim->Instance->ARR;
 }
 
 int TIM_get_prescaler(TIM_HandleTypeDef *htim){
@@ -18,12 +18,14 @@ int TIM_get_time(TIM_HandleTypeDef *htim){
 }
 
 Timer::Timer(TIM_HandleTypeDef *handler){
-    this->handler = handler;
+    this->handler   = handler;
+    this->frequency = HAL_RCC_GetHCLKFreq();
+    this->uticks    = frequency / 1000000.0;
 }
 
-Timer::Timer(TIM_HandleTypeDef *handler, int size, int channels){
-    this->handler = handler;
-    this->size    = size;
+Timer::Timer(TIM_HandleTypeDef *handler, int size, int channels)
+    : Timer(handler){
+    this->size = size;
 
     for (int i = 1; i <= channels; i++) {
         uint32_t address = 0;
@@ -46,8 +48,20 @@ Timer::Timer(TIM_HandleTypeDef *handler, int size, int channels){
 }
 
 void Timer::Time_set(float useconds){
-    float tick = 1.0 / (TIM_FREQ / (Prescaler_get() + 1) );
-    Counter_set( (int) (useconds / (tick * 1000000)));
+    if (optimize) {
+        Optimize_for(useconds);
+    }
+    float tick = 1000000.0 / (frequency / (Prescaler_get() + 1) );
+    Counter_set(static_cast<int>((useconds / (tick))));
+}
+
+bool Timer::Optimize(bool flag){
+    optimize = flag;
+    return optimize;
+}
+
+void Timer::Optimize_for(int time_us){
+    handler->Instance->PSC = ((time_us * uticks) / (2 << (size - 1)) - 1) + 1;
 }
 
 void Timer::Counter_set(uint32_t new_counter){
@@ -88,7 +102,6 @@ PWM_channel::PWM_channel(int index, uint32_t address){
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-
     #ifdef TIM_1_EN
     if (htim->Instance == TIM1) {
         TIM_1.IRQ.Notify();
@@ -193,4 +206,4 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
         return;
     }
     #endif
-}
+} // HAL_TIM_PeriodElapsedCallback
