@@ -32,7 +32,7 @@ void UART2_IT_Handler();
 void UART3_IT_Handler();
 void UART4_IT_Handler();
 
-//class IRQ_handler;
+// class IRQ_handler;
 
 class UART {
 private:
@@ -54,20 +54,24 @@ public:
     UART(UART_HandleTypeDef *UART_Handler_set);
     UART(){ };
 
+
     int Send(string message); // send string over UART
-    int Send(int message);    // send number over UART
-    int Send(uint message);    // send number over UART
 
-    int Resend();
+    template <typename send__type> // send any type as string via UART
+    int Send(send__type message){
+        return Send(to_string(message));
+    }
 
-    int Load();
-    int Receive();       // Receive IT Callback -> Insert into
+    int Resend(); // routine that send another string from buffer if UART is avaible
 
-    int Clear_buffer();  // Clear input buffer
+    int Load();    // Copy data from temp buffer to class buffer
+    int Receive(); // Receive IT Callback -> Insert into
+
+    int Clear_buffer(); // Clear input buffer
 };
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart);
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart); // Callback called after any receive
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart); // Callback called after any send
 
 
 #endif // ifndef UART_H

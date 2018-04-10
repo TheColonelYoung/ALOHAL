@@ -46,16 +46,6 @@ int UART::Send(string message){
     return message.length();
 }
 
-int UART::Send(int number){
-    string message = to_string(number);
-    Send(message);
-    return message.length();
-}
-
-int UART::Send(uint number){
-    return Send((int) number);
-}
-
 int UART::Load(){
     UART_buffer.push_back(UART_buffer_temp[0]);
     HAL_UART_Receive_IT(UART_Handler, UART_buffer_temp, 1);
