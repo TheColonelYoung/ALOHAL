@@ -90,3 +90,7 @@ string to_string(float number){
 string to_string(double number){
     return to_string((float)number);
 }
+
+string to_string(const char* text){
+    return string(text);
+}

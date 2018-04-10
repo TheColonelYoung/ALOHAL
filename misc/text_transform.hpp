@@ -17,6 +17,7 @@ string to_string(long number);
 string to_string(float number);
 string to_string(double number);
 string to_string(uint32_t number);
+string to_string(const char* text);
 
 
 
