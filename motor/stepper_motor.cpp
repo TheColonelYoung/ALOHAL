@@ -37,13 +37,15 @@ long StepperMotor::Move(double degrees, SM_Directions direction){
         Set_timer(acc_initial_step * 1000000);
         accelerating = true;
         acc_step     = acc_initial_step;
-    } else{
+    } else if (accelerating) {
+        ;
+    } else {
         Set_timer(step_time);
     }
 
     timer.Enable_IRQ();
     return steps;
-}
+} // Move
 
 void StepperMotor::Acc_step(){
     if (accelerating) {
@@ -72,7 +74,7 @@ int StepperMotor::Speed(float speed){
     this->speed = speed;
     step_time   = 1000000 / (speed / step_size);
     Set_timer(step_time);
-    //NOTE problem with acceleration
+    // NOTE problem with acceleration
     return static_cast<int>(speed);
 }
 
@@ -90,7 +92,7 @@ int StepperMotor::Acceleration(float acceleration){
 }
 
 void StepperMotor::Acc_init_calc(){
-    acc_initial_step = 1.f / (sqrt(pow(1.f / (step_time+1), 2.f) + 2.f * acceleration));
+    acc_initial_step = 1.f / (sqrt(pow(1.f / (step_time + 1), 2.f) + 2.f * acceleration));
 }
 
 void StepperMotor::Stop(){
@@ -101,6 +103,4 @@ void StepperMotor::Stop(){
     timer.Disable_IRQ();
 }
 
-void StepperMotor::Init(){
-
-}
+void StepperMotor::Init(){ }

@@ -52,7 +52,7 @@ protected:
     long steps = 0;    // number of remaning steps, -1 is infinite
     float step_size;   // size of step in degrees
     float speed   = 0; // actual speed in degrees in second
-    int step_time = 0; // time between two steps
+    int step_time = 0; // time between two steps in us
 
     bool acc_en       = false;
     bool accelerating = false;
