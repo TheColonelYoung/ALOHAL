@@ -1,8 +1,6 @@
 #ifndef EYRINA_HPP
 #define EYRINA_HPP
 
-// ------------------LIBRARY_OPTIONS----------------
-// ------------------LIBRARY_OPTIONS----------------
 #ifdef STM32_F0
 # include "stm32f0xx_hal.h"
 #elif STM32_F1
@@ -19,23 +17,28 @@
 
 #include "globals.hpp"
 #include "construction/linear_rail.hpp"
+#include "motor/SM_DRV8825.hpp"
 
 using namespace std;
 
-enum Axis { X, Y, Z, F};
+#define EYRINA_SM_SPEED        2000
+#define EYRINA_SM_ACCELERATION 3000
+#define EYRINA_SM_STEP_SIZE    1.8
+
+#define EYRINA_LR_COUNT        4
+#define EYRINA_LR_SHIFT_RATIO  1
 
 class Eyrina {
     vector<Linear_rail> rails;
 
-    Endstop left_end;
-    Endstop right_end;
-
 public:
+    enum Axis { X = 0, Y, Z, F };
+
     Eyrina();
+    void Init_rails();
 
     int Move_axis(Axis axis, long distance);
-    int Rotate_axis(Axis axis, float degrees );
-
+    int Rotate_axis(Axis axis, float degrees);
 };
 
-#endif
+#endif // ifndef EYRINA_HPP
