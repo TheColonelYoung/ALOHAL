@@ -36,16 +36,16 @@ using namespace std;
 
 // classes
 class SM_DRV8825 : public StepperMotor {
-    Pin _direction_pin;
     Pin _step_pin;
+    Pin _direction_pin;
     Pin _reset_pin;
     Pin _sleep_pin;
     Pin _fault_pin;
 
 public:
     SM_DRV8825() = default;
-    SM_DRV8825(float step_size, float speed);
-    SM_DRV8825(float step_size, float speed, float acceleration);
+    SM_DRV8825(Pin step_pin, Pin dir_pin,float step_size, float speed);
+    SM_DRV8825(Pin step_pin, Pin dir_pin,float step_size, float speed, float acceleration);
 
     int Set_pin(string pin_name, Pin pin_set);
     void Select_timer(Timer &timer) override;
