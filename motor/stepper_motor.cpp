@@ -74,7 +74,7 @@ int StepperMotor::Speed(float speed){
     this->speed = speed;
     step_time   = 1000000 / (speed / step_size);
     Set_timer(step_time);
-    // NOTE problem with acceleration
+    // NOTE change of speed in run works only for non-accelerating motors
     return static_cast<int>(speed);
 }
 

@@ -4,7 +4,7 @@ SM_DRV8825::SM_DRV8825(Pin step_pin, Pin dir_pin, float step_size, float speed)
     :  StepperMotor(step_size, speed * 2), _step_pin(step_pin), _direction_pin(dir_pin){ };
 
 SM_DRV8825::SM_DRV8825(Pin step_pin, Pin dir_pin, float step_size, float speed, float acceleration)
-    : StepperMotor(step_size, speed * 2, acceleration), _step_pin(step_pin), _direction_pin(dir_pin){ };
+    : StepperMotor(step_size, speed * 2, acceleration * 2), _step_pin(step_pin), _direction_pin(dir_pin){ };
 
 
 int SM_DRV8825::Set_pin(string pin_name, Pin pin_set){
@@ -41,7 +41,7 @@ void SM_DRV8825::Step(){
             steps -= 1;
             // steps decresed to 0 => set driver to sleep
             if (steps <= 0) {
-                // Sleep();
+                // Sleep(); //NOTE reactivate this
                 Stop();
             }
         }
@@ -53,6 +53,12 @@ void SM_DRV8825::Step(){
 
 long SM_DRV8825::Move(double degrees, SM_Directions direction){
     StepperMotor::Move(degrees * 2, direction);
+    if (direction == left) {
+        _direction_pin.Set(1);
+    } else {
+        _direction_pin.Set(0);
+    }
+
     return steps;
 }
 
