@@ -21,12 +21,12 @@
 
 using namespace std;
 
-#define EYRINA_SM_SPEED        2000
-#define EYRINA_SM_ACCELERATION 3000
+#define EYRINA_SM_SPEED        5000
+#define EYRINA_SM_ACCELERATION 4000
 #define EYRINA_SM_STEP_SIZE    1.8
 
 #define EYRINA_LR_COUNT        4
-#define EYRINA_LR_SHIFT_RATIO  1
+#define EYRINA_LR_SHIFT_RATIO  1.389
 
 class Eyrina {
     vector<Linear_rail> rails;
