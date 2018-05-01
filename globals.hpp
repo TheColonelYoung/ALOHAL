@@ -1,22 +1,26 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include "gpio/pin.hpp"
+
 typedef unsigned int uint;
 
 void ALOHAL_init();
 
-/************************************SETTINGS*********************************************/
-#define TIM_FREQ 48000000
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
+/************************************SETTINGS*********************************************/
+
+#define TIM_FREQ 48000000
 /************************************OPTIONS**********************************************/
 // EXTERNAL IRQ
-#define EXT_IRQ_EN
+// #define EXT_IRQ_EN
 
 // #define ADC_1_EN
 // NOTE In higher families MCUs has more ADC, in this purpose conditional compile must be added
 
-#define UART_1_EN
-// #define UART_2_EN
+// #define UART_1_EN
+#define UART_2_EN
 // #define UART_3_EN
 // #define UART_4_EN
 
@@ -95,6 +99,16 @@ extern UART UART_4;
 
 // TIMERS
 class Timer;
+
+#define ALOHAL_CREATE_TIMER(name, handler, size, channels) \
+    name = Timer(&handler, size, channels); \
+    ALOHAL_TIM_CHAN_BACKPOINTER(name)
+
+
+#define ALOHAL_TIM_CHAN_BACKPOINTER(timer) \
+    for (uint i = 0; i < timer.channel.size(); i++) { \
+        timer.channel[i]._parent_timer = &timer; }
+
 #ifdef TIM_1_EN
 # include "timer/timer.hpp"
 extern TIM_HandleTypeDef htim1;

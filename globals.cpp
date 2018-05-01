@@ -26,49 +26,49 @@ void ALOHAL_init(){
     #endif
 
     #ifdef TIM_1_EN
-    TIM_1 = Timer(&htim1, 16, 4);
+    ALOHAL_CREATE_TIMER(TIM_1, htim1, 16, 4)
     #endif
     #ifdef TIM_2_EN
-    TIM_2 = Timer(&htim2, 32, 4);
+    ALOHAL_CREATE_TIMER(TIM_2, htim2, 32, 4)
     #endif
     #ifdef TIM_3_EN
-    TIM_3 = Timer(&htim3, 16, 4);
+    ALOHAL_CREATE_TIMER(TIM_3, htim3, 16, 4)
     #endif
     #ifdef TIM_4_EN
-    TIM_4 = Timer(&htim4, 16, 4);
+    ALOHAL_CREATE_TIMER(TIM_4, htim4, 16, 4)
     #endif
     #ifdef TIM_5_EN
-    TIM_5 = Timer(&htim5, 32, 4);
+    ALOHAL_CREATE_TIMER(TIM_5, htim5, 32, 4)
     #endif
     #ifdef TIM_6_EN
-    TIM_6 = Timer(&htim6, 16, 0);
+    ALOHAL_CREATE_TIMER(TIM_6, htim6, 16, 0)
     #endif
     #ifdef TIM_7_EN
-    TIM_7 = Timer(&htim7, 16, 0);
+    ALOHAL_CREATE_TIMER(TIM_7, htim7, 16, 0)
     #endif
     #ifdef TIM_8_EN
-    TIM_8 = Timer(&htim8, 16, 4);
+    ALOHAL_CREATE_TIMER(TIM_8, htim8, 16, 4)
     #endif
     #ifdef TIM_9_EN
-    TIM_9 = Timer(&htim9, 16, 2);
+    ALOHAL_CREATE_TIMER(TIM_9, htim9, 16, 2)
     #endif
     #ifdef TIM_10_EN
-    TIM_10 = Timer(&htim10, 16, 1);
+    ALOHAL_CREATE_TIMER(TIM_10, htim10, 16, 1)
     #endif
     #ifdef TIM_11_EN
-    TIM_11 = Timer(&htim11, 16, 1);
+    ALOHAL_CREATE_TIMER(TIM_11, htim11, 16, 1)
     #endif
     #ifdef TIM_12_EN
-    TIM_12 = Timer(&htim12, 16, 2);
+    ALOHAL_CREATE_TIMER(TIM_12, htim12, 16, 2)
     #endif
     #ifdef TIM_13_EN
-    TIM_13 = Timer(&htim13, 16, 1);
+    ALOHAL_CREATE_TIMER(TIM_13, htim13, 16, 1)
     #endif
     #ifdef TIM_14_EN
-    TIM_14 = Timer(&htim14, 16, 1);
+    ALOHAL_CREATE_TIMER(TIM_14, htim14, 16, 1)
     #endif
     #ifdef TIM_15_EN
-    TIM_15 = Timer(&htim15, 16, 4);
+    ALOHAL_CREATE_TIMER(TIM_15, htim15, 16, 4)
     #endif
 } // ALOHAL_init
 
