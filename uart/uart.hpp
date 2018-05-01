@@ -40,7 +40,6 @@ private:
 
     unsigned char *UART_buffer_temp;
 
-    unsigned char *RX_buffer;
     vector<string> TX_buffer;
 
     int buffer_end = 0;
@@ -48,7 +47,7 @@ private:
 public:
     IRQ_handler IRQ;
 
-    string UART_buffer = "";
+    string RX_buffer = "";
     bool busy = false;
 
     UART(UART_HandleTypeDef *UART_Handler_set);

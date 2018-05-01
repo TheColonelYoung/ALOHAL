@@ -47,14 +47,14 @@ int UART::Send(string message){
 }
 
 int UART::Load(){
-    UART_buffer.push_back(UART_buffer_temp[0]);
+    RX_buffer.push_back(UART_buffer_temp[0]);
     HAL_UART_Receive_IT(UART_Handler, UART_buffer_temp, 1);
     return 0;
 }
 
 int UART::Clear_buffer(){
-    uint length = UART_buffer.length();
-    UART_buffer = "";
+    uint length = RX_buffer.length();
+    RX_buffer = "";
     return length;
 }
 
