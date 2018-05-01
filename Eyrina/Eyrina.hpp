@@ -18,6 +18,8 @@
 #include "globals.hpp"
 #include "construction/linear_rail.hpp"
 #include "motor/SM_DRV8825.hpp"
+#include "gpio/pin.hpp"
+#include "Eyrina/protocol.hpp"
 
 using namespace std;
 
@@ -31,11 +33,17 @@ using namespace std;
 class Eyrina {
     vector<Linear_rail> rails;
 
+
 public:
     enum Axis { X = 0, Y, Z, F };
+    E_protocol protocol;
+
+    Pin DBG_LED_1;
+    Pin DBG_LED_2;
 
     Eyrina();
     void Init_rails();
+    void Init_protocol();
 
     int Move_axis(Axis axis, long distance);
     int Rotate_axis(Axis axis, float degrees);
