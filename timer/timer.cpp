@@ -43,16 +43,25 @@ Timer::Timer(TIM_HandleTypeDef *handler, int size, int channels)
                 address = 0xC;
                 break;
         }
-        channel.push_back(PWM_channel(i, address));
+
+        channel.emplace_back(TIM_channel(this, address));
     }
 }
+/*
+Timer& Timer::operator=(Timer rhs){
+    return
+}*/
 
 void Timer::Time_set(float useconds){
     if (optimize) {
         Optimize_for(useconds);
     }
-    float tick = 1000000.0 / (frequency / (Prescaler_get() + 1) );
+    float tick = 1000000.0 / (frequency / (Prescaler() + 1) );
     Counter_set(static_cast<int>((useconds / (tick))));
+}
+
+void Timer::Frequency_set(float frequency){
+    Time_set(1000000.0 / frequency);
 }
 
 bool Timer::Optimize(bool flag){
@@ -76,9 +85,18 @@ void Timer::Prescaler_set(uint16_t new_prescaler){
     handler->Instance->PSC = new_prescaler;
 }
 
-uint16_t Timer::Prescaler_get(){
+uint16_t Timer::Prescaler(){
     return handler->Instance->PSC;
 }
+
+uint Timer::Input_frequency(){
+    return frequency;
+}
+
+TIM_HandleTypeDef* Timer::Handler(){
+    return handler;
+}
+
 
 void Timer::Start(){
     HAL_TIM_Base_Start(handler);
@@ -94,11 +112,6 @@ void Timer::Enable_IRQ(){
 
 void Timer::Disable_IRQ(){
     HAL_TIM_Base_Stop_IT(handler);
-}
-
-PWM_channel::PWM_channel(int index, uint32_t address){
-    this->_index   = index;
-    this->_address = address;
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
