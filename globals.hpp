@@ -9,15 +9,16 @@ void ALOHAL_init();
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
-/************************************SETTINGS*********************************************/
-
 #define TIM_FREQ 48000000
+
 /************************************OPTIONS**********************************************/
 // EXTERNAL IRQ
 // #define EXT_IRQ_EN
 
-// #define ADC_1_EN
+#define ADC_1_EN
 // NOTE In higher families MCUs has more ADC, in this purpose conditional compile must be added
+
+#define DAC_1_EN
 
 // #define UART_1_EN
 #define UART_2_EN
@@ -25,11 +26,11 @@ void ALOHAL_init();
 // #define UART_4_EN
 
 #define TIM_1_EN
-// #define TIM_2_EN
+#define TIM_2_EN
 #define TIM_3_EN
-// #define TIM_4_EN
-// #define TIM_5_EN
-// #define TIM_6_EN
+#define TIM_4_EN
+#define TIM_5_EN
+#define TIM_6_EN
 // #define TIM_7_EN
 // #define TIM_8_EN
 // #define TIM_9_EN
@@ -41,6 +42,9 @@ void ALOHAL_init();
 // #define TIM_15_EN
 
 // # define FLASH_EN
+
+
+#define OTS_EN
 
 
 /************************************EXTERNS**********************************************/
@@ -65,8 +69,16 @@ extern Flash_mem Flash;
 class AD_C;
 #ifdef ADC_1_EN
 # include "adc/ADC.hpp"
-extern ADC_HandleTypeDef hadc;
+extern ADC_HandleTypeDef hadc1;
 extern AD_C ADC_1;
+#endif
+
+// DAC
+class DA_C;
+#ifdef DAC_1_EN
+# include "dac/DAC.hpp"
+extern DAC_HandleTypeDef hdac;
+extern DA_C DAC_1;
 #endif
 
 // UART
@@ -197,6 +209,12 @@ extern Timer TIM_14;
 # include "timer/timer.hpp"
 extern TIM_HandleTypeDef htim15;
 extern Timer TIM_15;
+#endif
+
+#ifdef OTS_EN
+class Tasker;
+# include "timer/tasker.hpp"
+extern Tasker OTS;
 #endif
 
 #endif // ifndef GLOBALS_H

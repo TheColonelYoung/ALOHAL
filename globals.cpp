@@ -3,7 +3,7 @@
 void ALOHAL_init(){
     // ADC
     #ifdef ADC_1_EN
-    ADC_1 = AD_C(&hadc);
+    ADC_1 = AD_C(&hadc1);
     #endif
 
     // FLASH
@@ -23,6 +23,11 @@ void ALOHAL_init(){
     #endif
     #ifdef UART_4_EN
     UART_4 = UART(&huart4);
+    #endif
+
+    // DAC
+    #ifdef DAC_1_EN
+    DAC_1 = DA_C(&hdac, 2);
     #endif
 
     #ifdef TIM_1_EN
@@ -70,6 +75,11 @@ void ALOHAL_init(){
     #ifdef TIM_15_EN
     ALOHAL_CREATE_TIMER(TIM_15, htim15, 16, 4)
     #endif
+
+    #ifdef OTS_EN
+    OTS = Tasker();
+    #endif
+
 } // ALOHAL_init
 
 // EXT_IRQ
@@ -85,6 +95,11 @@ Flash_mem Flash;
 // ADC
 #ifdef ADC_1_EN
 AD_C ADC_1;
+#endif
+
+// DAC
+#ifdef DAC_1_EN
+DA_C DAC_1;
 #endif
 
 // UART
@@ -145,4 +160,8 @@ Timer TIM_14;
 #endif
 #ifdef TIM_15_EN
 Timer TIM_15;
+#endif
+
+#ifdef OTS_EN
+Tasker OTS;
 #endif
