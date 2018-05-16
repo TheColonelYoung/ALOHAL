@@ -12,13 +12,21 @@ int Linear_rail::Move(long distance){
     }
     SM_Directions dir;
     if (distance > 0) {
-        dir = right;
+        dir = SM_Directions::right;
     } else {
-        dir = left;
+        dir = SM_Directions::left;
     }
     motor->Move(distance / ratio, dir);
 
     return 0;
+}
+
+int Linear_rail::Speed(float speed){
+    return motor->Speed(speed);
+}
+
+void Linear_rail::Stop(){
+    motor->Stop();
 }
 
 bool Linear_rail::Invert(bool flag){

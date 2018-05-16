@@ -26,22 +26,24 @@ using namespace std;
 enum Direction { Right, Left };
 
 class Linear_rail {
-
     StepperMotor *motor;
 
     bool invert = false; // // in default move to right is motor rotation to right, when true, move to left is caused by turning motor to right
-    float ratio; // represend amount of shif on rail caused by turning motor by 1 degree
+    float ratio;         // represend amount of shif on rail caused by turning motor by 1 degree
 
     Endstop left_end;
     Endstop right_end;
 public:
     // Linear_rail() = default;
-    Linear_rail( StepperMotor *motor, float ratio);
-    Linear_rail( StepperMotor *motor, float ratio, Endstop left, Endstop right);
+    Linear_rail(StepperMotor *motor, float ratio);
+    Linear_rail(StepperMotor *motor, float ratio, Endstop left, Endstop right);
 
     vector<int> Endstop_read();
     int Endstop_read(Direction endstop_side);
-    int Move(long distance);
+
+    int Move(long distance); // Shif rail by distance
+    int Speed(float speed); // Set new speed for motor, do not use when motor is moving
+    void Stop();            // Stop motor a disable it
 
 
     bool Invert(bool flag); // sets invertation flag
