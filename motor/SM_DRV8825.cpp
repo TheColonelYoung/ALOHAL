@@ -53,7 +53,7 @@ void SM_DRV8825::Step(){
 
 long SM_DRV8825::Move(double degrees, SM_Directions direction){
     StepperMotor::Move(degrees * 2, direction);
-    if (direction == left) {
+    if (direction == SM_Directions::left) {
         _direction_pin.Set(1);
     } else {
         _direction_pin.Set(0);
