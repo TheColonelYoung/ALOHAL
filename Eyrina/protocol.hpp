@@ -17,11 +17,15 @@
 
 #include "globals.hpp"
 #include "uart/uart.hpp"
-
+#include "dac/DAC.hpp"
 
 using namespace std;
 
 #define E_PROTOCOL_MAX_LENGTH 4
+
+#define E_PROTOCOL_MOTOR_COM_OFFSET 1
+#define E_PROTOCOL_LED_DRIVER_COM_OFFSET 7
+#define E_PROTOCOL_PWM_COM_OFFSET 9
 
 #define TABLE_SCAVENGER(table) \
     for (uint i = 0; i < ARRAY_SIZE(table); i++) { \
@@ -33,7 +37,6 @@ class E_protocol {
     int wait_for = 0;
 
     bool response_en = false;
-
 
     UART *UART_input;
 
@@ -50,9 +53,9 @@ public:
 
     //This method perform completed command
     void Perform_board_command(uint8_t command);
-    void Perform_motor_command(uint8_t command);
-    void Perform_LED_driver_command(uint8_t command);
-    void Perform_PWM_command(uint8_t command);
+    void Perform_motor_command(uint8_t receiver, uint8_t command);
+    void Perform_LED_driver_command(uint8_t receiver, uint8_t command);
+    void Perform_PWM_command(uint8_t receiver, uint8_t command);
 
     bool Response(int return_code);
 };
