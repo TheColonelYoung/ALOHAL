@@ -53,17 +53,15 @@
 # include "stm32f7xx_hal.h"
 #endif
 
+
+// libraries nedded for function of tasker events and DEBUG
+#include "globals.hpp"
 #include "timer/timer.hpp"
 #include "misc/text_transform.hpp"
 
-// libraries nedded for function of tasker events and DEBUG
-#include "gpio/pin.hpp"
-#include "uart/uart.hpp"
-
-//#include "USB_VCP.h"
 
 // define used timer handler
-#define TASKER_TIMER      htim2
+#define TASKER_TIMER      htim5
 #define TASKER_TIMER_SIZE 16 // 16 or 32 bits
 
 // class declaration
@@ -77,15 +75,8 @@ extern UART_HandleTypeDef huart2;
 
 using namespace std;
 
-// event function prototypes
-void Tasker_timer_IT();
-void flip();
-void flip2();
-void send();
-void timsend();
-
-
 class Tasker {
+
 	vector<Event> events;                      // vector of tasks
 	TIM_HandleTypeDef * timer = &TASKER_TIMER; // timer which is used by tasker
 	int number_of_events      = 0;             // number of actual taks in tasker
@@ -110,7 +101,7 @@ public:
 	int Create_event(string name, int time, string unit, int repeat, void (* function)(void), int priority = 0); // append new event
 	int Remove_event(string event);                                                                              // delete event
 
-	int Handle_event(); // handle first event and update next event's time
+	void Handle_event(); // handle first event and update next event's time
 	int Event_count();  // return number of events
 
 	int Get_freeID();   // get new ID for new event
