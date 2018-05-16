@@ -76,11 +76,11 @@ public:
     void Acc_step();
 
     void Init();    // Enable IRQ, initiate calculations
-    void Stop();    // stop steper motor rotation
-    void Disable(); // disable IRQ, need Init for another run
+    void Stop();    // Stop steper motor rotation
+    void Disable(); // Disable IRQ, need Init for another run
 
-    virtual void Select_timer(Timer &timer) = 0; // assign timer for motor
-    virtual void Step() = 0;                     // make one step by direction
+    virtual void Select_timer(Timer &timer) = 0; // Assign timer for motor
+    virtual void Step() = 0;                     // Make one step by direction
 
     virtual long Move(double degrees, SM_Directions direction);
     virtual int Speed(float speed);
