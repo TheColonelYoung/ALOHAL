@@ -28,6 +28,7 @@ uint16_t AD_C::Value(){
 }
 
 int AD_C::Set_resolution(int resolution){
+    /*
     switch (resolution) {
         case 12:
             handler->Init.Resolution = ADC_RESOLUTION_12B;
@@ -45,9 +46,9 @@ int AD_C::Set_resolution(int resolution){
             return -1;
     }
     if (HAL_ADC_Init(&hadc) != HAL_OK) {
-        // Pin('C', 14).Toggle();
+
     }
-    resolution = resolution;
+    resolution = resolution;*/
     return resolution;
 }
 
@@ -56,21 +57,25 @@ void AD_C::Set_value(uint16_t value){
 }
 
 void AD_C::Start_IT(){
+    /*
     if (handler->Init.EOCSelection != ADC_EOC_SINGLE_CONV) {
         handler->Init.EOCSelection = ADC_EOC_SINGLE_CONV;
         HAL_ADC_Init(&hadc);
     }
+    */
     HAL_ADC_Start_IT(handler);
 }
 
 uint16_t AD_C::Measure(){
+    /*
     if (handler->Init.EOCSelection != ADC_EOC_SINGLE_CONV) {
         handler->Init.EOCSelection = ADC_EOC_SINGLE_CONV;
         HAL_ADC_Init(&hadc);
-    }
+    }*/
+
     HAL_ADC_Start(handler);
     while (1) {
-        if (HAL_ADC_PollForConversion(handler, 100) == HAL_OK) {
+        if (HAL_ADC_PollForConversion(handler, 1000) == HAL_OK) {
             ADC_1.Set_value(HAL_ADC_GetValue(handler));
             break;
         }
@@ -102,7 +107,7 @@ float AD_C::Percentage(){
 int AD_C::Set_channel(int chan){
     ADC_ChannelConfTypeDef sConfig;
     sConfig.Channel      = (uint32_t) chan;
-    sConfig.Rank         = ADC_RANK_CHANNEL_NUMBER;
+    //sConfig.Rank         = ADC_RANK_CHANNEL_NUMBER;
     sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
 
     HAL_ADC_ConfigChannel(handler, &sConfig);
@@ -115,7 +120,7 @@ int AD_C::Set_channel(string chan){
     if (chan == "VREF") {
         chan_config.Channel = ADC_CHANNEL_VREFINT;
     } else if (chan == "VBAT") {
-        chan_config.Channel = ADC_CHANNEL_VBAT;
+        //chan_config.Channel = ADC_CHANNEL_VBAT;
     } else if (chan == "TEMP") {
         chan_config.Channel = ADC_CHANNEL_TEMPSENSOR;
     } else {
