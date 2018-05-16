@@ -13,34 +13,52 @@
 # include "stm32f7xx_hal.h"
 #endif
 
-// entened pointer to DAC from main
-extern DAC_HandleTypeDef hdac;
+#include <vector>
 
-// value of voltage connected to VREF
-#define DAC_REF_VOLTAGE 3.2
-// number of DAC on this chip
-#define NUM_OF_DAC      2
+#include "globals.hpp"
 
-/**
- * Enable and start the DAC, without this cannot be value set
- * @param  channel number of channel restricted by NUM_OF_DAC
- * @return         return channel number if was succesfull or -1 if not
- */
-int DAC_Start(int channel);
+using namespace std;
 
-/**
- * Stop the DAC (saves power), values cannot be writen
- * @param  channel number of channel restricted by NUM_OF_DAC
- * @return         return channel number if was succesfull or -1 if not
- */
-int DAC_Stop(int channel);
+class DA_C;
 
-/**
- * Set voltage value to pin of DAC
- * @param  channel number of channel restricted by NUM_OF_DAC
- * @param  voltage output voltage on pin restricted by DAC_REF_VOLTAGE
- * @return         return value in DAC register if was succesfull or -1 if not
- */
-int DAC_set_value(int channel, float voltage);
+class DA_C_channel {
+    DA_C *_parent_convertor;
+    uint _index;
+
+public:
+    DA_C_channel() = default;
+    DA_C_channel(DA_C *parent, int index);
+
+    void Start();
+    int Set_value(float voltage);
+    int Set_reference(float value);
+    void Stop();
+};
+
+class DA_C {
+
+
+public:
+    DAC_HandleTypeDef *_handler;
+
+private:
+    uint _channel_count;
+
+public:
+    float supply_voltage = -1;
+    vector<DA_C_channel> channel;
+
+public:
+    DA_C() = default;
+    DA_C(DAC_HandleTypeDef *handler, int channel_count);
+    DA_C(DAC_HandleTypeDef *handler, int channel_count, float supply_voltage);
+
+    DAC_HandleTypeDef *Handler();
+
+    void Test();
+
+    void Calibrate();
+};
+
 
 #endif // ifndef DAC_H
