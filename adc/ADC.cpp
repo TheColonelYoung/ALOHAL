@@ -12,8 +12,8 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
 
 AD_C::AD_C(ADC_HandleTypeDef *handler)
     : handler(handler){
-    reference_cal = (*VREFINT_CAL_ADDR);
-    HAL_ADCEx_Calibration_Start(handler);
+    //reference_cal = (*VREFINT_CAL_ADDR);
+    HAL_ADCEx_Calibration_Start(handler,0);
 }
 
 uint AD_C::Calibration(){
@@ -76,11 +76,11 @@ uint16_t AD_C::Measure(){
     HAL_ADC_Start(handler);
     while (1) {
         if (HAL_ADC_PollForConversion(handler, 1000) == HAL_OK) {
-            ADC_1.Set_value(HAL_ADC_GetValue(handler));
+            Set_value(HAL_ADC_GetValue(handler));
             break;
         }
     }
-    return ADC_1.ADC_val;
+    return ADC_val;
 }
 
 float AD_C::Voltage_v(){
@@ -108,7 +108,7 @@ int AD_C::Set_channel(int chan){
     ADC_ChannelConfTypeDef sConfig;
     sConfig.Channel      = (uint32_t) chan;
     //sConfig.Rank         = ADC_RANK_CHANNEL_NUMBER;
-    sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+    sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
 
     HAL_ADC_ConfigChannel(handler, &sConfig);
     return 0;

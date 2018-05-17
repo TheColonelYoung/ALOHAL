@@ -1,7 +1,7 @@
 #include "irq_handler.hpp"
 
 int IRQ_handler::Notify(){
-    for (uint i = 0; i < observers.size(); i++) {
+    for (unsigned int i = 0; i < observers.size(); i++) {
         observers[i]->Run();
     }
 

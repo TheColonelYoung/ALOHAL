@@ -1,22 +1,6 @@
 #ifndef ADC_H
 #define ADC_H
 
-#ifdef STM32_F0
-# include "stm32f0xx_hal.h"
-# include "stm32f0xx_hal_adc.h"
-#elif STM32_F1
-# include "stm32f1xx_hal.h"
-# include "stm32f1xx_hal_adc.h"
-#elif STM32_F3
-# include "stm32f3xx_hal.h"
-# include "stm32f3xx_hal_adc.h"
-#elif STM32_F4
-# include "stm32f4xx_hal.h"
-# include "stm32f4xx_hal_adc.h"
-#elif STM32_F7
-# include "stm32f7xx_hal.h"
-# include "stm32f7xx_hal_adc.h"
-#endif // ifdef STM32_F0
 
 using namespace std;
 
@@ -26,7 +10,6 @@ using namespace std;
 #include "globals.hpp"
 
 typedef unsigned int uint;
-
 
 #define VREFINT_CAL_ADDR ((uint16_t *)((uint32_t) 0x1FFFF7BA))
 #define ADC_CHANNEL_CONCAT(channel) (ADC_CHANNEL_ ## channel)

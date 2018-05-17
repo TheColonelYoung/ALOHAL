@@ -46,7 +46,7 @@ public:
 
     template <class unregistrator_class>
     void Unregister(unregistrator_class& object){
-        for (uint i = 0; i < observers.size(); i++) {
+        for (unsigned int i = 0; i < observers.size(); i++) {
             if (&object == observers[i]->Get_origin_object()) {
                 delete(observers[i]);
                 observers.erase(observers.begin() + i);
