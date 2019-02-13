@@ -15,9 +15,11 @@ void ALOHAL_init(){
     #ifdef UART_1_EN
     UART_1 = UART(&huart1);
     #endif
-    #ifdef UART_2_EN
+
+    #ifdef UART2
     UART_2 = UART(&huart2);
     #endif
+
     #ifdef UART_3_EN
     UART_3 = UART(&huart3);
     #endif

@@ -23,7 +23,7 @@ void ALOHAL_init();
 // #define DAC_1_EN
 
 // #define UART_1_EN
-#define UART_2_EN
+//#define UART_2_EN
 // #define UART_3_EN
 // #define UART_4_EN
 
@@ -90,16 +90,21 @@ extern DA_C DAC_1;
 // UART
 class UART;
 
+
+
 #ifdef UART_1_EN
-# include "uart/uart.hpp"
-extern UART_HandleTypeDef huart1;
-extern UART UART_1;
+    #ifndef USART1
+        #error "USART1 must be enabled in CubeMX before compilation"
+    #endif
+    # include "uart.hpp"
+    extern UART_HandleTypeDef huart1;
+    extern UART UART_1;
 #endif
 
-#ifdef UART_2_EN
-# include "uart/uart.hpp"
-extern UART_HandleTypeDef huart2;
-extern UART UART_2;
+#ifdef UART2
+    #include "uart.hpp"
+    extern UART_HandleTypeDef huart2;
+    extern UART UART_2;
 #endif
 
 #ifdef UART_3_EN
