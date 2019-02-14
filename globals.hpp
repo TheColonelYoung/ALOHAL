@@ -11,8 +11,6 @@ void ALOHAL_init();
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
-#define TIM_FREQ 48000000
-
 /************************************OPTIONS**********************************************/
 // EXTERNAL IRQ
 // #define EXT_IRQ_EN
@@ -21,11 +19,6 @@ void ALOHAL_init();
 // NOTE In higher families MCUs has more ADC, in this purpose conditional compile must be added
 
 // #define DAC_1_EN
-
-// #define UART_1_EN
-//#define UART_2_EN
-// #define UART_3_EN
-// #define UART_4_EN
 
 // #define TIM_1_EN
 // #define TIM_2_EN
@@ -92,11 +85,8 @@ class UART;
 
 
 
-#ifdef UART_1_EN
-    #ifndef USART1
-        #error "USART1 must be enabled in CubeMX before compilation"
-    #endif
-    # include "uart.hpp"
+#ifdef UART1
+    #include "uart.hpp"
     extern UART_HandleTypeDef huart1;
     extern UART UART_1;
 #endif
@@ -107,17 +97,18 @@ class UART;
     extern UART UART_2;
 #endif
 
-#ifdef UART_3_EN
-# include "uart/uart.hpp"
-extern UART_HandleTypeDef huart3;
-extern UART UART_3;
+#ifdef UART3
+    #include "uart.hpp"
+    extern UART_HandleTypeDef huart3;
+    extern UART UART_3;
 #endif
 
-#ifdef UART_4_EN
-# include "uart/uart.hpp"
-extern UART_HandleTypeDef huart4;
-extern UART UART_4;
+#ifdef UART3
+    #include "uart.hpp"
+    extern UART_HandleTypeDef huart3;
+    extern UART UART_3;
 #endif
+
 
 
 // TIMERS
@@ -126,7 +117,6 @@ class Timer;
 #define ALOHAL_CREATE_TIMER(name, handler, size, channels) \
     name = Timer(&handler, size, channels); \
     ALOHAL_TIM_CHAN_BACKPOINTER(name)
-
 
 #define ALOHAL_TIM_CHAN_BACKPOINTER(timer) \
     for (uint i = 0; i < timer.channel.size(); i++) { \
