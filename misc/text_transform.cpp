@@ -40,7 +40,7 @@ string itoa(int a){
     sprintf(buffer, "%d", a);
     return string(buffer);
 }
-
+/*
 string to_string(int number){
     char buffer[32];
     sprintf(buffer, "%d", number);
@@ -94,3 +94,4 @@ string to_string(double number){
 string to_string(const char* text){
     return string(text);
 }
+*/

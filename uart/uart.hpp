@@ -61,6 +61,10 @@ public:
         return Send(to_string(message));
     }
 
+    int Send(const char* message){
+        return Send(string(message));
+    }
+
     int Resend(); // routine that send another string from buffer if UART is avaible
 
     int Load();    // Copy data from temp buffer to class buffer
