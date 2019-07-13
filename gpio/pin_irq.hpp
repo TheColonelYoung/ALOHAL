@@ -15,7 +15,6 @@
 # include "stm32f7xx_hal.h"
 #endif
 
-#include "globals.hpp"
 #include "irq/irq_multi_handler.hpp"
 extern IRQ_multi_handler<int> EXT_IRQ;
 

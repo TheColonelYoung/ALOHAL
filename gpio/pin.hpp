@@ -4,6 +4,7 @@
 // ------------------LIBRARY_OPTIONS----------------
 // ------------------LIBRARY_OPTIONS----------------
 
+#include "global_includes.hpp"
 #include "pin_irq.hpp"
 
 #define PORT_SIZE         ((int) GPIOB - (int) GPIOA)

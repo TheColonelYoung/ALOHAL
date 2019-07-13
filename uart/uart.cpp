@@ -1,5 +1,12 @@
 #include "uart.hpp"
 
+#include "device/device.hpp"
+
+class Device;
+extern Device device;
+
+#include "mcu/config.hpp"
+
 unsigned char UART_1_buffer_temp[10];
 unsigned char UART_2_buffer_temp[10];
 unsigned char UART_3_buffer_temp[10];
@@ -59,8 +66,10 @@ int UART::Clear_buffer(){
 }
 
 int UART::Resend(){
+
     TX_buffer.erase(TX_buffer.begin()); //Erase message which transfer is complete
     if (TX_buffer.size() > 0) { //Send next message in line
+        //Pin('B',3).Set(1);
         HAL_UART_Transmit_IT(UART_Handler, (unsigned char *) TX_buffer.front().c_str(), TX_buffer.front().length());
     }else{  //Now is UART unoccupied
         busy = false;
@@ -71,29 +80,29 @@ int UART::Resend(){
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
     #ifdef UART_1_EN
     if (huart->Instance == USART1) {
-        UART_1.Load();
-        UART_1.IRQ.Notify();
+        device.mcu.UART_1.Load();
+        device.mcu.UART_1.IRQ.Notify();
         return;
     }
     #endif
     #ifdef UART_2_EN
     if (huart->Instance == USART2) {
-        UART_2.Load();
-        UART_2.IRQ.Notify();
+        device.mcu.UART_2.Load();
+        device.mcu.UART_2.IRQ.Notify();
         return;
     }
     #endif
     #ifdef UART_3_EN
     if (huart->Instance == USART3) {
-        UART_3.Load();
-        UART_3.IRQ.Notify();
+        device.mcu.UART_3.Load();
+        device.mcu.UART_3.IRQ.Notify();
         return;
     }
     #endif
     #ifdef UART_4_EN
     if (huart->Instance == USART4) {
-        UART_4.Load();
-        UART_4.IRQ.Notify();
+        device.mcu.UART_4.Load();
+        device.mcu.UART_4.IRQ.Notify();
         return;
     }
     #endif
@@ -102,25 +111,25 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
     #ifdef UART_1_EN
     if (huart->Instance == USART1) {
-        UART_1.Resend();
+        device.mcu.UART_1.Resend();
         return;
     }
     #endif
     #ifdef UART_2_EN
     if (huart->Instance == USART2) {
-        UART_2.Resend();
+        device.mcu.UART_2.Resend();
         return;
     }
     #endif
     #ifdef UART_3_EN
     if (huart->Instance == USART3) {
-        UART_3.Resend();
+        device.mcu.UART_3.Resend();
         return;
     }
     #endif
     #ifdef UART_4_EN
     if (huart->Instance == USART4) {
-        UART_4.Resend();
+        device.mcu.UART_4.Resend();
         return;
     }
     #endif

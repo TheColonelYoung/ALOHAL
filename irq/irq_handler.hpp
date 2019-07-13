@@ -3,6 +3,8 @@
 
 // ------------------LIBRARY_INCLUDES--------------
 
+#pragma once
+
 #ifdef STM32_F0
 # include "stm32f0xx_hal.h"
 #elif STM32_F1

@@ -18,14 +18,21 @@
 #elif defined STM32_F7
 # include "stm32f7xx_hal.h"
 # include "stm32f7xx_hal_uart.h"
+#elif defined STM32_L4
+# include "stm32l4xx_hal.h"
+# include "stm32l4xx_hal_uart.h"
 #endif // ifdef STM32_F0
 
 #include <vector>
-#include "globals.hpp"
-#include "misc/text_transform.hpp"
+//#include "misc/text_transform.hpp"
 #include "irq/irq_handler.hpp"
+#include "mcu/config.hpp"
+#include "gpio/pin.hpp"
+//#include "globals.hpp"
 
 using namespace std;
+
+typedef unsigned int uint;
 
 void UART1_IT_Handler();
 void UART2_IT_Handler();
