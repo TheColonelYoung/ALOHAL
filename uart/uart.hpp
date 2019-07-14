@@ -77,6 +77,9 @@ public:
     int Load();    // Copy data from temp buffer to class buffer
     int Receive(); // Receive IT Callback -> Insert into
 
+    string Read(int length);
+    string Read(string delimiter);
+
     int Clear_buffer(); // Clear input buffer
 };
 

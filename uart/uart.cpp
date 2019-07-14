@@ -77,6 +77,23 @@ int UART::Resend(){
     return TX_buffer.size();
 }
 
+string UART::Read(int length){
+    string output = RX_buffer.substr(0,length);
+    RX_buffer.erase(0,length);
+    return output;
+}
+
+string UART::Read(string delimiter){
+    size_t position = RX_buffer.find(delimiter, 0);
+    if(position != string::npos){
+        string output = RX_buffer.substr(0,position + delimiter.length());
+        RX_buffer.erase(0,position + delimiter.length());
+        return output;
+    } else {
+        return "";
+    }
+}
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
     #ifdef UART_1_EN
     if (huart->Instance == USART1) {
