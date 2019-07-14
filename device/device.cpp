@@ -12,8 +12,6 @@ void Device::Init(){
     mcu.Init();
     cli.Connect(mcu.UART_2);
     mcu.UART_2.Send("Initialization done\r\n");
-    mcu.UART_2.Send("OS start\r\n");
     cli.Start();
-    cli.Print("Testing_print...\r\n");
 }
 
