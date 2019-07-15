@@ -15,10 +15,24 @@ This `device` contains references to structure of program, these are: cli, apps,
 
 ### CLI
 Provides interface for communicating with user.
-Emulates serial comunication iterface. Inspired by POSIX.
+Emulates serial comunication iterface. Inspired by POSIX Interface.
 Load input from user and provides it to application.
 Applications cannot send data directly to screen, only send data to cli.
-`cli` provides function for printing device info, as build_data, project name, procesor name, etc.
+Contains globaly registred commands. This commands can be runned from every location in filesystem if is connected.
+Provides build-in function for printing device info, as build_data, project name, procesor name, etc.
+Other device peripherals be register own command. Commands have predefined interface, must return type `int` and receive vector of string as argument, otherwise it cannot be registred.
+
+#### File system
+Files system is component, which can be add to basic `cli`.
+Device peripherals can crete folders, files or executables inside folders.
+Executables provides acces to device functionality.
+In memory file system supportin some types of records:
+- Directory - contains another entry, exists one main folder named `/`
+- Executable - is link to function or to object and his method, which can be started from cli, have same parametres as command registred to `cli`
+- File - Basic type contain only string as content, possible not-implemented types:
+  - Binary - pointer to alocated RAM with binary data
+  - In-Flash - pointer to spqace in FLASH memory where is file saved
+All record types above are based on base class names FS_entry.
 
 ### Application
 Supports input arguments, are provided to app as in pure 'C'.
@@ -41,4 +55,6 @@ MCU contain peripheral as Timers, UART, USB, I2C, SPI ...
 Periferals are not accessible from cli.
 
 # Access restrictions
+
+
 
