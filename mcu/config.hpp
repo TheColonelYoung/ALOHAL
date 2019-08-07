@@ -24,7 +24,6 @@ Enable this to support registring functions to external interupt event handler
 // #define UART_3_EN
 // #define UART_4_EN
 
-
 // #define TIM_1_EN
 // #define TIM_2_EN
 // #define TIM_3_EN
@@ -40,6 +39,7 @@ Enable this to support registring functions to external interupt event handler
 // #define TIM_13_EN
 // #define TIM_14_EN
 // #define TIM_15_EN
+// #define TIM_16_EN
 
 // # define FLASH_EN
 
@@ -200,4 +200,10 @@ extern Timer TIM_14;
 # include "timer/timer.hpp"
 extern TIM_HandleTypeDef htim15;
 extern Timer TIM_15;
+#endif
+
+#ifdef TIM_16_EN
+# include "timer/timer.hpp"
+extern TIM_HandleTypeDef htim16;
+extern Timer TIM_16;
 #endif

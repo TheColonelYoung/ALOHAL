@@ -43,6 +43,56 @@ public:
     #ifdef UART_4_EN
     UART UART_4;
     #endif
+
+    #ifdef TIM_1_EN
+    Timer TIM_1;
+    #endif
+    #ifdef TIM_2_EN
+    Timer TIM_2;
+    #endif
+    #ifdef TIM_3_EN
+    Timer TIM_3;
+    #endif
+    #ifdef TIM_4_EN
+    Timer TIM_4;
+    #endif
+    #ifdef TIM_5_EN
+    Timer TIM_5;
+    #endif
+    #ifdef TIM_6_EN
+    Timer TIM_6;
+    #endif
+    #ifdef TIM_7_EN
+    Timer TIM_7;
+    #endif
+    #ifdef TIM_8_EN
+    Timer TIM_8;
+    #endif
+    #ifdef TIM_9_EN
+    Timer TIM_9;
+    #endif
+    #ifdef TIM_10_EN
+    Timer TIM_10;
+    #endif
+    #ifdef TIM_11_EN
+    Timer TIM_11;
+    #endif
+    #ifdef TIM_12_EN
+    Timer TIM_12;
+    #endif
+    #ifdef TIM_13_EN
+    Timer TIM_13;
+    #endif
+    #ifdef TIM_14_EN
+    Timer TIM_14;
+    #endif
+    #ifdef TIM_15_EN
+    Timer TIM_15;
+    #endif
+    #ifdef TIM_16_EN
+    Timer TIM_16;
+    #endif
+
 };
 
 
