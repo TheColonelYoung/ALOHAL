@@ -15,11 +15,9 @@ void MCU::Init(){
     #ifdef UART_1_EN
     UART_1 = UART(&huart1);
     #endif
-
     #ifdef UART_2_EN
     UART_2 = UART(&huart2);
     #endif
-
     #ifdef UART_3_EN
     UART_3 = UART(&huart3);
     #endif
@@ -79,69 +77,3 @@ void MCU::Init(){
     #endif
 
 }
-/*
-// EXT_IRQ
-#ifdef EXT_IRQ_EN
-IRQ_multi_handler<int> EXT_IRQ = IRQ_multi_handler<int>();
-#endif
-
-// FLASH
-#ifdef FLASH_EN
-Flash_mem Flash;
-#endif
-
-// ADC
-#ifdef ADC_1_EN
-AD_C ADC_1;
-#endif
-
-// DAC
-#ifdef DAC_1_EN
-DA_C DAC_1;
-#endif
-
-#ifdef TIM_1_EN
-Timer TIM_1;
-#endif
-#ifdef TIM_2_EN
-Timer TIM_2;
-#endif
-#ifdef TIM_3_EN
-Timer TIM_3;
-#endif
-#ifdef TIM_4_EN
-Timer TIM_4;
-#endif
-#ifdef TIM_5_EN
-Timer TIM_5;
-#endif
-#ifdef TIM_6_EN
-Timer TIM_6;
-#endif
-#ifdef TIM_7_EN
-Timer TIM_7;
-#endif
-#ifdef TIM_8_EN
-Timer TIM_8;
-#endif
-#ifdef TIM_9_EN
-Timer TIM_9;
-#endif
-#ifdef TIM_10_EN
-Timer TIM_10;
-#endif
-#ifdef TIM_11_EN
-Timer TIM_11;
-#endif
-#ifdef TIM_12_EN
-Timer TIM_12;
-#endif
-#ifdef TIM_13_EN
-Timer TIM_13;
-#endif
-#ifdef TIM_14_EN
-Timer TIM_14;
-#endif
-#ifdef TIM_15_EN
-Timer TIM_15;
-#endif*/
