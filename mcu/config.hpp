@@ -83,33 +83,23 @@ extern DAC_HandleTypeDef hdac;
 extern DA_C DAC_1;
 #endif
 
-// UART
 class UART;
+#if defined(UART_1_EN) || defined(UART_2_EN) || defined(UART_1_EN) || defined(UART_3_EN)
+# include "uart/uart.hpp"
+#endif
 
 #ifdef UART_1_EN
-# include "uart/uart.hpp"
 extern UART_HandleTypeDef huart1;
-extern UART UART_1;
 #endif
-
 #ifdef UART_2_EN
-# include "uart/uart.hpp"
 extern UART_HandleTypeDef huart2;
-extern UART UART_2;
 #endif
-
 #ifdef UART_3_EN
-# include "uart/uart.hpp"
 extern UART_HandleTypeDef huart3;
-extern UART UART_3;
 #endif
-
 #ifdef UART_4_EN
-# include "uart/uart.hpp"
 extern UART_HandleTypeDef huart4;
-extern UART UART_4;
 #endif
-
 
 // TIMERS
 class Timer;
@@ -117,7 +107,6 @@ class Timer;
 #define ALOHAL_CREATE_TIMER(name, handler, size, channels) \
     name = Timer(&handler, size, channels); \
     ALOHAL_TIM_CHAN_BACKPOINTER(name)
-
 
 #define ALOHAL_TIM_CHAN_BACKPOINTER(timer) \
     for (uint i = 0; i < timer.channel.size(); i++) { \
