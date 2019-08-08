@@ -8,16 +8,20 @@
 #pragma once
 
 #include "mcu/config.hpp"
-
 #include "gpio/pin.hpp"
-
-#if defined(UART_1_EN) || defined(UART_2_EN) || defined(UART_3_EN) || defined(UART_4_EN)
-    #include "uart/uart.hpp"
-#endif
 
 #include <string>
 
 using namespace std;
+
+/**
+ * @brief Represent MCU(STM32) on board(device)
+ *
+ * Contains all configured hardware peripherals
+ * Configuration of MCU is in file mcu/config.hpp
+ * Initialization of MCU should be done from Device.Init as first
+ * Configuration in ALOHAL must corresponds with CubeMX configuration
+ */
 
 class MCU
 {
@@ -26,6 +30,11 @@ private:
 public:
     MCU() =default;
 
+    /**
+     * @brief Initialize peripherals with their parameters
+     * Should be called during device initialization
+     *
+     */
     void Init();
 
     // Peripherals
