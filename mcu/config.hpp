@@ -41,6 +41,12 @@ Enable this to support registring functions to external interupt event handler
 // #define TIM_15_EN
 // #define TIM_16_EN
 
+#define I2C_1_EN
+//#define I2C_2_EN
+//#define I2C_3_EN
+//#define I2C_4_EN
+
+
 // # define FLASH_EN
 
 
@@ -206,4 +212,24 @@ extern Timer TIM_15;
 # include "timer/timer.hpp"
 extern TIM_HandleTypeDef htim16;
 extern Timer TIM_16;
+#endif
+
+
+
+class I2C_master;
+#if defined(I2C_1_EN) || defined(I2C_2_EN) || defined(I2C_1_EN) || defined(I2C_3_EN)
+# include "i2c/i2c_master.hpp"
+#endif
+
+#ifdef I2C_1_EN
+extern I2C_HandleTypeDef hi2c1;
+#endif
+#ifdef I2C_2_EN
+extern I2C_HandleTypeDef hi2c2;
+#endif
+#ifdef I2C_3_EN
+extern I2C_HandleTypeDef hi2c3;
+#endif
+#ifdef I2C_4_EN
+extern I2C_HandleTypeDef hi2c4;
 #endif
