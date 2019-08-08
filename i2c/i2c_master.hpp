@@ -15,15 +15,52 @@
 using namespace std;
 typedef unsigned int uint;
 
+/**
+ * @brief I2C Bus in master role, comunicates with other device connected to bus
+ *
+ */
 class I2C_master
 {
 private:
     I2C_HandleTypeDef *handler;
     uint speed;
 public:
+    /**
+     * @brief Construct a new i2c master object
+     *
+     */
     I2C_master() =default;
+
+    /**
+     * @brief Construct a new i2c master object
+     *
+     * @param handler pointer to handler structure of I2C
+     * @param speed baudrate of bus
+     */
     I2C_master(I2C_HandleTypeDef *handler, uint speed = 100000);
 
+    /**
+     * @brief Transmit data to device on bus in polling mode
+     *
+     * @param addr Target device address
+     * @param data Data to be send
+     * @return uint Success = 0, Error - 1, Busy - 2, Timeout - 3
+     */
     uint Send_poll(uint8_t addr, vector<uint8_t> data);
+
+    /**
+     * @brief Receive data from device on bus in polling mode
+     *
+     * @param addr Address of target device
+     * @param length Number of bytes received
+     * @return vector<uint8_t> Received data
+     */
     vector<uint8_t> Receive_poll(uint8_t addr, uint length = 1);
+
+    /**
+     * @brief Scan all available addresses and find all responsing devices
+     *
+     * @return vector<uint8_t> Addresses of responsing device
+     */
+    vector<uint8_t> Scan();
 };
