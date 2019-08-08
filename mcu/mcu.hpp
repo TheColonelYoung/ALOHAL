@@ -44,6 +44,20 @@ public:
     UART UART_4;
     #endif
 
+    // I2C
+    #ifdef I2C_1_EN
+    I2C_master I2C_1;
+    #endif
+    #ifdef I2C_2_EN
+    I2C_master I2C_2;
+    #endif
+    #ifdef I2C_3_EN
+    I2C_master I2C_3;
+    #endif
+    #ifdef I2C_4_EN
+    I2C_master I2C_4;
+    #endif
+
     #ifdef TIM_1_EN
     Timer TIM_1;
     #endif
