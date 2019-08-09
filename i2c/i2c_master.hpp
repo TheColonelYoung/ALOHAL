@@ -17,19 +17,18 @@ typedef unsigned int uint;
 
 /**
  * @brief I2C Bus in master role, comunicates with other device connected to bus
- *
  */
 class I2C_master
 {
 private:
     I2C_HandleTypeDef *handler;
     uint speed;
+
 public:
     /**
      * @brief Construct a new i2c master object
-     *
      */
-    I2C_master() =default;
+    I2C_master() = default;
 
     /**
      * @brief Construct a new i2c master object
@@ -46,7 +45,7 @@ public:
      * @param data Data to be send
      * @return uint Success = 0, Error - 1, Busy - 2, Timeout - 3
      */
-    uint Send_poll(uint8_t addr, vector<uint8_t> data);
+    uint Transmit_poll(uint8_t addr, vector<uint8_t> data);
 
     /**
      * @brief Receive data from device on bus in polling mode
