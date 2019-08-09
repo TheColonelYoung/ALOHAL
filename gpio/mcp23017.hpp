@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "i2c/i2c_device.hpp"
 
 /**
@@ -23,10 +25,10 @@ private:
      * Variables below are mirroring registers in MCP23017
      * This can save some transmission, for example when pin in state 1 is set to 1
      */
-    uint16_t state;
+    uint16_t level;     // logic level of output pin
     uint16_t direction;
     uint16_t pull_up;
-    uint16_t irq_en;
+    vector<IRQ_trigger> irq_trigger(16);
 
 public:
     enum REG{
@@ -80,22 +82,98 @@ public:
     /**
      * @brief Set pin of expander to output state
      *
-     * @param pin Number of pin 0-15, Port A 0-7, Port B 8-15
+     * @param pin   Number of pin 0-15, Port A 0-7, Port B 8-15
      * @param state New state of pin
-     * @return int
+     * @return int  Status of transmission, -1 if pin is set as input
      */
     int Set(uint8_t pin, bool state);
 
+    /**
+     * @brief Set all pins at once
+     *
+     * @param port  New state for all pins [PORTA, PORTB]
+     * @return int  Status of transmission
+     */
+    int Set(uint16_t port);
+
+    /**
+     * @brief Read input value from pins (all even set as output)
+     *
+     * @param pin  Number of pin 0-15
+     * @return int Status of transmission, -1 if pin is set as output
+     */
     int Read(uint8_t pin);
 
+    /**
+     * @brief Read value from all pins
+     * Even output pins are read
+     *
+     * @return uint16_t Value on pins
+     */
+    uint16_t Read();
+
+    /**
+     * @brief Setup pin  as output or input
+     *
+     * @param pin        Number of pin to setup
+     * @param direction  true -> input, false -> output
+     * @return int       Status of transmission
+     */
     int Direction(uint8_t pin, bool direction);
 
-    int Pull_up(uint8_t pin, bool state)
+    /**
+     * @brief Setup direction of all pins
+     *
+     * @param port  Direction settings for all pins
+     * @return int  Status of transmission
+     */
+    int Direction(uint16_t port);
 
-    int IRQ_setup(uint8_t pin, IRQ_trigger trigger)
+    /**
+     * @brief Set pull-up resistor of given pin
+     * Ignored if pin is setup as output (but transmission is made)
+     * Pull-up has value of 100k
+     *
+     * @param pin    Pin number 0-15
+     * @param state  true -> pull-up enabled, false -> disabled
+     * @return int   Status of transmission
+     */
+    int Pull_up(uint8_t pin, bool state);
 
-    bool IRQ_read(uint8_t pin);
+    /**
+     * @brief Set pull-up resistors of all pins
+     *
+     * @param port  Pull-up settings for pins
+     * @return int  Status of transmission
+     */
+    int Pull_up(uint16_t port);
 
+    /**
+     * @brief Setup trigger of IRQ on pin or disable IRQ
+     *
+     * @param pin      Number of pin which is configured
+     * @param trigger  Type of trigger
+     * @return int     Status of transmission
+     */
+    int IRQ_setup(uint8_t pin, IRQ_trigger trigger);
+
+    /**
+     * @brief Read IRQ status of given pin
+     * This operation erase flag in memory of IC
+     * This method is used only part part of IRQ subsystem of this component
+     *
+     * @param pin   Number of pin for reading 0-15
+     * @return int  Status of transmission
+     */
+    int IRQ_read(uint8_t pin);
+
+    /**
+     * @brief Read IRQ status of all pins at once
+     * This method should be used preferably agains reading only one pins
+     * Because during reading onlyone pin, IRQ of another pin can be lost
+     *
+     * @return uint16_t IRQ status
+     */
     uint16_t IRQ_read();
 
 
