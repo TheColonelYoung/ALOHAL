@@ -4,4 +4,4 @@
 typedef unsigned int uint;
 
 class Device;
-extern Device device;
+extern Device *device;

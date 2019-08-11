@@ -9,9 +9,9 @@
 #include "device.hpp"
 
 void Device::Init(){
-    mcu.Init();
-    cli.Connect(mcu.UART_2);
-    mcu.UART_2.Send("Initialization done\r\n");
-    cli.Start();
+    mcu->Init();
+    cli->Connect(mcu->UART_2);
+    mcu->UART_2.Send("Initialization done\r\n");
+    cli->Start();
 }
 

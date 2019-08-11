@@ -12,6 +12,7 @@
 
 #include "mcu/mcu.hpp"
 #include "cli/cli.hpp"
+#include "gpio/pin.hpp"
 
 using namespace std;
 
@@ -19,12 +20,12 @@ class Device{
 private:
 
 public:
-    MCU mcu = MCU();
-    CLI cli;
+    MCU *mcu = new MCU();
+    CLI *cli;
 
     Device() = default;
 
     void Init();
 };
 
-#include "gpio/pin.hpp"
+
