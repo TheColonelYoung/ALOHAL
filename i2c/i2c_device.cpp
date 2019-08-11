@@ -1,6 +1,6 @@
 #include "i2c_device.hpp"
 
-I2C_device::I2C_device(I2C_master master, uint8_t address):
+I2C_device::I2C_device(I2C_master master, unsigned char address):
     master(master), address(address){
 
 }

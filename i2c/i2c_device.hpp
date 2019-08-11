@@ -31,7 +31,7 @@ public:
      * @param master Object of master bus on which is device connected
      * @param address Address of device on bus
      */
-    I2C_device(I2C_master master, uint8_t address);
+    I2C_device(I2C_master master, unsigned char address);
 
     /**
      * @brief Transmit data to device
