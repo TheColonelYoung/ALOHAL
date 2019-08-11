@@ -21,6 +21,12 @@
 class MCP23017: public I2C_device
 {
 private:
+    enum IRQ_trigger{     // GPINTEN  DEFVAL  INTCON
+        disabled     = 0, //    0       X       X
+        on_change    = 1, //    1       X       0
+        rising_edge  = 2, //    1       0       1
+        falling_edge = 3  //    1       1       1
+    };
     /**
      * Variables below are mirroring registers in MCP23017
      * This can save some transmission, for example when pin in state 1 is set to 1
@@ -28,7 +34,7 @@ private:
     uint16_t level;     // logic level of output pin
     uint16_t direction;
     uint16_t pull_up;
-    vector<IRQ_trigger> irq_trigger(16);
+    vector<IRQ_trigger> irq_trigger();
 
 public:
     enum REG{
@@ -49,13 +55,6 @@ public:
         A = 0x00,
         B = 0x01,
     };
-
-    enum IRQ_trigger{     // GPINTEN  DEFVAL  INTCON
-        disabled     = 0, //    0       X       X
-        on_change    = 1, //    1       X       0
-        rising_edge  = 2, //    1       0       1
-        falling_edge = 3  //    1       1       1
-    }
 
     /**
      * @brief Constructors are inherited from I2C_device
