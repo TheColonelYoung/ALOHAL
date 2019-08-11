@@ -1,8 +1,6 @@
 #ifndef UART_H
 #define UART_H
 
-#include <string>
-
 #ifdef STM32_F0
 # include "stm32f0xx_hal.h"
 # include "stm32f0xx_hal_uart.h"
@@ -24,11 +22,11 @@
 #endif // ifdef STM32_F0
 
 #include <vector>
-//#include "misc/text_transform.hpp"
+#include <string>
+
 #include "irq/irq_handler.hpp"
 #include "mcu/config.hpp"
 #include "gpio/pin.hpp"
-//#include "globals.hpp"
 
 using namespace std;
 
