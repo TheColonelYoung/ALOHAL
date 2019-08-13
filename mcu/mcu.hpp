@@ -67,6 +67,20 @@ public:
     I2C_master I2C_4;
     #endif
 
+    // SPI
+    #ifdef SPI_1_EN
+    SPI_master SPI_1;
+    #endif
+    #ifdef SPI_2_EN
+    SPI_master SPI_2;
+    #endif
+    #ifdef SPI_3_EN
+    SPI_master SPI_3;
+    #endif
+    #ifdef SPI_4_EN
+    SPI_master SPI_4;
+    #endif
+
     #ifdef TIM_1_EN
     Timer TIM_1;
     #endif

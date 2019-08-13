@@ -79,7 +79,7 @@ void MCU::Init(){
     ALOHAL_CREATE_TIMER(TIM_15, htim15, 16, 1)
     #endif
 
-        // I2C
+    // I2C
     #ifdef I2C_1_EN
     I2C_1 = I2C_master(&hi2c1);
     #endif
@@ -91,5 +91,19 @@ void MCU::Init(){
     #endif
     #ifdef I2C_4_EN
     I2C_4 = I2C_master(&hi2c4);
+    #endif
+
+    // SPI
+    #ifdef SPI_1_EN
+    SPI_1 = SPI_master(&hspi1);
+    #endif
+    #ifdef SPI_2_EN
+    SPI_2 = SPI_master(&hspi2);
+    #endif
+    #ifdef SPI_3_EN
+    SPI_3 = SPI_master(&hspi3);
+    #endif
+    #ifdef SPI_4_EN
+    SPI_4 = SPI_master(&hspi4);
     #endif
 }
