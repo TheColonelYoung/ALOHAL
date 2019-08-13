@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 
+#include "bus/bus_device.hpp"
 #include "i2c/i2c_master.hpp"
 typedef unsigned int uint;
 
@@ -17,7 +18,7 @@ typedef unsigned int uint;
  * @brief Generic class for all devices, which are connected to I2C bus
  *
  */
-class I2C_device
+class I2C_device: public Bus_device
 {
 private:
     I2C_master master;
@@ -39,7 +40,7 @@ public:
      * @param data Data to be send by bus
      * @return uint Status code of transmittion
      */
-    uint Transmit(vector<uint8_t> data);
+    uint Transmit(vector<uint8_t> data) override;
 
     /**
      * @brief Receive data from device on bus
@@ -47,5 +48,5 @@ public:
      * @param length Number of bytes to be received
      * @return vector<uint8_t> received data
      */
-    vector<uint8_t> Receive(uint length);
+    vector<uint8_t> Receive(uint length)  override;
 };
