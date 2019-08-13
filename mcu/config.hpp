@@ -46,6 +46,11 @@ Enable this to support registring functions to external interupt event handler
 //#define I2C_3_EN
 //#define I2C_4_EN
 
+#define SPI_1_EN
+//#define SPI_2_EN
+//#define SPI_3_EN
+//#define SPI_4_EN
+
 
 // # define FLASH_EN
 
@@ -232,4 +237,22 @@ extern I2C_HandleTypeDef hi2c3;
 #endif
 #ifdef I2C_4_EN
 extern I2C_HandleTypeDef hi2c4;
+#endif
+
+class SPI_master;
+#if defined(SPI_1_EN) || defined(SPI_2_EN) || defined(SPI_1_EN) || defined(SPI_3_EN)
+# include "spi/spi_master.hpp"
+#endif
+
+#ifdef SPI_1_EN
+extern SPI_HandleTypeDef hspi1;
+#endif
+#ifdef SPI_2_EN
+extern SPI_HandleTypeDef hspi2;
+#endif
+#ifdef SPI_3_EN
+extern SPI_HandleTypeDef hspi3;
+#endif
+#ifdef SPI_4_EN
+extern SPI_HandleTypeDef hspi4;
 #endif
