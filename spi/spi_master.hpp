@@ -44,17 +44,19 @@ public:
      *
      * @param chip_select GPIO which serve as chip select of target device
      * @param data Data to be send
+     * @param cs_active Logic level in which is chip select signal of target device enabled
      * @return uint Success = 0, Error - 1, Busy - 2, Timeout - 3
      */
-    uint Transmit_poll(Pin chip_select, vector<uint8_t> data);
+    uint Transmit_poll(Pin chip_select, vector<uint8_t> data, bool cs_active = false);
 
     /**
      * @brief Receive data from device on bus in polling mode
      *
      * @param chip_select
      * @param length Number of bytes received
+     * @param cs_active Logic level in which is chip select signal of target device enabled
      * @return vector<uint8_t> Received data
      */
-    vector<uint8_t> Receive_poll(Pin chip_select, uint length = 1);
+    vector<uint8_t> Receive_poll(Pin chip_select, uint length = 1, bool cs_active = false);
 };
 
