@@ -27,13 +27,16 @@ private:
         rising_edge  = 2, //    1       0       1
         falling_edge = 3  //    1       1       1
     };
+
     /**
      * Variables below are mirroring registers in MCP23017
      * This can save some transmission, for example when pin in state 1 is set to 1
+     * Number of pins is from left(0) to right(15)
+     * Example: A0, A1, A2, ... B6, B7
      */
-    uint16_t level;     // logic level of output pin
-    uint16_t direction;
-    uint16_t pull_up;
+    uint16_t level      = 0x0000;     // logic level of output pin
+    uint16_t direction  = 0xffff;     // at default is all set as input
+    uint16_t pull_up    = 0x0000;     // at default is pull_up disabled
     vector<IRQ_trigger> irq_trigger();
 
 public:
@@ -63,11 +66,15 @@ public:
 
     /**
      * @brief Initialize IC via I2C to default configuration
+     * Configuration of IC is as below
+     * Pins are set as input without pull_up resistor
      *
-     * Configuration of MCP23017 (register IOCON)- 0b01100000
+     * @return int Status of transmission
+     *
+     * Configuration of MCP23017 (register IOCON)- 0b01000000
      * BANK   = 0  Registers of ports are interleaved
      * MIRROR = 1  Interrupt notify pins are mergen into one
-     * SEQOP  = 1  Address increment is disabled
+     * SEQOP  = 0  Address increment is enabled
      * DISSLW = 0  Slew rate control of SDA is disabled
      * HAEN   = 0  Only in SPI version (23S17)
      * ODR    = 0  Active output driver
@@ -76,7 +83,7 @@ public:
      *
      * Polarity of input pin is same as logic at default IPOL
      */
-    void Init();
+    int Init();
 
     /**
      * @brief Set pin of expander to output state
