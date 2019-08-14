@@ -99,9 +99,9 @@ public:
      * @brief Read input value from pins (all even set as output)
      *
      * @param pin  Number of pin 0-15
-     * @return int Status of transmission, -1 if pin is set as output
+     * @return int Value on pin, -1 if pin is set as output
      */
-    int Read(uint8_t pin);
+    uint8_t Read(uint8_t pin);
 
     /**
      * @brief Read value from all pins
@@ -110,6 +110,14 @@ public:
      * @return uint16_t Value on pins
      */
     uint16_t Read();
+
+    /**
+     * @brief Toggle output pin value if pin is set as output
+     *
+     * @param pin_number Number of pin 0-15
+     * @return uint8_t Status, -1 is pin is set as input, otherwise status of transmition
+     */
+    uint8_t Toggle(uint8_t pin_number);
 
     /**
      * @brief Setup pin  as output or input
