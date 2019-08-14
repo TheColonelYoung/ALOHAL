@@ -3,6 +3,9 @@
  * @author Petr Malaník (TheColonelYoung(at)gmail(dot)com)
  * @version 0.1
  * @date 08.08.2019
+ *
+ * // TODO this IC can be optimazed for shorter transfer in case of one pin methods
+ *         only one uint8_t needs to be transferred, other is unchanged
  */
 
 #pragma once
@@ -34,9 +37,11 @@ private:
      * Number of pins is from left(0) to right(15)
      * Example: A0, A1, A2, ... B6, B7
      */
-    uint16_t level      = 0x0000;     // logic level of output pin
+    uint16_t level      = 0x0000;     // logic level of output pin, 0-out, 1-in
     uint16_t direction  = 0xffff;     // at default is all set as input
     uint16_t pull_up    = 0x0000;     // at default is pull_up disabled
+
+    // TODO IRQ trigger, need to be defined in main IRQ file
     vector<IRQ_trigger> irq_trigger();
 
 public:
