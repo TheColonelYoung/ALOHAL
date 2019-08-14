@@ -13,14 +13,13 @@ typedef unsigned int uint;
  */
 class Bus_device
 {
-private:
-
 public:
     /**
      * @brief Construct a new Bus_device object
      */
     Bus_device() =default;
 
+private:
     /**
      * @brief Function for generic transfer from master to slave on bus
      *
