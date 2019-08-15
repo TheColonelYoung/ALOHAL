@@ -8,6 +8,7 @@
 #pragma once
 
 #include "mcu/config.hpp"
+#include "mcu/settings.hpp"
 #include "gpio/pin.hpp"
 
 #include <string>

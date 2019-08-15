@@ -4,10 +4,14 @@
  * @version 0.1
  * @date 12.07.2019
  */
-
 #pragma once
 
-#define MCU_MODEL "STM32L432"
+/**
+ * @brief Enable this define to use this file as config for MCU
+ * Don't enable this in alohal default config
+ * Make copy of default config, move it into project folder (not inside alohal) and enable define below
+ */
+//#define CUSTOM_MCU_CONFIG __FILE__
 
 /* External IRQ support
 Enable this to support registring functions to external interupt event handler
