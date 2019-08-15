@@ -25,7 +25,6 @@
 #include <string>
 
 #include "irq/irq_handler.hpp"
-#include "mcu/config.hpp"
 #include "gpio/pin.hpp"
 
 using namespace std;

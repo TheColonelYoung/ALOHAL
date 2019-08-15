@@ -1,5 +1,5 @@
-#ifdef CUSTOM_CONFIG
-    #include CUSTOM_CONFIG
-#else
+#if __has_include("config.hpp")
     #include "config.hpp"
+#else
+    #include "config_default.hpp"
 #endif

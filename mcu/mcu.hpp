@@ -7,7 +7,12 @@
 
 #pragma once
 
-#include "mcu/config.hpp"
+#if __has_include("config.hpp")
+    #include "config.hpp"
+#else
+    #include "config_default.hpp"
+#endif
+
 #include "mcu/settings.hpp"
 #include "gpio/pin.hpp"
 
