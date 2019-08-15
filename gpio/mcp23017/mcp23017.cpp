@@ -28,7 +28,7 @@ int MCP23017::Direction(uint8_t pin, bool new_direction){
 
     if(direction == old_direction){
         // Same value is already set, no need for transfer
-        return 0
+        return 0;
     }
 
     return Transmit(vector<uint8_t> {REG::IODIR,
@@ -43,14 +43,13 @@ int MCP23017::Direction(uint16_t port){
                                     static_cast<uint8_t>((direction & 0xff00)>>8)});
 }
 
-
 int MCP23017::Set(uint8_t pin, bool state){
     if((pin > 15) || (pin < 15)){
         // Invalid pin number
         return -1;
     }
 
-    if (direction & (1<<pin) != 0){
+    if ((direction & (1<<pin)) != 0){
         // Pin is configured as input, so output level cannot be set
         return -2;
     }
@@ -64,7 +63,7 @@ int MCP23017::Set(uint8_t pin, bool state){
 
     if(level == old_level){
         // Same value is already set, no need for transfer
-        return 0
+        return 0;
     }
 
     return Transmit(vector<uint8_t> {REG::GPIO,
@@ -77,4 +76,9 @@ int MCP23017::Set(uint16_t port){
     return Transmit(vector<uint8_t> {REG::GPIO,
                                     static_cast<uint8_t>(direction & 0x00ff),
                                     static_cast<uint8_t>((direction & 0xff00)>>8)});
+}
+
+uint8_t MCP23017::Toggle(uint8_t pin_number){
+    bool actual_level = (level>>pin_number) & 1;
+    return Set(pin_number, !actual_level);
 }
