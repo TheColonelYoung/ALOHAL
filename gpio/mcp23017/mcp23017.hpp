@@ -34,8 +34,8 @@ private:
     /**
      * Variables below are mirroring registers in MCP23017
      * This can save some transmission, for example when pin in state 1 is set to 1
-     * Number of pins is from left(0) to right(15)
-     * Example: A0, A1, A2, ... B6, B7
+     * Number of pins is from right(0) to left(15)
+     * Example: B7, B6, ... A2, A1, A0
      */
     uint16_t level      = 0x0000;     // logic level of output pin, 0-out, 1-in
     uint16_t direction  = 0xffff;     // at default is all set as input
@@ -44,7 +44,6 @@ private:
     // TODO IRQ trigger, need to be defined in main IRQ file
     vector<IRQ_trigger> irq_trigger();
 
-public:
     enum REG{
         IODIR   = 0x00,  // IO Dirrection Input/Outpus
         IPOL    = 0x02,  // Input polarity, if logic of input is same or inverted
@@ -63,6 +62,8 @@ public:
         A = 0x00,
         B = 0x01,
     };
+
+public:
 
     /**
      * @brief Constructors are inherited from I2C_device
@@ -138,7 +139,7 @@ public:
      * @param direction  true -> input, false -> output
      * @return int       Status of transmission
      */
-    int Direction(uint8_t pin, bool direction);
+    int Direction(uint8_t pin, bool new_direction);
 
     /**
      * @brief Setup direction of all pins
@@ -194,7 +195,6 @@ public:
      * @return uint16_t IRQ status
      */
     uint16_t IRQ_read();
-
 
 };
 
