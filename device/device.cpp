@@ -11,7 +11,7 @@
 void Device::Init(){
     mcu->Init();
     cli->Connect(mcu->UART_1);
-    mcu->UART_1.Send("Initialization done\r\n");
+    mcu->UART_1->Send("Initialization done\r\n");
     cli->Start();
 }
 

@@ -21,7 +21,7 @@ private:
 
 public:
     MCU *mcu = new MCU();
-    CLI *cli;
+    CLI *cli = new CLI();
 
     Device() = default;
 
