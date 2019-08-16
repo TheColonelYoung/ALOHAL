@@ -13,16 +13,16 @@ void MCU::Init(){
 
     // UART
     #ifdef UART_1_EN
-    UART_1 = UART(&huart1);
+    UART_1 = new UART(&huart1);
     #endif
     #ifdef UART_2_EN
-    UART_2 = UART(&huart2);
+    UART_2 = new UART(&huart2);
     #endif
     #ifdef UART_3_EN
-    UART_3 = UART(&huart3);
+    UART_3 = new UART(&huart3);
     #endif
     #ifdef UART_4_EN
-    UART_4 = UART(&huart4);
+    UART_4 = new UART(&huart4);
     #endif
 
     // DAC

@@ -47,16 +47,16 @@ public:
 
     // UART
     #ifdef UART_1_EN
-    UART UART_1;
+    UART *UART_1;
     #endif
     #ifdef UART_2_EN
-    UART UART_2;
+    UART *UART_2;
     #endif
     #ifdef UART_3_EN
-    UART UART_3;
+    UART *UART_3;
     #endif
     #ifdef UART_4_EN
-    UART UART_4;
+    UART *UART_4;
     #endif
 
     // I2C
