@@ -49,7 +49,7 @@ private:
     int buffer_end = 0;
 
 public:
-    IRQ_handler IRQ;
+    IRQ_handler *IRQ = new IRQ_handler();
 
     string RX_buffer = "";
     bool busy = false;
