@@ -9,18 +9,16 @@ void CLI::Connect(UART *connection){
     serial_connection->Send("CLI connected \r\n");
 }
 
-int CLI::Start(){
+void CLI::Start(){
     Register_command("help", "Print available commands or help for given command, example: help, help build", this, &CLI::Help);
     Register_command("build_info", "Print information about compilation as compiler version and date of compilation", this, &CLI::Build_info);
     actual_line.assign(line_opening);
     Redraw_line();
-    return 0;
 }
 
 void CLI::Char_load(){
     string received_char = serial_connection->Read(1);
     if (static_cast<int>(received_char[0]) == 13){ //newline in `screen` \r
-        Pin('B',3).Toggle();
         Process_line();
     } else {
         actual_line += received_char;
@@ -80,7 +78,7 @@ int CLI::Print(string text){
 
 int CLI::Help(vector<string> args){
     if(args.size() == 1){ // only help without parametr
-        string output_line = "Available commands - " + to_string(commands.size()) + " :\r\n";
+        string output_line = "Available commands - " + to_string(commands.size()) + "\r\n";
         for(auto &cmd:commands){
             output_line += cmd->Get_command() + "\r\n";
         }
