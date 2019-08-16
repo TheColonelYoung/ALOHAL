@@ -9,7 +9,7 @@
 class CLI
 {
 private:
-    UART *serial_connection;
+    UART *serial_connection = nullptr;
     string actual_line = "";
     const string line_opening = ">";
 
@@ -18,7 +18,7 @@ private:
 public:
     CLI() =default;
 
-    void Connect(UART &connection);
+    void Connect(UART *connection);
 
     int Start();
 

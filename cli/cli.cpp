@@ -1,15 +1,17 @@
 #include "cli.hpp"
 
-void CLI::Connect(UART &connection){
-    serial_connection = &connection;
-    serial_connection->IRQ.Register(this, &CLI::Char_load);
+#include "globals.hpp"
+
+void CLI::Connect(UART *connection){
+    serial_connection = connection;
+    serial_connection->IRQ->Register(this, &CLI::Char_load);
     serial_connection->Send("\r\n");
     serial_connection->Send("CLI connected \r\n");
 }
 
 int CLI::Start(){
-    Register_command("help", "Print avaible commands or help for given command, example: help, help build", this, &CLI::Help);
-    Register_command("build_info", "Print information about compilation as compiler version and date", this, &CLI::Build_info);
+    Register_command("help", "Print available commands or help for given command, example: help, help build", this, &CLI::Help);
+    Register_command("build_info", "Print information about compilation as compiler version and date of compilation", this, &CLI::Build_info);
     actual_line.assign(line_opening);
     Redraw_line();
     return 0;
@@ -77,21 +79,20 @@ int CLI::Print(string text){
 }
 
 int CLI::Help(vector<string> args){
-    if(args.size() == 1){
-        string output_line = "Avaible commands - " + to_string(commands.size()) + " :\r\n";
+    if(args.size() == 1){ // only help without parametr
+        string output_line = "Available commands - " + to_string(commands.size()) + " :\r\n";
         for(auto &cmd:commands){
             output_line += cmd->Get_command() + "\r\n";
         }
         Print(output_line);
-    } else {
+    } else {    // help with additional command as parametr
         for(auto &cmd:commands){
-            if (cmd->Get_command() == args[1])
-            {
-                Print(cmd ->Get_command() + " - " + cmd->Get_help() + "\r\n");
-            } else {
-                Print("Parameter was not found\r\n");
+            if (cmd->Get_command() == args[1]){
+                Print(cmd->Get_command() + " - " + cmd->Get_help() + "\r\n");
+                return commands.size();;
             }
         }
+        Print("Parameterwas not found\r\n");
     }
     return commands.size();
 }
