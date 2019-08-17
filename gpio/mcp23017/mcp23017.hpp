@@ -36,6 +36,10 @@ private:
      * This can save some transmission, for example when pin in state 1 is set to 1
      * Number of pins is from right(0) to left(15)
      * Example: B7, B6, ... A2, A1, A0
+     * A0 - 0   A4 - 4      B0 - 8    B4 - 12
+     * A1 - 1   A5 - 5      B1 - 9    B5 - 13
+     * A2 - 2   A6 - 6      B2 - 10   B6 - 14
+     * A3 - 3   A7 - 7      B3 - 11   B7 - 15
      */
     uint16_t level      = 0x0000;     // logic level of output pin, 0-out, 1-in
     uint16_t direction  = 0xffff;     // at default is all set as input
@@ -45,13 +49,13 @@ private:
     vector<IRQ_trigger> irq_trigger();
 
     enum REG{
-        IODIR   = 0x00,  // IO Dirrection Input/Outpus
+        IODIR   = 0x00,  // IO Dirrection 1-Input/0-Outpus
         IPOL    = 0x02,  // Input polarity, if logic of input is same or inverted
         GPINTEN = 0x04,  // Interrupt-On-Change enable
         DEFVAL  = 0x06,  // Default interrupt comparison value,  Refer to INTCON
         INTCON  = 0x08,  // Interrupt compare value, 1 = compare against DEFVAL value, 0 = compare against the previous value
         IOCON   = 0x0A,  // IC setting, bank/mirror/seqop/disslw/haen/odr/intpol/notimp
-        GPPU    = 0x0C,  // Pullup
+        GPPU    = 0x0C,  // Pullup 1-Enabled, 0 - Disabled
         INTF    = 0x0E,  // Interrupt Flag, 1 = pin caused interrupt, 0 = no interrupt
         INTCAP  = 0x10,  // Interrupt capture value of GPIO at time of last interrupt
         GPIO    = 0x12,  // GPIO
@@ -195,6 +199,13 @@ public:
      * @return uint16_t IRQ status
      */
     uint16_t IRQ_read();
+
+    /**
+     * @brief Read whole memory of expander
+     *
+     * @return vector<uint8_t> Whole memory region
+     */
+    vector<uint8_t> Memory_dump();
 
 };
 
