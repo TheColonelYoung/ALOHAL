@@ -123,7 +123,7 @@ extern UART_HandleTypeDef huart4;
 class Timer;
 
 #define ALOHAL_CREATE_TIMER(name, handler, size, channels) \
-    name = Timer(&handler, size, channels); \
+    name = new Timer(&handler, size, channels); \
     ALOHAL_TIM_CHAN_BACKPOINTER(name)
 
 #define ALOHAL_TIM_CHAN_BACKPOINTER(timer) \
