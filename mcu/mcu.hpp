@@ -61,79 +61,79 @@ public:
 
     // I2C
     #ifdef I2C_1_EN
-    I2C_master I2C_1;
+    I2C_master *I2C_1;
     #endif
     #ifdef I2C_2_EN
-    I2C_master I2C_2;
+    I2C_master *I2C_2;
     #endif
     #ifdef I2C_3_EN
-    I2C_master I2C_3;
+    I2C_master *I2C_3;
     #endif
     #ifdef I2C_4_EN
-    I2C_master I2C_4;
+    I2C_master *I2C_4;
     #endif
 
     // SPI
     #ifdef SPI_1_EN
-    SPI_master SPI_1;
+    SPI_master *SPI_1;
     #endif
     #ifdef SPI_2_EN
-    SPI_master SPI_2;
+    SPI_master *SPI_2;
     #endif
     #ifdef SPI_3_EN
-    SPI_master SPI_3;
+    SPI_master *SPI_3;
     #endif
     #ifdef SPI_4_EN
-    SPI_master SPI_4;
+    SPI_master *SPI_4;
     #endif
 
     #ifdef TIM_1_EN
-    Timer TIM_1;
+    Timer *TIM_1;
     #endif
     #ifdef TIM_2_EN
-    Timer TIM_2;
+    Timer *TIM_2;
     #endif
     #ifdef TIM_3_EN
-    Timer TIM_3;
+    Timer *TIM_3;
     #endif
     #ifdef TIM_4_EN
-    Timer TIM_4;
+    Timer *TIM_4;
     #endif
     #ifdef TIM_5_EN
-    Timer TIM_5;
+    Timer *TIM_5;
     #endif
     #ifdef TIM_6_EN
-    Timer TIM_6;
+    Timer *TIM_6;
     #endif
     #ifdef TIM_7_EN
-    Timer TIM_7;
+    Timer *TIM_7;
     #endif
     #ifdef TIM_8_EN
-    Timer TIM_8;
+    Timer *TIM_8;
     #endif
     #ifdef TIM_9_EN
-    Timer TIM_9;
+    Timer *TIM_9;
     #endif
     #ifdef TIM_10_EN
-    Timer TIM_10;
+    Timer *TIM_10;
     #endif
     #ifdef TIM_11_EN
-    Timer TIM_11;
+    Timer *TIM_11;
     #endif
     #ifdef TIM_12_EN
-    Timer TIM_12;
+    Timer *TIM_12;
     #endif
     #ifdef TIM_13_EN
-    Timer TIM_13;
+    Timer *TIM_13;
     #endif
     #ifdef TIM_14_EN
-    Timer TIM_14;
+    Timer *TIM_14;
     #endif
     #ifdef TIM_15_EN
-    Timer TIM_15;
+    Timer *TIM_15;
     #endif
     #ifdef TIM_16_EN
-    Timer TIM_16;
+    Timer *TIM_16;
     #endif
 
 };

@@ -3,12 +3,12 @@
 void MCU::Init(){
     // ADC
     #ifdef ADC_1_EN
-    ADC_1 = AD_C(&hadc1);
+    ADC_1 = new AD_C(&hadc1);
     #endif
 
     // FLASH
     #ifdef FLASH_EN
-    Flash = Flash_mem();
+    Flash = new Flash_mem();
     #endif
 
     // UART
@@ -27,7 +27,7 @@ void MCU::Init(){
 
     // DAC
     #ifdef DAC_1_EN
-    DAC_1 = DA_C(&hdac, 2);
+    DAC_1 = new DA_C(&hdac, 2);
     #endif
 
     #ifdef TIM_1_EN
@@ -81,29 +81,29 @@ void MCU::Init(){
 
     // I2C
     #ifdef I2C_1_EN
-    I2C_1 = I2C_master(&hi2c1);
+    I2C_1 = new I2C_master(&hi2c1);
     #endif
     #ifdef I2C_2_EN
-    I2C_2 = I2C_master(&hi2c2);
+    I2C_2 = new I2C_master(&hi2c2);
     #endif
     #ifdef I2C_3_EN
-    I2C_3 = I2C_master(&hi2c3);
+    I2C_3 = new I2C_master(&hi2c3);
     #endif
     #ifdef I2C_4_EN
-    I2C_4 = I2C_master(&hi2c4);
+    I2C_4 = new I2C_master(&hi2c4);
     #endif
 
     // SPI
     #ifdef SPI_1_EN
-    SPI_1 = SPI_master(&hspi1);
+    SPI_1 = new SPI_master(&hspi1);
     #endif
     #ifdef SPI_2_EN
-    SPI_2 = SPI_master(&hspi2);
+    SPI_2 = new SPI_master(&hspi2);
     #endif
     #ifdef SPI_3_EN
-    SPI_3 = SPI_master(&hspi3);
+    SPI_3 = new SPI_master(&hspi3);
     #endif
     #ifdef SPI_4_EN
-    SPI_4 = SPI_master(&hspi4);
+    SPI_4 = new SPI_master(&hspi4);
     #endif
 }
