@@ -1,8 +1,7 @@
 #include "spi/spi_device.hpp"
 
-SPI_device::SPI_device(SPI_master master, Pin chip_select, bool cs_active = false):
+SPI_device::SPI_device(SPI_master master, Pin *chip_select, bool cs_active):
     master(master), chip_select(chip_select), cs_active(cs_active){}
-
 
 uint SPI_device::Transmit(vector<uint8_t> data){
     return master.Transmit_poll(chip_select, data, cs_active);

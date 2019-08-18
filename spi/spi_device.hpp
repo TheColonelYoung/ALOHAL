@@ -26,9 +26,11 @@ private:
     SPI_master master;
 
     /**
-     * @brief GPIO of MCU or expander to which has device connected chip_select(slave select)
+     * @brief   GPIO of MCU or expander to which has device connected chip_select(slave select)
+     *          Pointer to Pin must be used due to polymorphism,
+     *               then can be used class derivated from Pin, as PinMCP23017
      */
-    Pin chip_select;
+    Pin *chip_select;
 
     /**
      * @brief Logic level of cip select signal in which is device active
@@ -45,7 +47,7 @@ public:
      * @param chip_select Pin to which is connected chip_select input of device
      * @param cs_active Logic level of chip_select in which is device active
      */
-    SPI_device(SPI_master master, Pin chip_select, bool cs_active = false);
+    SPI_device(SPI_master master, Pin *chip_select, bool cs_active = false);
 
     /**
      * @brief Transmit data to device
