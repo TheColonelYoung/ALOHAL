@@ -23,8 +23,7 @@ public:
         Stopped         = 0,
         Acceleration    = 1,
         Deceleration    = 2,
-        Constant_speed  = 3,
-        Sleep           = 4
+        Constant_speed  = 3
     };
 
     enum Direction{
