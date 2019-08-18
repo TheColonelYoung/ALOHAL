@@ -46,7 +46,7 @@ using namespace std;
 
 enum SM_Directions { left = -1, stop = 0, right = 1 };
 
-class StepperMotor {
+class STEP_DIR_SM {
 protected:
     SM_Directions direction = stop;
     long steps = 0;    // number of remaning steps, -1 is infinite
@@ -66,9 +66,9 @@ protected:
     void Set_timer(int step_length);
 
 public:
-    StepperMotor() = default;
-    StepperMotor(float step_size, float speed);
-    StepperMotor(float step_size, float speed, float acceleration);
+    STEP_DIR_SM() = default;
+    STEP_DIR_SM(float step_size, float speed);
+    STEP_DIR_SM(float step_size, float speed, float acceleration);
 
     int Acceleration(float acceleration);
     void Acc_init_calc();

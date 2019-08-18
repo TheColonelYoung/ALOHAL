@@ -35,7 +35,7 @@
 using namespace std;
 
 // classes
-class SM_DRV8825 : public StepperMotor {
+class SM_DRV8825 : public STEP_DIR_SM {
     Pin _step_pin;
     Pin _direction_pin;
     Pin _reset_pin;

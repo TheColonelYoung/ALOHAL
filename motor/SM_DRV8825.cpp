@@ -1,10 +1,10 @@
 #include "SM_DRV8825.hpp"
 
 SM_DRV8825::SM_DRV8825(Pin step_pin, Pin dir_pin, float step_size, float speed)
-    :  StepperMotor(step_size, speed * 2), _step_pin(step_pin), _direction_pin(dir_pin){ };
+    :  STEP_DIR_SM(step_size, speed * 2), _step_pin(step_pin), _direction_pin(dir_pin){ };
 
 SM_DRV8825::SM_DRV8825(Pin step_pin, Pin dir_pin, float step_size, float speed, float acceleration)
-    : StepperMotor(step_size, speed * 2, acceleration * 2), _step_pin(step_pin), _direction_pin(dir_pin){ };
+    : STEP_DIR_SM(step_size, speed * 2, acceleration * 2), _step_pin(step_pin), _direction_pin(dir_pin){ };
 
 
 int SM_DRV8825::Set_pin(string pin_name, Pin pin_set){
