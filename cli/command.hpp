@@ -23,7 +23,6 @@ private:
     string command;
     string help;
 
-    template_class object;
     template_class * object_ptr = nullptr;
     int (template_class::*method_pointer)(vector<string> args);
 
@@ -32,10 +31,6 @@ private:
 public:
     Command() =default;
     ~Command() =default;
-
-    Command(string command, string help, template_class &object, int (template_class::*method)(vector<string> args))
-        :command(command), help(help), object(object), method_pointer(method)
-    {}
 
     Command(string command, string help, template_class *object, int (template_class::*method)(vector<string> args))
         :command(command), help(help), object_ptr(object), method_pointer(method)
@@ -50,8 +45,6 @@ public:
             return (*(function))(args);
         } else if (object_ptr){
             return (*object_ptr.*method_pointer)(args);
-        }else {
-            return (object.*method_pointer)(args);
         }
         return -1;
     }
