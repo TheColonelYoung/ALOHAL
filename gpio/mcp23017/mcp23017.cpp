@@ -54,17 +54,11 @@ int MCP23017::Set(uint8_t pin, bool state){
         return -2;
     }
 
-    uint16_t old_level = level;
     if(state){
         level |= (1<<pin);
     } else {
         level &= ~(1<<pin);
     }
-    /*
-    if(level == old_level){
-        // Same value is already set, no need for transfer
-        return 0;
-    }*/
 
     return Transmit(vector<uint8_t> {REG::GPIO,
                                     static_cast<uint8_t>(level & 0x00ff),

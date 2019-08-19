@@ -105,7 +105,9 @@ public:
     int Set(uint8_t pin, bool state);
 
     /**
-     * @brief Set all pins at once
+     * @brief   Set all pins at once
+     *          Everytime when pin is set must performed reading and then writing
+     *              to back to chip to ensure that no value was rewrite
      *
      * @param port  New state for all pins [PORTA, PORTB]
      * @return int  Status of transmission
