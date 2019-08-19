@@ -86,20 +86,6 @@ public:
      * @tparam registrator_class    Class of object, which is making registration
      * @param command   Name of command
      * @param help      Help for command
-     * @param object    Object on which will be method invocated
-     * @param method    Method of class which will be invocated
-     */
-    template <typename registrator_class>
-    void Register_command(string command, string help, registrator_class &object, int (registrator_class::*method)(vector<string> args)){
-        commands.emplace_back(new Command<registrator_class>(command, help, object, method));
-    }
-
-    /**
-     * @brief Register method of some object as CLI command
-     *
-     * @tparam registrator_class    Class of object, which is making registration
-     * @param command   Name of command
-     * @param help      Help for command
      * @param object    Pointer to object on which will be method invocated
      * @param method    Method of class which will be invocated
      */
@@ -107,6 +93,9 @@ public:
     void Register_command(string command, string help, registrator_class *object, int (registrator_class::*method)(vector<string> args)){
         commands.emplace_back(new Command<registrator_class>(command, help, object, method));
     }
+
+
+
 
 
 };

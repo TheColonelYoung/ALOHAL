@@ -47,11 +47,15 @@ int CLI::Process_line(){
     if (args.size() < 1){
         return -1;
     }
+    serial_connection->Send("\r\n");
 
     for(auto &command:commands){
         if(args[0] == command->Get_command()){
             //serial_connection->Send("\r\nStarting command: " + command->Get_command());
-            return command->Invoke(args);
+            int ret = command->Invoke(args);
+            actual_line.assign(line_opening);
+            Redraw_line();
+            return ret;
         }
     }
     Print("Command was not found\r\n");
@@ -90,7 +94,7 @@ int CLI::Help(vector<string> args){
                 return commands.size();;
             }
         }
-        Print("Parameterwas not found\r\n");
+        Print("Parameter was not found\r\n");
     }
     return commands.size();
 }
