@@ -53,7 +53,7 @@ int G_code_commander::G1(vector<string> args){
         if ( axis.find(axis_label) != axis.end() ) {
             // If can be parameter converted to string
             if (isdigit(cmd.back())){
-                int distance = stoi(cmd.substr(1));
+                double distance = stod(cmd.substr(1));
                 axis[axis_label]->Move(distance);
                 moving_axis += 1;
             } else{
