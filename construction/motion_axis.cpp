@@ -8,7 +8,9 @@ Motion_axis::Motion_axis(Stepper_motor *motor, double ratio, Stepper_motor::Dire
 
 long Motion_axis::Move(double shift){
     double steps = round(shift/ratio);
-    position += shift;
+    if(valid_position){
+        position += shift;
+    }
     if (shift > 0){
         motor->Move(Direction(), steps);
     } else if (shift < 0){
