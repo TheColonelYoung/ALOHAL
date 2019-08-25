@@ -8,11 +8,22 @@ void L6470::Init(){
     Set_param(register_map::OCD_TH, 0b00001010, 4);
 
     //Stall TH
-    Set_param(register_map::STALL_TH, 0b01000000, 7);
+    Set_param(register_map::STALL_TH, 0x7f, 7);
 
-    //KVAL
-    Set_param(register_map::KVAL_RUN, 0x1b, 8);
-    Set_param(register_map::KVAL_HOLD, 0x00, 8);
+    //Compensation
+/*
+    Set_param(register_map::FS_SPD, 0x3ff, 10);
+    Set_param(register_map::ST_SLP, 0x00, 8);
+    Set_param(register_map::FN_SLP_ACC, 0x00, 8);
+    Set_param(register_map::FN_SLP_DEC, 0x00, 8);*/
+
+    //KVAL -> KVAL = /56*motor_rated_voltage / supply_voltage
+    /*
+    uint8_t KVAL_VALUE = 0x20;
+    Set_param(register_map::KVAL_RUN, KVAL_VALUE, 8);
+    Set_param(register_map::KVAL_ACC, KVAL_VALUE, 8);
+    Set_param(register_map::KVAL_DEC, KVAL_VALUE, 8);
+    Set_param(register_map::KVAL_HOLD, 0x01, 8);*/
 }
 
 
