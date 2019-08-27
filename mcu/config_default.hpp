@@ -3,17 +3,16 @@
  * @author Petr Malaník (TheColonelYoung(at)gmail(dot)com)
  * @version 0.1
  * @date 12.07.2019
+ *
+ * @brief   This is default configuration for MCU, serves only as example how it should look
+ *          MCU configuration is specific for every project and should be customized
+ *          Project specific ,config should be located in Src folder with name config.hpp
+ *          To this file is pointing symbolic link from this folder
+ *
  */
 #pragma once
 
-/**
- * @brief Enable this define to use this file as config for MCU
- * Don't enable this in alohal default config
- * Make copy of default config, move it into project folder (not inside alohal) and enable define below
- */
-//#define CUSTOM_MCU_CONFIG __FILE__
-
-#warning "Default configuration from ALOHAl library is used, create project specific configuration"
+#warning "Default configuration from ALOHAL library is used, create project specific configuration"
 
 /* External IRQ support
 Enable this to support registring functions to external interupt event handler
