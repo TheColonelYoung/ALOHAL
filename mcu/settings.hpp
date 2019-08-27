@@ -9,10 +9,10 @@
 
 // Add defines for family and model based on Makefile defined defines
 #if defined(STM32L432xx)
-    #define MCU_MODEL "STM32L432"
+    #define MCU_MODEL_NAME "STM32L432"
     #define MCU_FAMILY_STM32_L4
 #elif defined(STM32L452xx)
-    #define MCU_MODEL "STM32L452"
+    #define MCU_MODEL_NAME "STM32L452"
     #define MCU_FAMILY_STM32_L4
 #endif
 

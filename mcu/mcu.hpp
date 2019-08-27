@@ -32,7 +32,7 @@ using namespace std;
 class MCU
 {
 private:
-    string model = MCU_MODEL;
+    string model = MCU_MODEL_NAME;
 public:
     MCU() =default;
 
