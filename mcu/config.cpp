@@ -3,3 +3,5 @@
 #else
     #include "config_default.hpp"
 #endif
+
+#include "externs.cpp"
