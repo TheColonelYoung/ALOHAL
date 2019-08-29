@@ -1,7 +1,7 @@
 #ifndef GLOBAL_INCLUDES_HPP
 #define GLOBAL_INCLUDES_HPP
 
-#include "mcu/settings.hpp"
+#include "mcu/configuration/settings.hpp"
 
 #if   defined(MCU_FAMILY_STM32_F0)
 # include "stm32f0xx_hal.h"

@@ -6,14 +6,15 @@
  */
 
 #pragma once
-
-#if __has_include("config.hpp")
-    #include "config.hpp"
+/*
+#if __has_include("configuration/config.hpp")
+    #include "configuration/config.hpp"
 #else
-    #include "config_default.hpp"
-#endif
+    #include "configuration/config_default.hpp"
+#endif*/
 
-#include "mcu/settings.hpp"
+#include "configuration/config.cpp"
+#include "mcu/configuration/settings.hpp"
 #include "gpio/pin.hpp"
 
 #include <string>
@@ -24,7 +25,7 @@ using namespace std;
  * @brief Represent MCU(STM32) on board(device)
  *
  * Contains all configured hardware peripherals
- * Configuration of MCU is in file mcu/config.hpp
+ * Configuration of MCU is in file mcu/configuration/config.hpp
  * Initialization of MCU should be done from Device.Init as first
  * Configuration in ALOHAL must corresponds with CubeMX configuration
  */
