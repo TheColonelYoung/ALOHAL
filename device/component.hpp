@@ -11,6 +11,7 @@
 
 typedef unsigned int uint;
 
+#include "device.hpp"
 class Device;
 extern Device *device;
 
@@ -20,10 +21,13 @@ using namespace std;
  * @brief   Represents parts on PCB which is connected with mcu someway
  *          Used for any parts of device, for example some I2C memory or stepper motor drivers
  */
-class Component
+class Component: public enable_shared_from_this<Component>
 {
 private:
     string name = "Unknown_component";
+
+    uint id;
+    static size_t id_counter;
 
 public:
     /**
