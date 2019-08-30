@@ -21,9 +21,11 @@ private:
 
 public:
     MCU *mcu = new MCU();
-    CLI *cli = new CLI();
+    CLI *cli = nullptr;
 
     Device() = default;
+
+    int Enable_CLI(UART *connection);
 
     void Init();
 };

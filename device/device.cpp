@@ -10,8 +10,16 @@
 
 void Device::Init(){
     mcu->Init();
-    cli->Connect(mcu->UART_1);
-    mcu->UART_1->Send("Initialization done\r\n");
-    cli->Start();
 }
 
+int Device::Enable_CLI(UART *connection){
+    cli = new CLI();
+    if(connection != nullptr){
+        cli->Connect(connection);
+        cli->Print("CLI is available\r\n");
+        cli->Start();
+        return 0;
+    } else {
+        return -1;
+    }
+}
