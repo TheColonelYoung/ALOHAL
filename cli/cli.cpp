@@ -6,7 +6,6 @@ void CLI::Connect(UART *connection){
     serial_connection = connection;
     serial_connection->IRQ->Register(this, &CLI::Char_load);
     serial_connection->Send("\r\n");
-    serial_connection->Send("CLI connected \r\n");
 }
 
 void CLI::Start(){
@@ -51,7 +50,6 @@ int CLI::Process_line(){
 
     for(auto &command:commands){
         if(args[0] == command->Get_command()){
-            //serial_connection->Send("\r\nStarting command: " + command->Get_command());
             int ret = command->Invoke(args);
             actual_line.assign(line_opening);
             Redraw_line();
