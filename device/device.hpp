@@ -13,11 +13,13 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <algorithm>
 
 #include "mcu/mcu.hpp"
 #include "cli/cli.hpp"
 #include "gpio/pin.hpp"
-#include "device/component.hpp"
+
+class Component;
 
 using namespace std;
 
@@ -47,6 +49,23 @@ public:
     int Enable_CLI(UART *connection);
 
     /**
+     * @brief Check if CLI for device exists
+     *
+     * @return true     CLI is available
+     * @return false    CLI is not available
+     */
+    bool CLI_available();
+
+    /**
+     * @brief Add component to vector of known components
+     *
+     * @param new_component Component to add
+     * @return string       New name of component
+     */
+    string Register_component(shared_ptr<Component> new_component);
+
+private:
+    /**
      * @brief Creates new enumerated name from generic component name
      *
      * @param original_name     Name of generic component, example: L6470
@@ -54,14 +73,6 @@ public:
      */
     string New_component_name(string original_name);
 
-    /**
-     * @brief Add component to vector of known components
-     *
-     * @param new_component Component to add
-     * @return uint         Number of components
-     */
-    uint Register_component(shared_ptr<Component> new_component);
-
 };
 
-
+#include "device/component.hpp"
