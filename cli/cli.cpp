@@ -17,12 +17,18 @@ void CLI::Start(){
 
 void CLI::Char_load(){
     string received_char = serial_connection->Read(1);
-    if (static_cast<int>(received_char[0]) == 13){ //newline in `screen` \r
+    if (static_cast<int>(received_char[0]) == 13){ // newline (screen - \r)
         Process_line();
-    } else {
+        return;
+    } else if (static_cast<int>(received_char[0]) == 127){ // backspace (screen - DEL)
+        if (actual_line.length() > line_opening.length()){
+            serial_connection->Send("\r" + string(actual_line.length(),' '));
+            actual_line.assign(actual_line.substr(0, actual_line.length() - 1));
+        }
+    } else if(isprint(static_cast<int>(received_char[0]))) {
         actual_line += received_char;
-        Redraw_line();
     }
+    Redraw_line();
 }
 
 int CLI::Process_line(){
@@ -73,7 +79,7 @@ void CLI::New_line(){
 
 int CLI::Print(string text){
     actual_line.assign(line_opening);
-    serial_connection->Send("\r\n" + text);
+    serial_connection->Send(text);
     Redraw_line();
     return text.length();
 }
