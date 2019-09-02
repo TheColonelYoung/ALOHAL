@@ -14,9 +14,8 @@ private:
 protected:
     vector<FS_entry *> content;
 public:
-    Directory() =default;
+    Directory();
     Directory(string name);
-    ~Directory();
 
     int Delete_entry(FS_entry &entry);
     int Add_entry(FS_entry &entry);
