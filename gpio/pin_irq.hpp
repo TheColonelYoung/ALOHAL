@@ -21,6 +21,13 @@ extern IRQ_multi_handler<int> EXT_IRQ;
 class Pin_IRQ {
 
 public:
+    enum Trigger{
+        Disabled,
+        Rising_edge,
+        Falling_edge,
+        On_change
+    };
+
     int pin_number;
 
     Pin_IRQ() =default;
