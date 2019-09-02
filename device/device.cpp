@@ -5,7 +5,7 @@ void Device::Init(){
 }
 
 int Device::Enable_CLI(UART *connection){
-    cli = new CLI();
+    cli.reset(new CLI());
     if(connection != nullptr){
         cli->Connect(connection);
         cli->Print("CLI is available\r\n");
@@ -18,6 +18,19 @@ int Device::Enable_CLI(UART *connection){
 
 bool Device::CLI_available(){
     return cli!=nullptr;
+}
+
+int Device::Enable_Filesystem(){
+    if (!CLI_available()){
+        return -1;
+    }
+    //fs = make_shared<Filesystem>(new Filesystem(cli));
+    fs = new Filesystem(cli);
+    return 0;
+}
+
+bool Device::Filesystem_available(){
+    return fs!=nullptr;
 }
 
 string Device::Register_component(shared_ptr<Component> new_component){

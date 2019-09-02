@@ -17,6 +17,7 @@
 
 #include "mcu/mcu.hpp"
 #include "cli/cli.hpp"
+#include "filesystem/filesystem.hpp"
 #include "gpio/pin.hpp"
 
 class Component;
@@ -28,7 +29,9 @@ private:
 
 public:
     MCU *mcu = new MCU();
-    CLI *cli = nullptr;
+    shared_ptr<CLI> cli;
+
+    Filesystem* fs;
 
     vector<shared_ptr<Component>> components;
 
@@ -55,6 +58,22 @@ public:
      * @return false    CLI is not available
      */
     bool CLI_available();
+
+    /**
+     * @brief   Creates and initialize Filesystem for device
+     *          File system need to have enabled CLI
+     *
+     * @return int 0 if filesystem is running
+     */
+    int Enable_Filesystem();
+
+    /**
+     * @brief Check if device has filesystem
+     *
+     * @return true     filesystem is available
+     * @return false    filesystem is not available
+     */
+    bool Filesystem_available();
 
     /**
      * @brief Add component to vector of known components
