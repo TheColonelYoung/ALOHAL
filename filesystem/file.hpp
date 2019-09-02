@@ -11,7 +11,7 @@ class File: public FS_entry
 private:
     string content;
 public:
-    File() = default;
+    File();
     ~File();
 
     inline void Set_content(string new_content){content.assign(new_content);};
