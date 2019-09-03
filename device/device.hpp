@@ -12,7 +12,6 @@
 
 #include <string>
 #include <vector>
-#include <memory>
 #include <algorithm>
 
 #include "mcu/mcu.hpp"
@@ -29,11 +28,11 @@ private:
 
 public:
     MCU *mcu = new MCU();
-    shared_ptr<CLI> cli;
+    CLI * cli;
 
     Filesystem* fs;
 
-    vector<shared_ptr<Component>> components;
+    vector<Component*> components;
 
     Device() = default;
 
@@ -78,10 +77,10 @@ public:
     /**
      * @brief Add component to vector of known components
      *
-     * @param new_component Component to add
+     * @param new_component Pointer to component to add
      * @return string       New name of component
      */
-    string Register_component(shared_ptr<Component> new_component);
+    string Register_component(Component* new_component);
 
 private:
     /**
