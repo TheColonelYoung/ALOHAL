@@ -21,8 +21,7 @@ using namespace std;
  * @brief   Represents parts on PCB which is connected with mcu someway
  *          Used for any parts of device, for example some I2C memory or stepper motor drivers
  */
-class Component: public enable_shared_from_this<Component>
-{
+class Component{
 private:
     string name = "Unknown_component";
 
