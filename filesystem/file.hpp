@@ -1,3 +1,9 @@
+/**
+ * @file file.hpp
+ * @author Petr Malaník (TheColonelYoung(at)gmail(dot)com)
+ * @version 0.1
+ * @date 05.09.2019
+ */
 #pragma once
 
 #include "entry.hpp"
