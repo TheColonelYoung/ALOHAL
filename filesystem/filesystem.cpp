@@ -20,18 +20,21 @@ const int Filesystem::Command_ls(vector<string> args){
     return 0;
 }
 
-const vector<string> Filesystem::Create_entry_path(string filename){
-    vector<string> path;
+const string Filesystem::Absolute_path(string filename){
     if (filename[0] != '/'){ // Relative path, add absolute prefix
         filename = actual_position->Path() + filename;
     }
     if (filename[filename.length()-1] == '/'){ // Remove / at end of string
         filename.erase(filename.length()-1);
     }
-    cli->Print(filename + "\r\n");
+    return filename;
+}
+
+const vector<string> Filesystem::Create_entry_path(string filename){
+    vector<string> path;
+    filename = Absolute_path(filename);
     path.emplace_back("/");
     filename.erase(0,1);
-    cli->Print(filename + "\r\n");
     unsigned int position = filename.find("/");
     while (position != string::npos){
         path.emplace_back(filename.substr(0, position-1));
@@ -42,7 +45,26 @@ const vector<string> Filesystem::Create_entry_path(string filename){
     return path;
 }
 
-const FS_entry Filesystem::Get_entry(vector<string> path){
+const bool Filesystem::Entry_exists(string filename){
+    return Entry_exists(Create_entry_path(filename));
+}
 
+const bool Filesystem::Entry_exists(vector<string> path) const{
+    path.erase(path.begin());
+    Directory* actual = root;
+    for(auto entry:path){
+        if(actual->Exists(entry)){
+            if(actual->Name() == path.back() && entry == path.back()){ // File found
+                return true;
+            } else if(actual->Get_entry(entry)->Type_of() == FS_entry::Type::Directory){
+                // Continue deepper
+                actual = static_cast<Directory *>(actual->Get_entry(entry));
+            }
+        }
+    }
+    return false;
+}
+
+const FS_entry* Filesystem::Get_entry(vector<string> path){
 
 }

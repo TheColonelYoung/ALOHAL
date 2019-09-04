@@ -6,9 +6,9 @@
  */
 #pragma once
 
+#include "entry.hpp"
 #include "directory.hpp"
 #include "cli/cli.hpp"
-#include "entry.hpp"
 
 #include <string>
 #include <vector>
@@ -76,7 +76,7 @@ public:
      * @return true     Entry exist in filesystem and can be accessed
      * @return false    Entry with this name does not exists
      */
-    const bool Entry_exists(vector<string> path);
+    const bool Entry_exists(vector<string> path) const;
 
     /**
      * @brief Test if entry exists on given path
