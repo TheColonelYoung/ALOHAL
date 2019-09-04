@@ -1,13 +1,17 @@
+/**
+ * @file entry.hpp
+ * @author Petr Malaník (TheColonelYoung(at)gmail(dot)com)
+ * @version 0.1
+ * @date 05.09.2019
+ */
 #pragma once
-
-//#include "directory.hpp"
 
 #include <string>
 
 using namespace std;
 
 class FS_entry{
-protected:
+public:
 
     enum class Type{
         Undefined,
@@ -16,18 +20,42 @@ protected:
         Executable
     };
 
+protected:
     Type type = Type::Undefined;
 
-    //Directory *parent = nullptr;
     string name = "None";
-public:
-    FS_entry() =default;
-    //FS_entry(string name, Directory &dir):name(name),parent(&dir){};
 
-    ~FS_entry() =default;
+    /**
+     * @brief Pointer to directory in which ius this entry located
+     */
+    FS_entry *parent = nullptr;
+
+public:
+    FS_entry() = default;
+
+    FS_entry(string name);
 
     int Delete();
-    string Get_name(){return name;};
 
-    string Path(){return "/";};
+    /**
+     * @brief Name of actual entry, this is not a path to entry
+     *
+     * @return string Name of entry
+     */
+    const inline string Name(){return name;};
+
+    /**
+     * @brief   Returns path from root to actual entry in form of string
+     *          Path is constructed via recursion, so beware many recursion directories
+     *
+     * @return string Path from root
+     */
+    const string Path();
+
+    /**
+     * @brief Return type of entry
+     *
+     * @return Type Entry type
+     */
+    const inline Type Type_of(){return type;};
 };
