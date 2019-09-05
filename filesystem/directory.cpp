@@ -4,12 +4,17 @@ Directory::Directory(){
     type = Type::Directory ;
 }
 
-Directory::Directory(const string name){
+Directory::Directory(string name){
     if (name.find("/") == string::npos){
         this->name = name;
     } else {
-        this->name = "exception";
+        if (name != "/"){
+            this->name = "Exception";
+        } else {
+            this->name = "/";
+        }
     }
+    type = Type::Directory ;
 }
 
 FS_entry* Directory::Get_entry(const string entry_name) const{
@@ -28,4 +33,9 @@ const bool Directory::Exists(const string filename){
         }
     }
     return false;
+}
+
+int Directory::Add_entry(FS_entry *entry){
+    entry->Set_parent(this);
+    content.push_back(entry);
 }

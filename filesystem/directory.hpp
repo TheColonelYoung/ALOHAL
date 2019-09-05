@@ -16,15 +16,14 @@ using namespace std;
 class Directory: public FS_entry
 {
 private:
-    string name = "None";
     vector<FS_entry *> content;
 
 public:
     Directory();
-    Directory(const string name);
+    Directory(string name);
 
-    int Delete_entry(FS_entry &entry);
-    int Add_entry(FS_entry &entry);
+    int Delete_entry(FS_entry *entry);
+    int Add_entry(FS_entry *entry);
 
     /**
      * @brief   Count number of entries
