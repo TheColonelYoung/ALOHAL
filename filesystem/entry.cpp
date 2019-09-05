@@ -2,17 +2,29 @@
 
 FS_entry::FS_entry(string name)
     :name(name){
-
 }
 
-const string FS_entry::Path(){
+string FS_entry::Path() const{
     string path;
     if(name == "/"){
-        path = "";
+        path = "/";
     } else {
-        path = parent->Path() + "/" + name;
+        if (type == Type::Directory){
+            path = parent->Path()+ name + "/" ;
+        } else {
+            path = parent->Path()+ name;
+        }
     }
     return path;
+}
+
+bool FS_entry::Set_parent(FS_entry* entry){
+    if(parent == nullptr){
+        parent = entry;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 
