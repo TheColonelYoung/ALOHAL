@@ -28,10 +28,10 @@ public:
     Filesystem() =default;
     Filesystem(CLI* cli);
 
-    const int Command_ls(vector<string> args);
+    int Command_ls(vector<string> args);
     int Command_cd(vector<string> args);
-    const int Command_cat(vector<string> args);
-    const int Command_pwd(vector<string> args);
+    int Command_cat(vector<string> args) const;
+    int Command_pwd(vector<string> args) const;
 
     int Make_directory(string name);
     int Make_executable(string name);
@@ -42,7 +42,7 @@ public:
      * @param path          Any type of path (absolute remain unchanged)
      * @return const string Absolute path to entry
      */
-    const string Absolute_path(string path);
+    string Absolute_path(string path) const;
 
     /**
      * @brief Breaks path in string to path consists of folder names (last is file name)
@@ -50,15 +50,23 @@ public:
      * @param filename      Path to file as string (absolute or relative)
      * @return const vector<string>    Names oif folders from root
      */
-    const vector<string> Create_entry_path(string filename);
+    vector<string> Create_entry_path(string filename) const;
+
+    /**
+     * @brief return FS_entry defined by relative or absolute path
+     *
+     * @param filename          Name of file relative or absolute
+     * @return const FS_entry   Pointer to FS_entry defined by filename, if not exist, nullptr is returned
+     */
+    FS_entry* Get_entry(string filename) const;
 
     /**
      * @brief return FS_entry defined by folder names from root
      *
      * @param path              Names of folders from root to file
-     * @return const FS_entry   Pointer to FS_entry defined by path
+     * @return const FS_entry   Pointer to FS_entry defined by path, if not exist, nullptr is returned
      */
-    const FS_entry* Get_entry(vector<string> path);
+    FS_entry* Get_entry(vector<string> path) const;
 
     /**
      * @brief Test if entry with given name exists
@@ -67,7 +75,7 @@ public:
      * @return true     Entry exist in filesystem and can be accessed
      * @return false    Entry with this name does not exists
      */
-    const bool Entry_exists(string filename);
+    bool Entry_exists(string filename) const;
 
     /**
      * @brief Test if entry exists on given path
@@ -76,7 +84,7 @@ public:
      * @return true     Entry exist in filesystem and can be accessed
      * @return false    Entry with this name does not exists
      */
-    const bool Entry_exists(vector<string> path) const;
+    bool Entry_exists(vector<string> path) const;
 
     /**
      * @brief Test if entry exists on given path
@@ -85,7 +93,7 @@ public:
      * @return true     Entry exist in filesystem and can be accessed
      * @return false    Entry with this name does not exists
      */
-    const FS_entry::Type Entry_type(string filename);
+    FS_entry::Type Entry_type(string filename) const;
 
     int Delete(FS_entry entry);
 };
