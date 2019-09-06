@@ -41,6 +41,10 @@ UART::UART(UART_HandleTypeDef *UART_Handler_set){
 }
 
 int UART::Send(string message){
+    if (message.length() == 0){
+        return 0;
+    }
+
     if (busy) {
         TX_buffer.emplace_back(message);
         return TX_buffer.size();
