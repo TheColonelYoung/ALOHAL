@@ -3,6 +3,7 @@
 Filesystem::Filesystem(CLI* cli):
     cli(cli){
     cli->Register_command("ls", "ls as in Linux", this, &Filesystem::Command_ls);
+    cli->Set_filesystem_prefix(actual_position->Path());
 }
 
 int Filesystem::Command_ls(vector<string> args){
