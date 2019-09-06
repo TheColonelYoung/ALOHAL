@@ -33,7 +33,7 @@ void CLI::Char_load(){
 
 int CLI::Process_line(){
     size_t position = actual_line.find(line_opening);
-    string cmd_line = actual_line.substr(position+1, actual_line.length()-position-1);
+    string cmd_line = actual_line.substr(position + line_opening.length(), actual_line.length() - position - line_opening.length());
 
     // only Enter is pressed
     if(cmd_line == ""){
@@ -75,6 +75,9 @@ int CLI::Redraw_line(){
 
 void CLI::Set_filesystem_prefix(const string prefix){
     filesystem_prefix = prefix;
+    if(filesystem_prefix.back() == '/' && filesystem_prefix.length() > 1){
+        filesystem_prefix.erase(filesystem_prefix.length()-1);
+    }
     New_line();
 }
 

@@ -12,7 +12,7 @@ private:
     UART *serial_connection = nullptr;
     string actual_line = "";
 
-    const string line_opening = ">";
+    const string line_opening = ">\x20";
     string filesystem_prefix = "";
 
     vector<Command_base *> commands;
