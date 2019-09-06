@@ -18,14 +18,14 @@ int Filesystem::Command_ls(vector<string> args){
     }
 
     if (!Entry_exists(directory_name)){
-        cli->Print("Target does not exists \r\n");
+        cli->Print("Target location does not exists \r\n");
         return -1;
     }
 
     Directory* list_directory = static_cast<Directory*>(Get_entry(directory_name));
 
     if(list_directory->Type_of() != FS_entry::Type::Directory){
-        cli->Print("Target is not a directory \r\n");
+        cli->Print("Target location is not a directory \r\n");
         return -1;
     }
 
@@ -39,6 +39,10 @@ int Filesystem::Command_ls(vector<string> args){
 string Filesystem::Absolute_path(string filename) const{
     if (filename == "."){
         return actual_position->Path();
+    }
+
+    if (filename == "/"){
+        return "/";
     }
 
     if (filename[0] != '/'){ // Relative path, add absolute prefix
@@ -57,7 +61,7 @@ vector<string> Filesystem::Create_entry_path(string filename) const{
     filename.erase(0,1);
     unsigned int position = filename.find("/");
     while (position != string::npos){
-        path.emplace_back(filename.substr(0, position-1));
+        path.emplace_back(filename.substr(0, position));
         filename.erase(0, position+1);
         if (filename.length() > 0){
             position = filename.find("/");
@@ -81,12 +85,12 @@ bool Filesystem::Entry_exists(vector<string> path) const{
         // Root handling
         return true;
     }
-
     path.erase(path.begin());
     Directory* actual = root;
     for(auto entry:path){
         if(actual->Exists(entry)){
-            if(actual->Name() == path.back() && entry == path.back()){ // File found
+            //cli->Print("Actual: " + actual->Name() + " Path.back(): " + path.back() +" \r\n");
+            if(/*actual->Name() == path.back() && */entry == path.back()){ // File found
                 return true;
             } else if(actual->Get_entry(entry)->Type_of() == FS_entry::Type::Directory){
                 // Continue deepper
@@ -110,9 +114,9 @@ FS_entry* Filesystem::Get_entry(vector<string> path) const{
     Directory* actual = root;
     for(auto entry:path){
         if(actual->Exists(entry)){
-            if(actual->Name() == path.back() && entry == path.back()){
+            if(/*actual->Name() == path.back() && */entry == path.back()){
                 // Entry found
-                return actual;
+                return actual->Get_entry(entry);
             } else if(actual->Get_entry(entry)->Type_of() == FS_entry::Type::Directory){
                 // Continue deepper
                 actual = static_cast<Directory *>(actual->Get_entry(entry));
@@ -125,19 +129,23 @@ FS_entry* Filesystem::Get_entry(vector<string> path) const{
 int Filesystem::Make_directory(string name){
     name = Absolute_path(name);
     cli->Print("creating folder\r\n");
-    HAL_Delay(100);
     if (Entry_exists(name)){
         cli->Print("Directory already exists\r\n");
         return -1;
     }
-    cli->Print("Directory is not existing\r\n");
-    HAL_Delay(100);
     unsigned int position = name.find_last_of("/");
-    string parent_directory_name = name.substr(0, position+1);
+    string parent_directory_name = name.substr(0, position);
+    if (parent_directory_name == ""){
+        parent_directory_name = "/";
+    }
+
     string directory_name = name.substr(position+1);
-    cli->Print(parent_directory_name + " : " + directory_name + "\r\n");
 
     Directory* parent_directory = static_cast<Directory*>(Get_entry(parent_directory_name));
+    if(parent_directory == nullptr){
+        cli->Print("Cannot find parent \r\n");
+        return -1;
+    }
     parent_directory->Add_entry(new Directory(directory_name));
 
     return 0;
