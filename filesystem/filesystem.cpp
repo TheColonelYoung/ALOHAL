@@ -7,32 +7,33 @@ Filesystem::Filesystem(CLI* cli):
 
 int Filesystem::Command_ls(vector<string> args){
     if (args.size() > 2){
-        return -1; //Invalid parameters
+        cli->Print("Invalid parameters \r\n");
+        return -1;
     }
-
     string directory_name;
     if(args.size() == 1){
         directory_name = Absolute_path(".");
     } else {
         directory_name = Absolute_path(args[1]);
     }
-
     if (!Entry_exists(directory_name)){
         cli->Print("Target location does not exists \r\n");
         return -1;
     }
-
     Directory* list_directory = static_cast<Directory*>(Get_entry(directory_name));
-
+    if(list_directory == nullptr){
+        cli->Print("Target location is unreachable - null returned \r\n");
+    }
     if(list_directory->Type_of() != FS_entry::Type::Directory){
         cli->Print("Target location is not a directory \r\n");
         return -1;
     }
 
+    string output = "";
     for(auto entry:list_directory->Contains()){
-        cli->Print(entry->Name() + "\r\n");
+        output += entry->Name() + "\r\n";
     }
-
+    cli->Print(output);
     return 0;
 }
 
@@ -128,7 +129,6 @@ FS_entry* Filesystem::Get_entry(vector<string> path) const{
 
 int Filesystem::Make_directory(string name){
     name = Absolute_path(name);
-    cli->Print("creating folder\r\n");
     if (Entry_exists(name)){
         cli->Print("Directory already exists\r\n");
         return -1;
