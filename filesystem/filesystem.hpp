@@ -96,4 +96,7 @@ public:
     FS_entry::Type Entry_type(string filename) const;
 
     int Delete(FS_entry entry);
+
+private:
+    string Command_check(vector<string> args) const;
 };

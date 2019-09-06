@@ -3,28 +3,22 @@
 Filesystem::Filesystem(CLI* cli):
     cli(cli){
     cli->Register_command("ls", "ls as in Linux", this, &Filesystem::Command_ls);
+    cli->Register_command("cd", "cd as in Linux", this, &Filesystem::Command_cd);
     cli->Set_filesystem_prefix(actual_position->Path());
+    root->Set_parent(root);
 }
 
 int Filesystem::Command_ls(vector<string> args){
-    if (args.size() > 2){
-        cli->Print("Invalid parameters \r\n");
+    string directory_name = Command_check(args);
+    if (directory_name == ""){
         return -1;
     }
-    string directory_name;
-    if(args.size() == 1){
-        directory_name = Absolute_path(".");
-    } else {
-        directory_name = Absolute_path(args[1]);
-    }
-    if (!Entry_exists(directory_name)){
-        cli->Print("Target location does not exists \r\n");
-        return -1;
-    }
+
     Directory* list_directory = static_cast<Directory*>(Get_entry(directory_name));
     if(list_directory == nullptr){
         cli->Print("Target location is unreachable - null returned \r\n");
     }
+
     if(list_directory->Type_of() != FS_entry::Type::Directory){
         cli->Print("Target location is not a directory \r\n");
         return -1;
@@ -36,6 +30,48 @@ int Filesystem::Command_ls(vector<string> args){
     }
     cli->Print(output);
     return 0;
+}
+
+int Filesystem::Command_cd(vector<string> args){
+    string directory_name = Command_check(args);
+    if (directory_name == ""){
+        return -1;
+    }
+
+    cli->Print(directory_name + "\r\n");
+
+    Directory* target_directory = static_cast<Directory*>(Get_entry(directory_name));
+    if(target_directory == nullptr){
+        cli->Print("Target location is unreachable - null returned \r\n");
+    }
+
+    if(target_directory->Type_of() != FS_entry::Type::Directory){
+        cli->Print("Target location is not a directory \r\n");
+        return -1;
+    }
+
+    actual_position = target_directory;
+    cli->Set_filesystem_prefix(actual_position->Path());
+
+    return 0;
+}
+
+string Filesystem::Command_check(vector<string> args) const{
+    if (args.size() > 2){
+        cli->Print("Invalid parameters \r\n");
+        return "";
+    }
+    string directory_name;
+    if(args.size() == 1){
+        directory_name = Absolute_path(".");
+    } else {
+        directory_name = Absolute_path(args[1]);
+    }
+    if (!Entry_exists(directory_name)){
+        cli->Print("Target location does not exists \r\n");
+        return "";
+    }
+    return directory_name;
 }
 
 string Filesystem::Absolute_path(string filename) const{
