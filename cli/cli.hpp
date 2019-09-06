@@ -11,7 +11,9 @@ class CLI
 private:
     UART *serial_connection = nullptr;
     string actual_line = "";
+
     const string line_opening = ">";
+    string filesystem_prefix = "";
 
     vector<Command_base *> commands;
 
@@ -43,6 +45,14 @@ public:
      * @return int Size of actual line
      */
     int Redraw_line();
+
+    /**
+     * @brief   Save prefix which will be printed before line opening,
+     *          This prefix means current location inside filesystem
+     *
+     * @param prefix    Position in filesystem
+     */
+    void Set_filesystem_prefix(const string prefix);
 
     /**
      * @brief Print new empty line to CLI

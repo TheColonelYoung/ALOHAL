@@ -11,18 +11,18 @@ void CLI::Connect(UART *connection){
 void CLI::Start(){
     Register_command("help", "Print available commands or help for given command, example: help, help build", this, &CLI::Help);
     Register_command("build_info", "Print information about compilation as compiler version and date of compilation", this, &CLI::Build_info);
-    actual_line.assign(line_opening);
-    Redraw_line();
+    New_line();
 }
 
 void CLI::Char_load(){
     string received_char = serial_connection->Read(1);
     if (static_cast<int>(received_char[0]) == 13){ // newline (screen - \r)
         Process_line();
+        New_line();
         return;
     } else if (static_cast<int>(received_char[0]) == 127){ // backspace (screen - DEL)
-        if (actual_line.length() > line_opening.length()){
-            serial_connection->Send("\r" + string(actual_line.length(),' '));
+        if (actual_line.length() > (line_opening.length() + filesystem_prefix.length())){
+            serial_connection->Send("\r" + string(actual_line.length() + filesystem_prefix.length(),' '));
             actual_line.assign(actual_line.substr(0, actual_line.length() - 1));
         }
     } else if(isprint(static_cast<int>(received_char[0]))) {
@@ -37,6 +37,7 @@ int CLI::Process_line(){
 
     // only Enter is pressed
     if(cmd_line == ""){
+        Print("\r\n");
         New_line();
         return 0;
     }
@@ -52,17 +53,18 @@ int CLI::Process_line(){
     if (args.size() < 1){
         return -1;
     }
-    serial_connection->Send("\r\n");
+    Print("\r\r\n");
 
     for(auto &command:commands){
         if(args[0] == command->Get_command()){
             int ret = command->Invoke(args);
+
             actual_line.assign(line_opening);
-            Redraw_line();
+            New_line();
             return ret;
         }
     }
-    Print("Command was not found\r\n");
+    Print("Command \"" + args[0] + "\" was not found\r\n");
     return -1;
 }
 
@@ -71,16 +73,18 @@ int CLI::Redraw_line(){
     return actual_line.length();
 }
 
+void CLI::Set_filesystem_prefix(const string prefix){
+    filesystem_prefix = prefix;
+    New_line();
+}
+
 void CLI::New_line(){
-    actual_line.assign(line_opening);
-    serial_connection->Send("\r\n");
+    actual_line.assign(filesystem_prefix + line_opening);
     Redraw_line();
 }
 
-int CLI::Print(string text){
-    actual_line.assign(line_opening);
+int CLI::Print(const string text){
     serial_connection->Send(text);
-    Redraw_line();
     return text.length();
 }
 
