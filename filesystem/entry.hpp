@@ -66,4 +66,12 @@ public:
      * @return false    Parent cannot be set, allready exists
      */
     bool Set_parent(FS_entry* entry);
+
+    /**
+     * @brief New parent can be set only when, is uninitialized (nullptr)
+     *
+     * @return true     New parent is set
+     * @return false    Parent cannot be set, allready exists
+     */
+    inline FS_entry* Parent(){return parent;};
 };
