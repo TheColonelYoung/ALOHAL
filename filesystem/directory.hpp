@@ -13,7 +13,7 @@
 
 using namespace std;
 
-class Directory: public FS_entry
+class Directory : public FS_entry
 {
 private:
     vector<FS_entry *> content;
@@ -23,6 +23,7 @@ public:
     Directory(string name);
 
     int Delete_entry(FS_entry *entry);
+
     int Add_entry(FS_entry *entry);
 
     /**
@@ -30,14 +31,14 @@ public:
      *
      * @return const int    Number of entries in Directory
      */
-    const inline int Size(){return content.size();};
+    const inline int Size(){ return content.size(); };
 
     /**
      * @brief Return entries, which are contained in Directory
      *
      * @return const vector<FS_entry *> Content of folder
      */
-    const inline vector<FS_entry *> Contains(){return content;};
+    const inline vector<FS_entry *> Contains(){ return content; };
 
     /**
      * @brief Returns pointer to directory defined by filename
@@ -45,7 +46,7 @@ public:
      * @param entry_name        File name to search
      * @return const FS_entry*  Pointer to entry with given name
      */
-    FS_entry* Get_entry(const string entry_name) const;
+    FS_entry * Get_entry(const string entry_name) const;
 
     /**
      * @brief Check if entry with given name exists in folder
@@ -55,6 +56,4 @@ public:
      * @return false    File not exists
      */
     const bool Exists(const string filename);
-
 };
-
