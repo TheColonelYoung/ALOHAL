@@ -208,28 +208,36 @@ FS_entry * Filesystem::Get_entry(vector<string> path) const {
 }
 
 int Filesystem::Make_directory(string path){
+    string directory_name = path.substr(path.find_last_of("/") + 1);
+    Directory *new_directory = new Directory(directory_name);
+    return Add_entry(path, new_directory);
+}
+
+int Filesystem::Add_entry(string path, FS_entry *entry){
     path = Absolute_path(path);
     if (Entry_exists(path)) {
-        cli->Print("Directory already exists\r\n");
-        return -1;
-    }
-    unsigned int position        = path.find_last_of("/");
-    string parent_directory_name = path.substr(0, position);
-    if (parent_directory_name == "") {
-        parent_directory_name = "/";
+        cli->Print("Entry with that already exists in filesystem: " + path + "\r\n");
+        return EEXIST;
     }
 
-    string directory_name = path.substr(position + 1);
+    if (path == "") {
+        path = "/";
+    }
+
+    string parent_directory_name = path.substr(0, path.find_last_of("/"));
 
     Directory *parent_directory = static_cast<Directory *>(Get_entry(parent_directory_name));
     if (parent_directory == nullptr) {
         cli->Print("Cannot find parent \r\n");
-        return -1;
+        return ENOENT;
+    } else if(parent_directory->Type_of() != FS_entry::Type::Directory){
+        cli->Print("Parent is not a directory \r\n");
+        return ENOTDIR;;
     }
 
-    Directory *new_directory = new Directory(directory_name);
-
-    parent_directory->Add_entry(new_directory);
+    parent_directory->Add_entry(entry);
 
     return 0;
+
 }
+

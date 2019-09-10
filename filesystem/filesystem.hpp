@@ -140,7 +140,17 @@ public:
      */
     FS_entry::Type Entry_type(string filename) const;
 
-    int Delete(FS_entry entry);
+    /**
+     * @brief Add entry into file system
+     *
+     * @param path      Path to new file, with filename
+     * @param entry     Entry to add
+     * @return int      Error number
+     */
+    int Add_entry(string path, FS_entry *entry);
+
+
+    int Delete(FS_entry *entry);
 
 private:
     string Command_check(vector<string> args) const;
