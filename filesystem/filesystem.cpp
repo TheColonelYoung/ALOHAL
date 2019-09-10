@@ -4,6 +4,7 @@ Filesystem::Filesystem(CLI *cli) :
     cli(cli){
     cli->Register_command("ls", "ls as in Linux", this, &Filesystem::Command_ls);
     cli->Register_command("cd", "cd as in Linux", this, &Filesystem::Command_cd);
+    cli->Register_command("pwd", "pwd as in Linux", this, &Filesystem::Command_pwd);
     cli->Set_filesystem_prefix(actual_position->Path());
     root->Set_parent(root);
 }
@@ -53,6 +54,11 @@ int Filesystem::Command_cd(vector<string> args){
     actual_position = target_directory;
     cli->Set_filesystem_prefix(actual_position->Path());
 
+    return 0;
+}
+
+int Filesystem::Command_pwd(vector<string> args){
+    cli->Print(actual_position->Path() + "\r\n");
     return 0;
 }
 
@@ -114,7 +120,7 @@ vector<string> Filesystem::Create_entry_path(string filename) const {
     }
 
     // Post procesing of path, remove ., when used .. go back one layer
-    for (int i = 0; i < path.size(); i++) {
+    for (uint i = 0; i < path.size(); i++) {
         if (path[i] == ".") { // case: /test/. -> /test
             path.erase(path.begin() + i);
             i--;

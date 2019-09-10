@@ -30,8 +30,8 @@ public:
 
     int Command_ls(vector<string> args);
     int Command_cd(vector<string> args);
-    int Command_cat(vector<string> args) const;
-    int Command_pwd(vector<string> args) const;
+    int Command_cat(vector<string> args);
+    int Command_pwd(vector<string> args);
 
     int Make_directory(string name);
     int Make_executable(string name);
