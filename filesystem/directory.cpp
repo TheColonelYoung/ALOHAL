@@ -40,3 +40,10 @@ int Directory::Add_entry(FS_entry *entry){
     content.emplace_back(entry);
     return content.size();
 }
+
+int Directory::Delete_entry(FS_entry *entry){
+    for(auto &directory_entry:content){
+        delete directory_entry;
+    }
+    return content.size();
+}
