@@ -179,19 +179,19 @@ FS_entry * Filesystem::Get_entry(vector<string> path) const {
     return nullptr;
 }
 
-int Filesystem::Make_directory(string name){
-    name = Absolute_path(name);
-    if (Entry_exists(name)) {
+int Filesystem::Make_directory(string path){
+    path = Absolute_path(path);
+    if (Entry_exists(path)) {
         cli->Print("Directory already exists\r\n");
         return -1;
     }
-    unsigned int position        = name.find_last_of("/");
-    string parent_directory_name = name.substr(0, position);
+    unsigned int position        = path.find_last_of("/");
+    string parent_directory_name = path.substr(0, position);
     if (parent_directory_name == "") {
         parent_directory_name = "/";
     }
 
-    string directory_name = name.substr(position + 1);
+    string directory_name = path.substr(position + 1);
 
     Directory *parent_directory = static_cast<Directory *>(Get_entry(parent_directory_name));
     if (parent_directory == nullptr) {

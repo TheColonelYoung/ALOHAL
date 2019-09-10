@@ -8,6 +8,8 @@
 
 #include "entry.hpp"
 #include "directory.hpp"
+#include "file.hpp"
+#include "executable.hpp"
 #include "cli/cli.hpp"
 
 #include <string>
@@ -33,11 +35,53 @@ public:
     int Command_cat(vector<string> args);
     int Command_pwd(vector<string> args);
 
-    int Make_directory(string name);
-    int Make_executable(string name);
+    /**
+     * @brief   Creates empty directory at given path
+     *
+     * @param name Path to folder, last part of path is directory name
+     * @return int 0 if it was successful
+     */
+    int Make_directory(string path);
 
     /**
-     * @brief Creates absolute path from given path
+     * @brief   Create file inside RAM
+     *
+     * @param name          File name
+     * @param content       Content of file, can be empty
+     * @return int          0 if it was successful
+     */
+    int Make_file(string path, string content = "");
+
+    /**
+     * @brief   Create virtual file inside filesystem
+     *
+     * @tparam class_T  Class of object which is pass to method
+     * @param path      Location at which will be file created
+     * @param object    Pointer to object which will be providingcontent of file
+     * @param method    Method which will invocated on saved object
+     * @return int  0 if it was successful
+     */
+    template<typename class_T>
+    int Make_file(string path, class_T *object, int (class_T::*method) (void)){
+        return 0;
+    }
+
+    /**
+     * @brief   Create executable inside filesystem
+     *
+     * @tparam class_T  Class of object which is pass to method
+     * @param path      Location at which will be executable saved
+     * @param object    Pointer to object which will be providing executable method
+     * @param method    Method which will invocated on saved object
+     * @return int  0 if it was successful
+     */
+    template<typename class_T>
+    int Make_executable(string path, class_T *object, int(class_T::*method)(vector<string>)){
+        return 0;
+    }
+
+    /**
+     * @brief   Creates absolute path from given path
      *
      * @param path          Any type of path (absolute remain unchanged)
      * @return const string Absolute path to entry
