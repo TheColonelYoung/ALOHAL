@@ -98,6 +98,7 @@ vector<string> Filesystem::Create_entry_path(string filename) const {
     path.emplace_back("/");
     filename.erase(0, 1);
     unsigned int position = filename.find("/");
+    // Break string to part divided by /
     while (position != string::npos) {
         path.emplace_back(filename.substr(0, position));
         filename.erase(0, position + 1);
@@ -107,11 +108,30 @@ vector<string> Filesystem::Create_entry_path(string filename) const {
             break;
         }
     }
+    // Add filename to end
     if (filename.length() > 0) {
         path.emplace_back(filename);
     }
+
+    // Post procesing of path, remove ., when used .. go back one layer
+    for (int i = 0; i < path.size(); i++) {
+        if (path[i] == ".") { // case: /test/. -> /test
+            path.erase(path.begin() + i);
+            i--;
+        } else if (path[i] == "..") {
+            if (i > 1) { // case: /test/.. -> /
+                path.erase(path.begin() + i - 1);
+                path.erase(path.begin() + i);
+                i -= 2;
+            } else { // case: /.. -> /
+                path.erase(path.begin() + i);
+                i--;
+            }
+        }
+    }
+
     return path;
-}
+} // Filesystem::Create_entry_path
 
 bool Filesystem::Entry_exists(string filename) const {
     return Entry_exists(Create_entry_path(filename));
