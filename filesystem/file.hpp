@@ -22,7 +22,7 @@ using namespace std;
  * @tparam class_T Default template parametr for class, this template serve only when file is virtual
  *
  */
-template <typename class_T = void>
+template <typename class_T = string>
 class File : public FS_entry
 {
 public:
@@ -34,7 +34,7 @@ public:
     };
 private:
 
-    Object_method_wrapper<class_T, int, void> *virtual_obtainer;
+    Object_method_wrapper<class_T, string, void(void)> *virtual_obtainer;
 
     Location location = Location::RAM;
 
@@ -63,8 +63,8 @@ public:
      * @param object    Pointer to object which will provide data for virtual file
      * @param method    Method of object which will provide data
      */
-    File(string name, class_T *object, int (class_T::*method) (void)) :
-        virtual_obtainer(new Object_method_wrapper<class_T, int, void>(object, method)){
+    File(string name, class_T *object, string (class_T::*method) (void)) :
+        virtual_obtainer(new Object_method_wrapper<class_T, string, void>(object, method)){
         this->type = Type::File;
         this->name = name;
     }
