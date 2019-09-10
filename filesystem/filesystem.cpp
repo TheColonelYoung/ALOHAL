@@ -5,6 +5,7 @@ Filesystem::Filesystem(CLI *cli) :
     cli->Register_command("ls", "ls as in Linux", this, &Filesystem::Command_ls);
     cli->Register_command("cd", "cd as in Linux", this, &Filesystem::Command_cd);
     cli->Register_command("pwd", "pwd as in Linux", this, &Filesystem::Command_pwd);
+    cli->Register_command("cat", "cat as in Linux", this, &Filesystem::Command_cat);
     cli->Set_filesystem_prefix(actual_position->Path());
     root->Set_parent(root);
 }
@@ -18,11 +19,12 @@ int Filesystem::Command_ls(vector<string> args){
     Directory *list_directory = static_cast<Directory *>(Get_entry(directory_name));
     if (list_directory == nullptr) {
         cli->Print("Target location is unreachable - null returned \r\n");
+        return ENOENT;
     }
 
     if (list_directory->Type_of() != FS_entry::Type::Directory) {
         cli->Print("Target location is not a directory \r\n");
-        return -1;
+        return ENOTDIR;
     }
 
     string output = "";
@@ -44,11 +46,12 @@ int Filesystem::Command_cd(vector<string> args){
     Directory *target_directory = static_cast<Directory *>(Get_entry(directory_name));
     if (target_directory == nullptr) {
         cli->Print("Target location is unreachable - null returned \r\n");
+        return ENOENT;
     }
 
     if (target_directory->Type_of() != FS_entry::Type::Directory) {
         cli->Print("Target location is not a directory \r\n");
-        return -1;
+        return ENOTDIR;
     }
 
     actual_position = target_directory;
@@ -57,7 +60,32 @@ int Filesystem::Command_cd(vector<string> args){
     return 0;
 }
 
+int Filesystem::Command_cat(vector<string> args){
+    string filename = Command_check(args);
+    if (filename == "") {
+        return EINVAL;
+    }
+
+    File<> *target_file = static_cast<File<> *>(Get_entry(filename));
+    if (target_file == nullptr) {
+        cli->Print("Target location is unreachable - null returned \r\n");
+        return ENOENT;
+    }
+
+    if (target_file->Type_of() != FS_entry::Type::File) {
+        cli->Print("Target location is not a file \r\n");
+        return EISDIR;
+    }
+
+    cli->Print(target_file->Read());
+    return 0;
+}
+
 int Filesystem::Command_pwd(vector<string> args){
+    if (args.size() != 1) {
+        cli->Print("Command \"pwd\" does not accept any arguments \r\n");
+        return E2BIG;
+    }
     cli->Print(actual_position->Path() + "\r\n");
     return 0;
 }
