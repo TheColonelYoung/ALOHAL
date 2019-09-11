@@ -45,7 +45,10 @@ int CLI::Process_line(){
     // parse command line into vector of strings (first is command, next are arguments)
     vector<string> args;
     while ((position = cmd_line.find(" ")) != string::npos){
-        args.emplace_back(cmd_line.substr(0,position));
+        string cmd = cmd_line.substr(0,position);
+        if (cmd.find_first_not_of(' ') != std::string::npos){
+            args.emplace_back(cmd);
+        }
         cmd_line.erase(0,position+1);
     }
     args.emplace_back(cmd_line);
@@ -55,6 +58,7 @@ int CLI::Process_line(){
     }
     Print("\r\r\n");
 
+    // Run registred command
     for(auto &command:commands){
         if(args[0] == command->Get_command()){
             int ret = command->Invoke(args);
@@ -64,8 +68,28 @@ int CLI::Process_line(){
             return ret;
         }
     }
+
+    // Run executable from filesystem if exists
+    if (fs){
+        string path = args[0];
+        unsigned int position = path.find_last_of("/");
+        if (position != string::npos){
+            args[0] = path.substr(position + 1);
+        }
+        return fs->Execute(path, args);
+    }
+
     Print("Command \"" + args[0] + "\" was not found\r\n");
     return -1;
+}
+
+int CLI::Enable_filesystem_executable(Filesystem* fs){
+    int ret = 0;
+    if (this->fs != nullptr){
+        ret = 1;
+    }
+    this->fs = fs;
+    return ret;
 }
 
 int CLI::Redraw_line(){

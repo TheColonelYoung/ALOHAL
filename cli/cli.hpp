@@ -6,6 +6,8 @@
 #include "uart/uart.hpp"
 #include "command.hpp"
 
+class Filesystem;
+
 class CLI
 {
 private:
@@ -13,6 +15,8 @@ private:
     string actual_line = "";
 
     const string line_opening = "\u001b[1m\u001b[32;1m>\x20\u001b[0m";
+
+    Filesystem* fs = nullptr;
     string filesystem_prefix = "";
 
     vector<Command_base *> commands;
@@ -76,6 +80,14 @@ public:
     int Process_line();
 
     /**
+     * @brief   Enable to run any executable from file system, executable cannot have name of any command
+     *
+     * @param fs Pointer to filesystem, from which will be executable loaded
+     * @return int 0 if OK, 1 if filesystem is already set
+     */
+    int Enable_filesystem_executable(Filesystem* fs);
+
+    /**
      * @brief CLI command, show available command or help for commands
      *
      * @param args Arguments on CLI for command
@@ -104,10 +116,7 @@ public:
         commands.emplace_back(new Command<registrator_class>(command, help, object, method));
     }
 
-
-
-
-
 };
 
+#include "filesystem/filesystem.hpp"
 
