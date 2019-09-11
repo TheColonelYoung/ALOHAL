@@ -34,7 +34,7 @@ public:
     };
 private:
 
-    Object_method_wrapper<class_T, string, void(void)> *virtual_obtainer;
+    Object_method_wrapper<class_T, string, void> *virtual_obtainer;
 
     Location location = Location::RAM;
 
@@ -64,7 +64,9 @@ public:
      * @param method    Method of object which will provide data
      */
     File(string name, class_T *object, string (class_T::*method) (void)) :
-        virtual_obtainer(new Object_method_wrapper<class_T, string, void>(object, method)){
+        virtual_obtainer(new Object_method_wrapper<class_T, string, void>(object, method)),
+        location(Location::Virtual)
+        {
         this->type = Type::File;
         this->name = name;
     }
