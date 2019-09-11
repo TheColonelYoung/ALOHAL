@@ -41,8 +41,6 @@ int Filesystem::Command_cd(vector<string> args){
         return -1;
     }
 
-    cli->Print(directory_name + "\r\n");
-
     Directory *target_directory = static_cast<Directory *>(Get_entry(directory_name));
     if (target_directory == nullptr) {
         cli->Print("Target location is unreachable - null returned \r\n");
@@ -56,7 +54,6 @@ int Filesystem::Command_cd(vector<string> args){
 
     actual_position = target_directory;
     cli->Set_filesystem_prefix(actual_position->Path());
-
     return 0;
 }
 
@@ -77,7 +74,13 @@ int Filesystem::Command_cat(vector<string> args){
         return EISDIR;
     }
 
-    cli->Print(target_file->Read());
+    cli->Print("Reading file: " + target_file->Name() + "\r\n");
+
+    string content = target_file->Read();
+    if (content.substr(content.length()-2,content.length()) != "\r\n") {
+        content += "\r\n";
+    }
+    cli->Print(content);
     return 0;
 }
 
@@ -211,6 +214,12 @@ int Filesystem::Make_directory(string path){
     string directory_name = path.substr(path.find_last_of("/") + 1);
     Directory *new_directory = new Directory(directory_name);
     return Add_entry(path, new_directory);
+}
+
+int Filesystem::Make_file(string path, string content){
+    string filename = path.substr(path.find_last_of("/") + 1);
+    File<> *new_file = new File(filename, content);
+    return Add_entry(path, new_file);
 }
 
 int Filesystem::Add_entry(string path, FS_entry *entry){

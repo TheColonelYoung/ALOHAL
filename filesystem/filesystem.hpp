@@ -11,6 +11,7 @@
 #include "entry.hpp"
 #include "executable.hpp"
 #include "file.hpp"
+#include "misc/text_transform.hpp"
 
 #include <algorithm>
 #include <cerrno>
