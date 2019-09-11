@@ -1,41 +1,30 @@
-#ifndef TEXT_TRANSFORM_H
-#define TEXT_TRANSFORM_H
+/**
+ * @file text_transform.hpp
+ * @author Petr Malaník (TheColonelYoung(at)gmail(dot)com)
+ * @version 0.1
+ * @date 9.03.2016
+ */
+#pragma once
 
 #include <string>
-#include <cstdio>
+#include <map>
 
 using namespace std;
 
-void ftoa(float f,char *buf);
-string itoa(int a);
+namespace Colored_text{
+    enum class Text_colors{
+        reset,
+        black,
+        red,
+        green,
+        yellow,
+        blue,
+        magenta,
+        cyan,
+        white
+    };
 
-int stoi(string s_val);
-/*
-string to_string(int number);
-string to_string(uint number);
-string to_string(long number);
-string to_string(float number);
-string to_string(double number);
-string to_string(uint32_t number);
-string to_string(const char* text);
+    extern map<Text_colors, string> Color_sequence;
+}
 
-
-
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif
+string color(string text, Colored_text::Text_colors color);

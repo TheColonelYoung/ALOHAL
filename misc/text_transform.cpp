@@ -1,97 +1,20 @@
 #include "text_transform.hpp"
 
-void ftoa(float f, char *buf){
-    int pos = 0, ix, dp, num;
-    if (f < 0) {
-        buf[pos++] = '-';
-        f = -f;
-    }
-    dp = 0;
-    while (f >= 10.0) {
-        f = f / 10.0;
-        dp++;
-    }
-    for (ix = 1; ix < 9; ix++) {
-        num = f;
-        f   = f - num;
-        if (num > 9)
-            buf[pos++] = '#';
-        else
-            buf[pos++] = '0' + num;
-        if (dp == 0) buf[pos++] = '.';
-        f = f * 10.0;
-        dp--;
-    }
+namespace Colored_text{
+    map<Text_colors, string> Color_sequence{
+        make_pair(Text_colors::reset,   "\u001b[0m"),
+        make_pair(Text_colors::black,   "\u001b[30m"),
+        make_pair(Text_colors::red,     "\u001b[31m"),
+        make_pair(Text_colors::green,   "\u001b[32m"),
+        make_pair(Text_colors::yellow,  "\u001b[33m"),
+        make_pair(Text_colors::blue,    "\u001b[34m"),
+        make_pair(Text_colors::magenta, "\u001b[35m"),
+        make_pair(Text_colors::cyan,    "\u001b[36m"),
+        make_pair(Text_colors::white,   "\u001b[37m"),
+    };
+
 }
 
-int stoi(string s_val){
-    int value = 0;
-    int rank  = 1;
-
-    for (int i = (s_val.length() - 1); i >= 0; i--) {
-        value += (s_val[i] - 48) * rank;
-        rank  *= 10;
-    }
-    return value;
+string color(string text, Colored_text::Text_colors color){
+    return Colored_text::Color_sequence[color] + text + Colored_text::Color_sequence[Colored_text::Text_colors::reset];
 }
-
-string itoa(int a){
-    char buffer[32];
-    sprintf(buffer, "%d", a);
-    return string(buffer);
-}
-/*
-string to_string(int number){
-    char buffer[32];
-    sprintf(buffer, "%d", number);
-    return string(buffer);
-}
-
-string to_string(uint number){
-    return to_string((int)number);
-}
-
-string to_string(long number){
-    return to_string((int)number);
-}
-
-string to_string(uint32_t number){
-    char buffer[20];
-    sprintf(buffer, "0x%08x", static_cast<unsigned int>(number));
-    return string(buffer);
-}
-
-string to_string(float number){
-    char buffer[10];
-    int pos = 0, ix, dp, num;
-    if (number < 0) {
-        buffer[pos++] = '-';
-        number = -number;
-    }
-    dp = 0;
-    while (number >= 10.0) {
-        number = number / 10.0;
-        dp++;
-    }
-    for (ix = 1; ix < 9; ix++) {
-        num = number;
-        number   = number - num;
-        if (num > 9)
-            buffer[pos++] = '#';
-        else
-            buffer[pos++] = '0' + num;
-        if (dp == 0) buffer[pos++] = '.';
-        number = number * 10.0;
-        dp--;
-    }
-    return string(buffer);
-}
-
-string to_string(double number){
-    return to_string((float)number);
-}
-
-string to_string(const char* text){
-    return string(text);
-}
-*/
