@@ -41,7 +41,7 @@ public:
      * @brief   Creates empty directory at given path
      *
      * @param name Path to folder, last part of path is directory name
-     * @return int 0 if it was successful
+     * @return int Error number
      */
     int Make_directory(string path);
 
@@ -50,7 +50,7 @@ public:
      *
      * @param name          File name
      * @param content       Content of file, can be empty
-     * @return int          0 if it was successful
+     * @return int          Error number
      */
     int Make_file(string path, string content = "");
 
@@ -60,12 +60,14 @@ public:
      * @tparam class_T  Class of object which is pass to method
      * @param path      Location at which will be file created
      * @param object    Pointer to object which will be providingcontent of file
-     * @param method    Method which will invocated on saved object
-     * @return int  0 if it was successful
+     * @param method    Method which will invocated on saved object, must return string and receive void as argument
+     * @return int      Error number
      */
     template<typename class_T>
-    int Make_file(string path, class_T *object, int (class_T::*method) (void)){
-        return 0;
+    int Make_file(string path, class_T *object, string (class_T::*method) (void)){
+        string filename = path.substr(path.find_last_of("/") + 1);
+        File<class_T> *new_file = new File<class_T>(filename, object, method);
+        return Add_entry(path, new_file);
     }
 
     /**
@@ -74,12 +76,14 @@ public:
      * @tparam class_T  Class of object which is pass to method
      * @param path      Location at which will be executable saved
      * @param object    Pointer to object which will be providing executable method
-     * @param method    Method which will invocated on saved object
-     * @return int  0 if it was successful
+     * @param method    Method which will invocated on saved object, must return int and receive vector<string> as argument
+     * @return int      Error number
      */
     template<typename class_T>
     int Make_executable(string path, class_T *object, int(class_T::*method)(vector<string>)){
-        return 0;
+        string filename = path.substr(path.find_last_of("/") + 1);
+        Executable<class_T> *new_exec = new Executable<class_T>(filename, object, method);
+        return Add_entry(path, new_exec);
     }
 
     /**
@@ -150,7 +154,21 @@ public:
      */
     int Add_entry(string path, FS_entry *entry);
 
+    /**
+     * @brief Method called from CLI, which run executable from filesystem
+     *
+     * @param path  Path to executable
+     * @param args  Arguments for executable
+     * @return int  Return code of executable
+     */
+    int Execute(string path, vector<string> args);
 
+    /**
+     * @brief Delete entry from filesystem
+     *
+     * @param entry Pointer to entry which will be deleted
+     * @return int  Error number
+     */
     int Delete(FS_entry *entry);
 
 private:
