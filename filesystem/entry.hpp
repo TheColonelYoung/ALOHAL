@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -74,4 +75,13 @@ public:
      * @return false    Parent cannot be set, allready exists
      */
     inline FS_entry* Parent(){return parent;};
+
+    /**
+     * @brief   Virtual function which is overriden only by executable
+     *          That because executable template argument cannot be deduced
+     *
+     * @param args  Ignored
+     * @return int  Always -1
+     */
+    virtual int Run(vector<string> args) const {return -1;};
 };
