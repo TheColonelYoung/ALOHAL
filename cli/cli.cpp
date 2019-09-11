@@ -78,6 +78,7 @@ void CLI::Set_filesystem_prefix(const string prefix){
     if(filesystem_prefix.back() == '/' && filesystem_prefix.length() > 1){
         filesystem_prefix.erase(filesystem_prefix.length()-1);
     }
+    filesystem_prefix = "\u001b[34;1m" + filesystem_prefix + "\u001b[0m";
     New_line();
 }
 
