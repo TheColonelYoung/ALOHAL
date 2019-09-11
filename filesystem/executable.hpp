@@ -44,6 +44,7 @@ public:
         executable(new Object_method_wrapper<class_T, int, vector<string>>(object, method))
     {
         this->type = Type::Executable;
+        this->name = name;
     }
 
     /**
@@ -52,7 +53,7 @@ public:
      * @param args  Arguments for encapsulated method
      * @return int  Return value of encapsulated method
      */
-    int Run(vector<string> args) const {
+    int Run(vector<string> args) const override{
         return executable->Invoke(args);
     }
 };
