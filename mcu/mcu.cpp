@@ -1,9 +1,16 @@
 #include "mcu.hpp"
 
 void MCU::Init(){
+
     // ADC
     #ifdef ADC_1_EN
-    ADC_1 = new AD_C(&hadc1);
+    ADC_1 = new AD_C(&hadc1, true, true, true);
+    #endif
+    #ifdef ADC_2_EN
+    ADC_2 = new AD_C(&hadc2);
+    #endif
+    #ifdef ADC_3_EN
+    ADC_3 = new AD_C(&hadc3);
     #endif
 
     // FLASH

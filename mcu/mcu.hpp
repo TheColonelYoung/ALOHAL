@@ -46,6 +46,17 @@ public:
 
     // Peripherals
 
+    // ADC
+    #ifdef ADC_1_EN
+    AD_C *ADC_1;
+    #endif
+    #ifdef ADC_2_EN
+    AD_C *ADC_2;
+    #endif
+    #ifdef ADC_3_EN
+    AD_C *ADC_3;
+    #endif
+
     // UART
     #ifdef UART_1_EN
     UART *UART_1;
