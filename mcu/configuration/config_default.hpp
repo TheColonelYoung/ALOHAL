@@ -20,8 +20,9 @@ Enable this to support registring functions to external interupt event handler
 
 // #define EXT_IRQ_EN
 
-// #define ADC_1_EN
-// NOTE In higher families MCUs has more ADC, in this purpose conditional compile must be added
+#define ADC_1_EN
+// #define ADC_2_EN
+// #define ADC_3_EN
 
 // #define DAC_1_EN
 

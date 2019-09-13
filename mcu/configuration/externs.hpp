@@ -25,13 +25,21 @@ class Flash_mem;
 extern Flash_mem Flash;
 #endif
 
-
 // ADC
 class AD_C;
+#if defined(ADC_1_EN) || defined(ADC_2_EN) || defined(ADC_3_EN)
+# include "adc/adc.hpp"
+#endif
+
+
 #ifdef ADC_1_EN
-# include "adc/ADC.hpp"
 extern ADC_HandleTypeDef hadc1;
-extern AD_C ADC_1;
+#endif
+#ifdef ADC_2_EN
+extern ADC_HandleTypeDef hadc2;
+#endif
+#ifdef ADC_3_EN
+extern ADC_HandleTypeDef hadc3;
 #endif
 
 // DAC

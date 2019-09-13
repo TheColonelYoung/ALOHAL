@@ -18,6 +18,8 @@
 
 // Configuration of address if internal components
 #if defined(STM32L432xx)
-    // Only example not real address
-    #define INTERNAL_TEMP_SENSOR_ADDRESS 0x00
+    #define INTERNAL_VOLTAGE_REFERENCE_ADDRESS ((uint16_t*)0x1fff75aa)
+    #define INTERNAL_TEMPERATURE_CALIBRATION_1_ADDRESS ((uint16_t*)0x1fff75a8)
+    #define INTERNAL_TEMPERATURE_CALIBRATION_2_ADDRESS ((uint16_t*)0x1fff75ca)
+    #define INTERNAL_TEMPERATURE_REFERENCE_VOLTAGE (3.0f)
 #endif
