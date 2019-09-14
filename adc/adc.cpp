@@ -58,7 +58,7 @@ double AD_C::Measure_poll(int channel){
         return -1;
     }
 
-    return ADC_value;
+    return (static_cast<float>(ADC_value) / static_cast<int>(resolution) * Supply_voltage());
 }
 
 double AD_C::Read(){

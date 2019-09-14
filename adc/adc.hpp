@@ -60,10 +60,10 @@ using namespace std;
 class AD_C {
 public:
     enum class Resolution {
-        _6_bit,
-        _8_bit,
-        _10_bit,
-        _12_bit
+        _6_bit = 6,
+        _8_bit = 8,
+        _10_bit = 10,
+        _12_bit = 12
     };
 
     enum class Sampling_rate {
