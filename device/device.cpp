@@ -25,16 +25,21 @@ int Device::Enable_Filesystem(){
         return -1;
     }
     fs = new Filesystem(cli);
+    fs->Make_directory("/components");
     return 0;
 }
 
 bool Device::Filesystem_available(){
-    return fs!=nullptr;
+    return (fs != nullptr);
 }
 
 string Device::Register_component(Component* new_component){
     components.emplace_back(new_component);
-    return New_component_name(new_component->Name());
+    string new_name = New_component_name(new_component->Name());
+    if(Filesystem_available()){
+        fs->Make_directory("/components/" + new_name);
+    }
+    return new_name;
 }
 
 string Device::New_component_name(string original_name){
