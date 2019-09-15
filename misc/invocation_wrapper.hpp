@@ -12,6 +12,24 @@
 
 using namespace std;
 
+template <typename return_T, typename args_T>
+class Invocation_wrapper_base{
+public:
+    Invocation_wrapper_base() =default;
+    virtual ~Invocation_wrapper_base() =default;
+    virtual return_T Invoke(args_T arg) const = 0;
+    virtual bool operator==(const Invocation_wrapper_base<return_T, args_T> & compare) const = 0;
+};
+
+template <typename return_T>
+class Invocation_wrapper_base<return_T, void>{
+public:
+    Invocation_wrapper_base() =default;
+    virtual ~Invocation_wrapper_base() =default;
+    virtual return_T Invoke() const = 0;
+    virtual bool operator==(const Invocation_wrapper_base<return_T, void> & compare) const = 0;
+};
+
 /**
  * @brief   This wrapper hold pointer to object and method. Method must be assigned to class from which is object.
  *          Also can be saved only function.
@@ -24,7 +42,7 @@ using namespace std;
  * @tparam args_T    Type of input argument of method or function
  */
 template <typename class_T, typename return_T, typename args_T>
-class Invocation_wrapper
+class Invocation_wrapper: public Invocation_wrapper_base<return_T, args_T>
 {
 private:
 
@@ -44,6 +62,7 @@ private:
     return_T (*function)(args_T args) = nullptr;
 
 public:
+
     Invocation_wrapper() = default;
 
     /**
@@ -71,13 +90,26 @@ public:
      * @param args          Arguments for encapsulated method
      * @return return_T     Value returned from encapsulated method
      */
-    return_T Invoke(args_T args) const {
+    return_T Invoke(args_T args) const override final{
         if (function) {
             return (*(function))(args);
         } else if (object_ptr) {
             return (*object_ptr.*method_pointer)(args);
         }
         return return_T();
+    }
+
+    bool operator==(const Invocation_wrapper_base<return_T, args_T> & compare) const override final{
+        auto compare_derivated = dynamic_cast<const Invocation_wrapper<class_T, return_T, args_T> &>(compare);
+        return (*this)==compare_derivated;
+    }
+
+    bool operator==(const Invocation_wrapper<class_T, return_T, args_T> & compare) const{
+        if(function){
+            return this->function == compare.function;
+        } else {
+            return (this->object_ptr == compare.object_ptr) && (this->method_pointer==compare.method_pointer);
+        }
     }
 };
 
@@ -88,7 +120,7 @@ public:
  * @tparam return_T  Type which will be returned from wrapped method or function
  */
 template <typename class_T, typename return_T>
-class Invocation_wrapper<class_T, return_T, void>
+class Invocation_wrapper<class_T, return_T, void>: public Invocation_wrapper_base<return_T, void>
 {
 private:
 
@@ -108,8 +140,8 @@ private:
     return_T (*function)(void) = nullptr;
 
 public:
-    Invocation_wrapper() = default;
 
+    Invocation_wrapper() = default;
 
     /**
      * @brief   Construct a new Invocation_wrapper object which holds object and his class method
@@ -138,12 +170,25 @@ public:
      *
      * @return return_T     Value returned from encapsulated method
      */
-    return_T Invoke() const {
+    return_T Invoke() const override final{
         if (function) {
             return (*(function))();
         } else if (object_ptr) {
             return (*object_ptr.*method_pointer)();
         }
         return return_T();
+    }
+
+    bool operator==(const Invocation_wrapper_base<return_T, void> & compare) const override final{
+        auto compare_derivated = dynamic_cast<const Invocation_wrapper<class_T, return_T, void> &>(compare);
+        return (*this)==compare_derivated;
+    }
+
+    bool operator==(const Invocation_wrapper<class_T, return_T, void> & compare) const {
+        if(function){
+            return this->function == compare.function;
+        } else {
+            return (this->object_ptr == compare.object_ptr) && (this->method_pointer == compare.method_pointer);
+        }
     }
 };
