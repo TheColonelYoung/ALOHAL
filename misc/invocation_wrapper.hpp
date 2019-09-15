@@ -1,5 +1,5 @@
 /**
- * @file object_method_wrapper.hpp
+ * @file invocation_wrapper.hpp
  * @author Petr Malaník (TheColonelYoung(at)gmail(dot)com)
  * @brief
  * @version 0.1
@@ -24,7 +24,7 @@ using namespace std;
  * @tparam args_T    Type of input argument of method or function
  */
 template <typename class_T, typename return_T, typename args_T>
-class Object_method_wrapper
+class Invocation_wrapper
 {
 private:
 
@@ -44,24 +44,24 @@ private:
     return_T (*function)(args_T args) = nullptr;
 
 public:
-    Object_method_wrapper() = default;
+    Invocation_wrapper() = default;
 
     /**
-     * @brief Construct a new Object_method_wrapper object which holds object and his class method
+     * @brief Construct a new Invocation_wrapper object which holds object and his class method
      *
      * @param object    Pointer to object which will be stored
      * @param method    Cointer to class method which can bee Invoked on object
      */
-    Object_method_wrapper(class_T *object, return_T(class_T::*method)(args_T args)) :
+    Invocation_wrapper(class_T *object, return_T(class_T::*method)(args_T args)) :
         object_ptr(object), method_pointer(method)
     { }
 
     /**
-     * @brief   Construct a new Object_method_wrapper object which holds pointer to function
+     * @brief   Construct a new Invocation_wrapper object which holds pointer to function
      *
      * @param function  Function to hold inside wrapper
      */
-    Object_method_wrapper(return_T(*function)(args_T args)) :
+    Invocation_wrapper(return_T(*function)(args_T args)) :
         function(function)
     { }
 
@@ -88,7 +88,7 @@ public:
  * @tparam return_T  Type which will be returned from wrapped method or function
  */
 template <typename class_T, typename return_T>
-class Object_method_wrapper<class_T, return_T, void>
+class Invocation_wrapper<class_T, return_T, void>
 {
 private:
 
@@ -108,27 +108,27 @@ private:
     return_T (*function)(void) = nullptr;
 
 public:
-    Object_method_wrapper() = default;
+    Invocation_wrapper() = default;
 
 
     /**
-     * @brief   Construct a new Object_method_wrapper object which holds object and his class method
+     * @brief   Construct a new Invocation_wrapper object which holds object and his class method
      *          This variant is used when method receive void as parametr
      *
      * @param object    Pointer to object which will be stored
      * @param method    Cointer to class method which can bee Invoked on object
      */
-    Object_method_wrapper(class_T *object, return_T(class_T::*method)(void)) :
+    Invocation_wrapper(class_T *object, return_T(class_T::*method)(void)) :
         object_ptr(object), method_pointer(method)
     { }
 
     /**
-     * @brief   Construct a new Object_method_wrapper object which holds pointer to function
+     * @brief   Construct a new Invocation_wrapper object which holds pointer to function
      *          This variant is used when method receive void as parametr
      *
      * @param function  Function to hold inside wrapper
      */
-    Object_method_wrapper(return_T(*function)(void)) :
+    Invocation_wrapper(return_T(*function)(void)) :
         function(function)
     { }
 
