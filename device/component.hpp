@@ -23,14 +23,15 @@ using namespace std;
  */
 class Component{
 private:
+    inline static size_t id_counter = 0;
+protected:
     string name = "Unknown_component";
 
     uint id;
-    static size_t id_counter;
-
 public:
     /**
-     * @brief Construct a new Component object, with enumerated name and register it to device
+     * @brief   Construct a new Component object, with enumerated name and register it to device
+     *          Enummerated name became nre component name
      *
      * @param name Original name for Component, example L6470
      */
