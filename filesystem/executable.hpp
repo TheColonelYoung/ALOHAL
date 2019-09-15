@@ -7,7 +7,7 @@
 #pragma once
 
 #include "entry.hpp"
-#include "misc/object_method_wrapper.hpp"
+#include "misc/invocation_wrapper.hpp"
 
 #include <string>
 #include <vector>
@@ -28,7 +28,7 @@ private:
     /**
      * @brief Wrapper which hold object and method
      */
-    Object_method_wrapper<class_T, int, vector<string> > *executable;
+    Invocation_wrapper<class_T, int, vector<string> > *executable;
 
 public:
     Executable(){ this->type = Type::Executable; };
@@ -41,7 +41,7 @@ public:
      * @param method    pointer to method which will be Invocated at execution time
      */
     Executable(string name, class_T *object, int(class_T::*method)(vector<string>)) :
-        executable(new Object_method_wrapper<class_T, int, vector<string>>(object, method))
+        executable(new Invocation_wrapper<class_T, int, vector<string>>(object, method))
     {
         this->type = Type::Executable;
         this->name = name;
