@@ -20,16 +20,11 @@ AD_C::AD_C(ADC_HandleTypeDef *handler, bool vrefint, bool inttemp, bool vbat) :
 int AD_C::Calibration(){
     HAL_ADCEx_Calibration_Start(handler, 0);
 
-    /*
-     * if (has_vref){
-     *  return Supply_voltage();
-     * } else {
-     *  return 0;
-     * }*/
-    // Set_channel();
-    // reference_val  = Measure();
-    // supply_voltage = (3.3 * ((float) reference_cal / (float) reference_val)) * 1000;
-    return 0;
+    if (has_vref){
+     return Supply_voltage();
+    } else {
+     return 0;
+    }
 }
 
 int AD_C::Continuous_measurement(int channel){
@@ -62,7 +57,7 @@ double AD_C::Measure_poll(int channel){
 }
 
 double AD_C::Read(){
-    return 0;
+    return (static_cast<float>(ADC_value) / static_cast<int>(resolution) * supply_voltage);
 }
 
 void AD_C::Set_value(uint16_t value){
@@ -85,6 +80,17 @@ double AD_C::Supply_voltage(){
     supply_voltage = (3.0 * (*reference_cal) / reference_val);
 
     return supply_voltage;
+}
+
+int AD_C::Set_supply_voltage(double supply_voltage){
+    int ret = 0;
+    if (this->supply_voltage != 0){
+        ret = -1;
+    }
+
+    this->supply_voltage = supply_voltage;
+    return ret;
+
 }
 
 double AD_C::Core_temperature(){
