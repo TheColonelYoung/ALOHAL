@@ -1,7 +1,6 @@
 /**
  * @file invocation_wrapper.hpp
  * @author Petr Malaník (TheColonelYoung(at)gmail(dot)com)
- * @brief
  * @version 0.1
  * @date 10.09.2019
  */
@@ -12,6 +11,14 @@
 
 using namespace std;
 
+/**
+ * @brief   Base class for Invocation_wrapper, this class is used when inherited class
+ *              Invocation_wrapper is saved to vector and have different class template
+ *          Vector only needs to define return type and type of argument
+ *
+ * @tparam return_T     Template for type of returned value
+ * @tparam args_T       Template for type of argument
+ */
 template <typename return_T, typename args_T>
 class Invocation_wrapper_base{
 public:
@@ -21,6 +28,12 @@ public:
     virtual bool operator==(const Invocation_wrapper_base<return_T, args_T> & compare) const = 0;
 };
 
+/**
+ * @brief   Same as Invocation_wrapper_base<return_T, args_T> but as argument type is used void
+ *          Specialization of templated class above
+ *
+ * @tparam return_T Template for type of returned value
+ */
 template <typename return_T>
 class Invocation_wrapper_base<return_T, void>{
 public:
@@ -99,11 +112,27 @@ public:
         return return_T();
     }
 
+    /**
+     * @brief   Perform comparission between two objects of class Invocation_wrapper_base,
+     *              this operator is inherit and overloaded from base class
+     *          Comparing object is cast to Invocation_wrapper
+     *
+     * @param compare   Right side of comparission
+     * @return true     Object are same
+     * @return false    Object are different
+     */
     bool operator==(const Invocation_wrapper_base<return_T, args_T> & compare) const override final{
         auto compare_derivated = dynamic_cast<const Invocation_wrapper<class_T, return_T, args_T> &>(compare);
         return (*this)==compare_derivated;
     }
 
+    /**
+     * @brief Perform comparission based on pointer to saved object and pointer to method
+     *
+     * @param compare   Right side of comparission
+     * @return true     Object are same
+     * @return false    Object are different
+     */
     bool operator==(const Invocation_wrapper<class_T, return_T, args_T> & compare) const{
         if(function){
             return this->function == compare.function;
@@ -179,11 +208,27 @@ public:
         return return_T();
     }
 
+    /**
+     * @brief   Perform comparission between two objects of class Invocation_wrapper_base,
+     *              this operator is inherit and overloaded from base class
+     *          Comparing object is cast to Invocation_wrapper
+     *
+     * @param compare   Right side of comparission
+     * @return true     Object are same
+     * @return false    Object are different
+     */
     bool operator==(const Invocation_wrapper_base<return_T, void> & compare) const override final{
         auto compare_derivated = dynamic_cast<const Invocation_wrapper<class_T, return_T, void> &>(compare);
         return (*this)==compare_derivated;
     }
 
+    /**
+     * @brief Perform comparission based on pointer to saved object and pointer to method
+     *
+     * @param compare   Right side of comparission
+     * @return true     Object are same
+     * @return false    Object are different
+     */
     bool operator==(const Invocation_wrapper<class_T, return_T, void> & compare) const {
         if(function){
             return this->function == compare.function;
