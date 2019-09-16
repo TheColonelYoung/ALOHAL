@@ -8,33 +8,149 @@
 #pragma once
 
 #include "device/component.hpp"
+#include "misc/invocation_wrapper.hpp"
+
+#include <string>
+#include <vector>
+#include <map>
+#include <optional>
 
 using namespace std;
 
-class Sensor: public Component
-{
+/**
+ * @brief   Serve as generic class, from which will be derivated all other type of sensors
+ *          Provide universal interface, from which can be determined which quantities can sensor measure
+ *          Also quantities which return type is numberical or text can be directly measured from this interface
+ */
+class Sensor : public Component{
 private:
-    /* data */
+
+    /**
+     * @brief   List of quantities, which can be measured by sensor, and their return type is double
+     *          This type is used for example for: voltage sensor, temperature sensor, etc.
+     */
+    map<string, Invocation_wrapper_base<double, void> *> numerical_quantity;
+
+    /**
+     * @brief   List of quantities, which can be measured by sensor, and their return type is double
+     *           This type is used for example for: status sensors
+     */
+    map<string, Invocation_wrapper_base<string, void> *> text_quantity;
+
+    /**
+     * @brief   List of quantities, which can be measured by sensor, but their return type is different then text or number (probably some structure)
+     *          This type of quantities can be only measured by using specified methods, not via generic sensor interface
+     *          This type is used for example for: GPS
+     */
+    vector<string> other_quantity;
+
 public:
+    /**
+     * @brief Construct a new Sensor object using default sensor name = "Unknown_sensor"
+     */
     Sensor();
+
+    /**
+     * @brief Construct a new Sensor object using given name
+     *
+     * @param name name of sensor
+     */
     Sensor(string name);
 
     /**
-     * @brief
+     * @brief Create list of all available measurable quantities from numerical_quantity, text_quantity and other_quantity
      *
-     * @return vector<string> Value measurable by sensor
+     * @return vector<string> List of quantities measurable by sensor
      */
-    vector<string> Measurable_values();
+    vector<string> Measurable_quantities() const;
 
     /**
-     * @brief Perform measuring of selected value
+     * @brief Create list of all available measurable quantities from numerical_quantity
      *
-     * @param value
-     * @return double
+     * @return vector<string> List of numerical quantities measurable by sensor
      */
-    double Measure(string value);
+    vector<string> Measurable_numerical() const;
+
+    /**
+     * @brief Create list of all available measurable quantities from text_quantity
+     *
+     * @return vector<string> List of text quantities measurable by sensor
+     */
+    vector<string> Measurable_text() const;
+
+    /**
+     * @brief Create list of all available measurable quantities from other_quantity
+     *
+     * @return vector<string> List of other quantities measurable by sensor
+     */
+    vector<string> Measurable_others() const;
+
+    /**
+     * @brief   Perform measuring of selected numerical quantity
+     *          Quantity must be one of Measurable numberical quantities
+     *
+     * @param value                 Name of numerical quantity
+     * @return optional<double>     Value of quantity
+     */
+    optional<double> Measure_numerical(string quantity);
+
+    /**
+     * @brief   Perform measuring of selected quantity
+     *          Quantity must be one of Measurable quantities
+     *
+     * @param value     Name of text quantity
+     * @return optional<string>
+     */
+    optional<string> Measure_text(string quantity);
+
+    /**
+     * @brief Created new record for quantity with method how to obtain it, used fir numberical quantities
+     *
+     * @tparam class_T          Class from which is obtainer
+     * @param quantity_name     Name of quantity which will be saved to measurable quantities
+     * @param object_ptr        Pointer to object which provides method for obtaining value
+     * @param method_ptr        Pointer to method of object above which provides value of quantity
+     * @return true             New record for quantity ais created
+     * @return false            Record cannot be created, probably same quantity name already exists
+     */
+    template <typename class_T>
+    bool Register_quantity(string quantity_name, class_T *object_ptr, double (class_T::*method_ptr)(void)){
+        if(Quantity_exists(quantity_name)){
+            // Quantity with this name already exists
+            return false;
+        }
+        numerical_quantity.insert(make_pair(quantity_name, new Invocation_wrapper<class_T, double, void>(object_ptr, method_ptr)));
+        return true;
+    }
+
+    /**
+     * @brief Created new record for quantity with method how to obtain it, used for text quantities
+     *
+     * @tparam class_T          Class from which is obtainer
+     * @param quantity_name     Name of quantity which will be saved to measurable quantities
+     * @param object_ptr        Pointer to object which provides method for obtaining value
+     * @param method_ptr        Pointer to method of object above which provides value of quantity
+     * @return true             New record for quantity ais created
+     * @return false            Record cannot be created, probably same quantity name already exists
+     */
+    template <typename class_T>
+    bool Register_quantity(string quantity_name, class_T *object_ptr, string (class_T::*method_ptr)(void)){
+        if(Quantity_exists(quantity_name)){
+            // Quantity with this name already exists
+            return false;
+        }
+        text_quantity.insert(make_pair(quantity_name, new Invocation_wrapper<class_T, string, void>(object_ptr, method_ptr)));
+        return true;
+    }
+
+private:
+    /**
+     * @brief   Check if quantity with selected name already exists in any list of measurable quantity
+     *          Try to find name in: numerical_quantity, text_quantity and other_quantity
+     *
+     * @param quantity_name     Name of quantity to check
+     * @return true             Quantity already exists
+     * @return false            Quantity does not exists at this sensor
+     */
+    bool Quantity_exists(string quantity_name);
 };
-
-
-
-
