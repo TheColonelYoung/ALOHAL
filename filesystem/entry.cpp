@@ -28,6 +28,6 @@ bool FS_entry::Set_parent(FS_entry* entry){
 }
 
 
-int FS_entry::Delete(){
-
+void FS_entry::Delete(){
+    this->~FS_entry();
 }

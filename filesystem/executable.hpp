@@ -33,6 +33,12 @@ private:
 public:
     Executable(){ this->type = Type::Executable; };
 
+    ~Executable(){
+        if (executable){
+            delete executable;
+        }
+    }
+
     /**
      * @brief Construct a new Executable object which hold pointer to object and method
      *

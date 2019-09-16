@@ -20,7 +20,6 @@ using namespace std;
  *              - This can be used for reading data which are generated or need to be actual
  *
  * @tparam class_T Default template parametr for class, this template serve only when file is virtual
- *
  */
 template <typename class_T = string>
 class File : public FS_entry
@@ -42,6 +41,12 @@ private:
 
 public:
     File() = default;
+
+    ~File(){
+        if (location == Location::Virtual && virtual_obtainer){
+            delete virtual_obtainer;
+        }
+    }
 
     /**
      * @brief Construct a new File object which content is saved in RAM

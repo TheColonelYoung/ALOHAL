@@ -36,7 +36,12 @@ public:
 
     FS_entry(string name);
 
-    int Delete();
+    virtual ~FS_entry() =default;
+
+    /**
+     * @brief Call destructor of object
+     */
+    void Delete();
 
     /**
      * @brief Name of actual entry, this is not a path to entry

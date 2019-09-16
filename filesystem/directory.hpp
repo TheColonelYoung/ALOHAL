@@ -28,6 +28,8 @@ public:
      */
     Directory(string name);
 
+    ~Directory();
+
     /**
      * @brief Add entry to directory content
      *

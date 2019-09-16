@@ -17,6 +17,12 @@ Directory::Directory(string name){
     type = Type::Directory;
 }
 
+Directory::~Directory(){
+    for(auto &entry:content){
+        entry->Delete();
+    }
+}
+
 FS_entry * Directory::Get_entry(const string entry_name) const {
     for (auto entry:content) {
         if (entry->Name() == entry_name) {
