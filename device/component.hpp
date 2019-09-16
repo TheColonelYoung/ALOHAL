@@ -12,6 +12,9 @@
 typedef unsigned int uint;
 
 #include "device.hpp"
+#include "filesystem/file.hpp"
+
+
 class Device;
 extern Device *device;
 
@@ -23,15 +26,23 @@ using namespace std;
  */
 class Component{
 private:
+    /**
+     * @brief Shared counter, from which anew components load their id
+     */
     inline static size_t id_counter = 0;
+
 protected:
     string name = "Unknown_component";
 
+    /**
+     * @brief Unique identifier across all components inside device
+     */
     uint id;
+
 public:
     /**
      * @brief   Construct a new Component object, with enumerated name and register it to device
-     *          Enummerated name became nre component name
+     *          Enumerated name became nre component name
      *
      * @param name Original name for Component, example L6470
      */
@@ -43,4 +54,16 @@ public:
      * @return string Name of component
      */
     string Name() const;
+
+protected:
+    template<typename class_T>
+    bool Create_virtual_file(string name, class_T* object, double(class_T::*method)(void)){
+        if (device->Filesystem_available()){
+            File<class_T>* component_file = new File<class_T>(name, object, method);
+            device->fs->Add_entry("/components/" + Name() + "/" + name, component_file);
+        } else {
+            return false;
+        }
+        return true;
+    }
 };

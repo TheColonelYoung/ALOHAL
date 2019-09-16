@@ -1,6 +1,5 @@
 #include "component.hpp"
 
-
 Component::Component(string name):
     name(name), id(id_counter)
 {
