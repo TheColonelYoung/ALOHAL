@@ -104,42 +104,53 @@ public:
     optional<string> Measure_text(string quantity);
 
     /**
-     * @brief Created new record for quantity with method how to obtain it, used fir numberical quantities
+     * @brief   Created new record for quantity with method how to obtain it, used for numberical quantities
+     *          Can create virtual file in component folder if filesystem is available in device
      *
      * @tparam class_T          Class from which is obtainer
      * @param quantity_name     Name of quantity which will be saved to measurable quantities
-     * @param object_ptr        Pointer to object which provides method for obtaining value
-     * @param method_ptr        Pointer to method of object above which provides value of quantity
+     * @param object            Pointer to object which provides method for obtaining value
+     * @param method            Pointer to method of object above which provides value of quantity
+     * @param create_file       If true, try to create virtual file in filesystem in component folder, can be used only when device has filesystem available
      * @return true             New record for quantity ais created
      * @return false            Record cannot be created, probably same quantity name already exists
      */
     template <typename class_T>
-    bool Register_quantity(string quantity_name, class_T *object_ptr, double (class_T::*method_ptr)(void)){
+    bool Register_quantity(string quantity_name, class_T *object, double (class_T::*method)(void), bool create_file = false){
         if(Quantity_exists(quantity_name)){
             // Quantity with this name already exists
             return false;
         }
-        numerical_quantity.insert(make_pair(quantity_name, new Invocation_wrapper<class_T, double, void>(object_ptr, method_ptr)));
+        numerical_quantity.insert(make_pair(quantity_name, new Invocation_wrapper<class_T, double, void>(object, method)));
+        if (create_file){
+            Create_virtual_file(quantity_name, object, method);
+        }
         return true;
     }
 
     /**
-     * @brief Created new record for quantity with method how to obtain it, used for text quantities
+     * @brief   Created new record for quantity with method how to obtain it, used for text quantities
+     *          Can create virtual file in component folder if filesystem is available in device
      *
      * @tparam class_T          Class from which is obtainer
      * @param quantity_name     Name of quantity which will be saved to measurable quantities
-     * @param object_ptr        Pointer to object which provides method for obtaining value
-     * @param method_ptr        Pointer to method of object above which provides value of quantity
+     * @param object            Pointer to object which provides method for obtaining value
+     * @param method            Pointer to method of object above which provides value of quantity
+     * @param create_file       If true, try to create virtual file in filesystem in component folder, can be used only when device has filesystem available
      * @return true             New record for quantity ais created
      * @return false            Record cannot be created, probably same quantity name already exists
      */
+
     template <typename class_T>
-    bool Register_quantity(string quantity_name, class_T *object_ptr, string (class_T::*method_ptr)(void)){
+    bool Register_quantity(string quantity_name, class_T *object, string (class_T::*method)(void), bool create_file = false){
         if(Quantity_exists(quantity_name)){
             // Quantity with this name already exists
             return false;
         }
-        text_quantity.insert(make_pair(quantity_name, new Invocation_wrapper<class_T, string, void>(object_ptr, method_ptr)));
+        text_quantity.insert(make_pair(quantity_name, new Invocation_wrapper<class_T, string, void>(object, method)));
+        if (create_file){
+            Create_virtual_file(quantity_name, object, method);
+        }
         return true;
     }
 
