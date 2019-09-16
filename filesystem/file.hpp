@@ -33,18 +33,32 @@ public:
     };
 private:
 
-    Invocation_wrapper<class_T, string, void> *virtual_obtainer;
+    /**
+     * @brief   Holds pointer to Incovation wrapper which serves as obtainer for data of virtual file
+     *          This obtainer can returns text or numerical value
+     */
+    Invocation_wrapper<class_T, string, void> *virtual_obtainer_text      = nullptr;
+    Invocation_wrapper<class_T, double, void> *virtual_obtainer_numerical = nullptr;
 
     Location location = Location::RAM;
 
-    string content; // only for file located in RAM
+    /**
+     * @brief Only for file located in RAM
+     */
+    string content;
 
 public:
     File() = default;
 
+    /**
+     * @brief Destroy the File object and removed internal Invocation_wrapper
+     *
+     */
     ~File(){
-        if (location == Location::Virtual && virtual_obtainer){
-            delete virtual_obtainer;
+        if (location == Location::Virtual && (virtual_obtainer_text != nullptr)) {
+            delete virtual_obtainer_text;
+        } else if (location == Location::Virtual && (virtual_obtainer_numerical != nullptr)) {
+            delete virtual_obtainer_numerical;
         }
     }
 
@@ -62,16 +76,31 @@ public:
     }
 
     /**
-     * @brief Construct a new File object which is virtual type
+     * @brief   Construct a new File object which is virtual type
+     *          Used for function which returns text value (string)
      *
      * @param name      Name of file
      * @param object    Pointer to object which will provide data for virtual file
      * @param method    Method of object which will provide data
      */
     File(string name, class_T *object, string (class_T::*method) (void)) :
-        virtual_obtainer(new Invocation_wrapper<class_T, string, void>(object, method)),
-        location(Location::Virtual)
-        {
+        virtual_obtainer_text(new Invocation_wrapper<class_T, string, void>(object, method)),
+        location(Location::Virtual){
+        this->type = Type::File;
+        this->name = name;
+    }
+
+    /**
+     * @brief   Construct a new File object which is virtual type
+     *          Used for function which returns numerical value (double)
+     *
+     * @param name      Name of file
+     * @param object    Pointer to object which will provide data for virtual file
+     * @param method    Method of object which will provide data
+     */
+    File(string name, class_T *object, double (class_T::*method) (void)) :
+        virtual_obtainer_numerical(new Invocation_wrapper<class_T, double, void>(object, method)),
+        location(Location::Virtual){
         this->type = Type::File;
         this->name = name;
     }
@@ -99,8 +128,10 @@ public:
     string Read() const {
         if (location == Location::RAM) {
             return content;
-        } else if (location == Location::Virtual) {
-            return virtual_obtainer->Invoke();
+        } else if (location == Location::Virtual && (virtual_obtainer_text != nullptr)) {
+            return virtual_obtainer_text->Invoke();
+        } else if (location == Location::Virtual && (virtual_obtainer_numerical != nullptr)) {
+            return to_string(virtual_obtainer_numerical->Invoke());
         }
 
         return "";
