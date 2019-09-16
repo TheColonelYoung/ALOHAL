@@ -1,15 +1,11 @@
 /**
  * @file invocation_wrapper.hpp
  * @author Petr Malaník (TheColonelYoung(at)gmail(dot)com)
- * @version 0.1
+ * @version 0.3
  * @date 10.09.2019
  */
 
 #pragma once
-
-#include <string>
-
-using namespace std;
 
 /**
  * @brief   Base class for Invocation_wrapper, this class is used when inherited class
