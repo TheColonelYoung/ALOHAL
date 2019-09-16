@@ -9,6 +9,7 @@ int Device::Enable_CLI(UART *connection){
     if(connection != nullptr){
         cli->Connect(connection);
         cli->Print("CLI is available\r\n");
+        HAL_Delay(1);
         cli->Start();
         return 0;
     } else {
