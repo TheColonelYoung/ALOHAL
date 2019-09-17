@@ -15,10 +15,12 @@ using namespace std;
 class Voltage_sensor: public Sensor
 {
 private:
-    ADC_channel * ADC;
+    ADC_channel * ADC_ch;
 
     double resistor_R1 = 0;
     double resistor_R2 = 0;
+
+    double ratio = 1;
 
 public:
     Voltage_sensor(ADC_channel * ADC, double resistor_R1 = 0, double resistor_R2 = 0 );
