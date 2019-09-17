@@ -5,3 +5,7 @@ ADC_channel::ADC_channel(AD_C *ADC, int channel):
 {
 
 }
+
+double ADC_channel::Measure_poll(){
+    return ADC->Measure_poll(channel);
+}
