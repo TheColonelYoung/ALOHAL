@@ -38,9 +38,6 @@ extern Device *device;
 typedef unsigned int uint;
 using namespace std;
 
-// #define VREFINT_CAL_ADDR ((uint16_t *)((uint32_t) 0x1FFFF7BA))
-
-
 /**
  * @brief   Represents analog to digital convertor. Have multiplexed channel, only one can be measured at same time
  *          Also ADC1 contains channel for measuring internal reference for obtaining supply voltage and internal
@@ -232,6 +229,10 @@ public:
 
     #ifdef ADC_CHANNEL_VREFINT
 
+    #if !defined(INTERNAL_VOLTAGE_REFERENCE_ADDRESS)
+        #error "Address of voltage reference data is not defined"
+    #endif
+
     /**
      * @brief   Perform measuring on internal reference channel
      *          Use polling measurement mode
@@ -251,6 +252,14 @@ public:
     int Set_supply_voltage(double supply_voltage);
 
     #ifdef ADC_CHANNEL_TEMPSENSOR
+
+    #if !defined(INTERNAL_TEMPERATURE_CALIBRATION_1_ADDRESS) || !defined(INTERNAL_TEMPERATURE_CALIBRATION_2_ADDRESS)
+        #error "Address of calibration adata is not defined"
+    #endif
+
+    #if !defined(INTERNAL_TEMPERATURE_REFERENCE_VOLTAGE)
+        #error "Reference voltage of temperature calibration is not defined"
+    #endif
 
     /**
      * @brief   Perform measuring on internal temperature sensor and after it calculate internal temperature
