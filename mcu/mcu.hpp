@@ -21,6 +21,9 @@
 
 using namespace std;
 
+class Device;
+extern Device* device;
+
 /**
  * @brief Represent MCU(STM32) on board(device)
  *
@@ -38,114 +41,126 @@ public:
     MCU() =default;
 
     /**
-     * @brief Initialize peripherals with their parameters
-     * Should be called during device initialization
-     *
+     * @brief   Perform initialization of mcu. This includes:
+     *              - Peripherals
      */
     void Init();
+
+    /**
+     * @brief   Create files and folders inside filesystem
+     *          Interface is depending on available peripherals
+     *          This method is called during setting up of filesystem of device
+     */
+    void Filesystem_interface_initialization();
+
+    /**
+     * @brief Initialize peripherals with their parameters
+     * Should be called during device initialization
+     */
+    void Init_peripherals();
 
     // Peripherals
 
     // ADC
     #ifdef ADC_1_EN
-    AD_C *ADC_1;
+    AD_C *ADC_1 = nullptr;
     #endif
     #ifdef ADC_2_EN
-    AD_C *ADC_2;
+    AD_C *ADC_2 = nullptr;
     #endif
     #ifdef ADC_3_EN
-    AD_C *ADC_3;
+    AD_C *ADC_3 = nullptr;
     #endif
 
     // UART
     #ifdef UART_1_EN
-    UART *UART_1;
+    UART *UART_1 = nullptr;
     #endif
     #ifdef UART_2_EN
-    UART *UART_2;
+    UART *UART_2 = nullptr;
     #endif
     #ifdef UART_3_EN
-    UART *UART_3;
+    UART *UART_3 = nullptr;
     #endif
     #ifdef UART_4_EN
-    UART *UART_4;
+    UART *UART_4 = nullptr;
     #endif
 
     // I2C
     #ifdef I2C_1_EN
-    I2C_master *I2C_1;
+    I2C_master *I2C_1 = nullptr;
     #endif
     #ifdef I2C_2_EN
-    I2C_master *I2C_2;
+    I2C_master *I2C_2 = nullptr;
     #endif
     #ifdef I2C_3_EN
-    I2C_master *I2C_3;
+    I2C_master *I2C_3 = nullptr;
     #endif
     #ifdef I2C_4_EN
-    I2C_master *I2C_4;
+    I2C_master *I2C_4 = nullptr;
     #endif
 
     // SPI
     #ifdef SPI_1_EN
-    SPI_master *SPI_1;
+    SPI_master *SPI_1 = nullptr;
     #endif
     #ifdef SPI_2_EN
-    SPI_master *SPI_2;
+    SPI_master *SPI_2 = nullptr;
     #endif
     #ifdef SPI_3_EN
-    SPI_master *SPI_3;
+    SPI_master *SPI_3 = nullptr;
     #endif
     #ifdef SPI_4_EN
-    SPI_master *SPI_4;
+    SPI_master *SPI_4 = nullptr;
     #endif
 
     #ifdef TIM_1_EN
-    Timer *TIM_1;
+    Timer *TIM_1 = nullptr;
     #endif
     #ifdef TIM_2_EN
-    Timer *TIM_2;
+    Timer *TIM_2 = nullptr;
     #endif
     #ifdef TIM_3_EN
-    Timer *TIM_3;
+    Timer *TIM_3 = nullptr;
     #endif
     #ifdef TIM_4_EN
-    Timer *TIM_4;
+    Timer *TIM_4 = nullptr;
     #endif
     #ifdef TIM_5_EN
-    Timer *TIM_5;
+    Timer *TIM_5 = nullptr;
     #endif
     #ifdef TIM_6_EN
-    Timer *TIM_6;
+    Timer *TIM_6 = nullptr;
     #endif
     #ifdef TIM_7_EN
-    Timer *TIM_7;
+    Timer *TIM_7 = nullptr;
     #endif
     #ifdef TIM_8_EN
-    Timer *TIM_8;
+    Timer *TIM_8 = nullptr;
     #endif
     #ifdef TIM_9_EN
-    Timer *TIM_9;
+    Timer *TIM_9 = nullptr;
     #endif
     #ifdef TIM_10_EN
-    Timer *TIM_10;
+    Timer *TIM_10 = nullptr;
     #endif
     #ifdef TIM_11_EN
-    Timer *TIM_11;
+    Timer *TIM_11 = nullptr;
     #endif
     #ifdef TIM_12_EN
-    Timer *TIM_12;
+    Timer *TIM_12 = nullptr;
     #endif
     #ifdef TIM_13_EN
-    Timer *TIM_13;
+    Timer *TIM_13 = nullptr;
     #endif
     #ifdef TIM_14_EN
-    Timer *TIM_14;
+    Timer *TIM_14 = nullptr;
     #endif
     #ifdef TIM_15_EN
-    Timer *TIM_15;
+    Timer *TIM_15 = nullptr;
     #endif
     #ifdef TIM_16_EN
-    Timer *TIM_16;
+    Timer *TIM_16 = nullptr;
     #endif
 
 };
