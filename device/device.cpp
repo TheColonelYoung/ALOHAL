@@ -27,6 +27,8 @@ int Device::Enable_Filesystem(){
     }
     fs = new Filesystem(cli);
     fs->Make_directory("/components");
+    fs->Make_directory("/mcu");
+    mcu->Filesystem_interface_initialization();
     return 0;
 }
 
