@@ -11,12 +11,9 @@
 
 typedef unsigned int uint;
 
+#include "globals.hpp"
 #include "device.hpp"
 #include "filesystem/file.hpp"
-
-
-class Device;
-extern Device *device;
 
 using namespace std;
 
@@ -58,9 +55,9 @@ public:
 protected:
     template<typename class_T>
     bool Create_virtual_file(string name, class_T* object, double(class_T::*method)(void)){
-        if (device->Filesystem_available()){
+        if (device()->Filesystem_available()){
             File<class_T>* component_file = new File<class_T>(name, object, method);
-            device->fs->Add_entry("/components/" + Name() + "/" + name, component_file);
+            device()->fs->Add_entry("/components/" + Name() + "/" + name, component_file);
         } else {
             return false;
         }

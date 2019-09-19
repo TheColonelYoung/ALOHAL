@@ -7,8 +7,8 @@
 #pragma once
 
 #if __cplusplus > 199711L
-#define register      // Deprecated in C++11.
-#endif  // #if __cplusplus > 199711L
+# define register // Deprecated in C++11.
+#endif            // #if __cplusplus > 199711L
 
 #include <string>
 #include <vector>
@@ -23,19 +23,26 @@ class Component;
 
 using namespace std;
 
-class Device{
+class Device {
 private:
 
 public:
-    MCU *mcu = new MCU();
-    CLI * cli;
+    inline static Device* instance = nullptr;
 
-    Filesystem* fs;
+    MCU *mcu = new MCU();
+    CLI *cli;
+
+    Filesystem *fs;
+
+    vector<Component *> components;
 
     vector<Component*> components;
 
+private:
     Device() = default;
 
+public:
+    static Device* Instance();
     /**
      * @brief   Initialization of device
      *          Runs initialization of mcu
@@ -90,7 +97,6 @@ private:
      * @return string           New generated name with enumeration, example: L6470_1
      */
     string New_component_name(string original_name);
-
 };
 
 #include "device/component.hpp"

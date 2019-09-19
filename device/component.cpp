@@ -5,7 +5,7 @@ Component::Component(string name):
 {
     id_counter++;
 
-    this->name = device->Register_component(this);
+    this->name = device()->Register_component(this);
 }
 
 string Component::Name() const{

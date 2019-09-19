@@ -24,6 +24,7 @@
 #include <vector>
 #include <string>
 
+#include "globals.hpp"
 #include "irq/irq_handler.hpp"
 #include "gpio/pin.hpp"
 

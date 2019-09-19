@@ -1,5 +1,12 @@
 #include "device.hpp"
 
+Device* Device::Instance(){
+    if (instance == nullptr){
+        instance = new Device();
+    }
+    return instance;
+}
+
 void Device::Init(){
     mcu->Init();
 }

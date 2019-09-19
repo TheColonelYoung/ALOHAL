@@ -12,6 +12,7 @@
 #include <map>
 
 #include "globals.hpp"
+#include "device/device.hpp"
 #include "construction/motion_axis.hpp"
 
 using namespace std;

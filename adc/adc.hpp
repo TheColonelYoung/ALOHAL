@@ -10,12 +10,11 @@
 #include <string>
 #include <map>
 
+#include "globals.hpp"
 #include "global_includes.hpp"
 
 typedef unsigned int uint;
 
-class Device;
-extern Device *device;
 
 #if   defined(MCU_FAMILY_STM32_F0)
 # include "stm32f0xx_hal_adc.h"

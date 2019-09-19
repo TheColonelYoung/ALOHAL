@@ -7,24 +7,24 @@ void MCU::Init(){
 }
 
 void MCU::Filesystem_interface_initialization(){
-    if (!device->Filesystem_available()){
+    if (!device()->Filesystem_available()){
         return;
     }
 
-    device->cli->Print("FS MCU INIT\r\n");
+    device()->cli->Print("FS MCU INIT\r\n");
 
     #ifdef ADC_1_EN
     #ifdef ADC_CHANNEL_TEMPSENSOR
     if(ADC_1 != nullptr){
         auto temperature = new File<AD_C>("core_temperature", this->ADC_1, &AD_C::Core_temperature);
-        device->fs->Add_entry("/mcu/core_temperature", temperature);
+        device()->fs->Add_entry("/mcu/core_temperature", temperature);
     }
     #endif
 
     #ifdef  ADC_CHANNEL_VBAT
     if(ADC_1 != nullptr){
         auto supply_voltage = new File<AD_C>("supply_voltage", this->ADC_1, &AD_C::Supply_voltage);
-        device->fs->Add_entry("/mcu/supply_voltage", supply_voltage);
+        device()->fs->Add_entry("/mcu/supply_voltage", supply_voltage);
     }
     #endif
     #endif

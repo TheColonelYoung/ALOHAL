@@ -1,10 +1,5 @@
 #include "uart.hpp"
 
-#include "device/device.hpp"
-
-class Device;
-extern Device *device;
-
 unsigned char UART_1_buffer_temp[10];
 unsigned char UART_2_buffer_temp[10];
 unsigned char UART_3_buffer_temp[10];
@@ -99,29 +94,29 @@ string UART::Read(string delimiter){
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
     #ifdef UART_1_EN
     if (huart->Instance == USART1) {
-        device->mcu->UART_1->Load();
-        device->mcu->UART_1->IRQ->Notify();
+        device()->mcu->UART_1->Load();
+        device()->mcu->UART_1->IRQ->Notify();
         return;
     }
     #endif
     #ifdef UART_2_EN
     if (huart->Instance == USART2) {
-        device->mcu->UART_2->Load();
-        device->mcu->UART_2->IRQ->Notify();
+        device()->mcu->UART_2->Load();
+        device()->mcu->UART_2->IRQ->Notify();
         return;
     }
     #endif
     #ifdef UART_3_EN
     if (huart->Instance == USART3) {
-        device->mcu->UART_3->Load();
-        device->mcu->UART_3->IRQ->Notify();
+        device()->mcu->UART_3->Load();
+        device()->mcu->UART_3->IRQ->Notify();
         return;
     }
     #endif
     #ifdef UART_4_EN
     if (huart->Instance == USART4) {
-        device->mcu->UART_4->Load();
-        device->mcu->UART_4->IRQ->Notify();
+        device()->mcu->UART_4->Load();
+        device()->mcu->UART_4->IRQ->Notify();
         return;
     }
     #endif
@@ -130,25 +125,25 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
     #ifdef UART_1_EN
     if (huart->Instance == USART1) {
-        device->mcu->UART_1->Resend();
+        device()->mcu->UART_1->Resend();
         return;
     }
     #endif
     #ifdef UART_2_EN
     if (huart->Instance == USART2) {
-        device->mcu->UART_2->Resend();
+        device()->mcu->UART_2->Resend();
         return;
     }
     #endif
     #ifdef UART_3_EN
     if (huart->Instance == USART3) {
-        device->mcu->UART_3->Resend();
+        device()->mcu->UART_3->Resend();
         return;
     }
     #endif
     #ifdef UART_4_EN
     if (huart->Instance == USART4) {
-        device->mcu->UART_4->Resend();
+        device()->mcu->UART_4->Resend();
         return;
     }
     #endif

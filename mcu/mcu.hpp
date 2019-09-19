@@ -6,13 +6,8 @@
  */
 
 #pragma once
-/*
-#if __has_include("configuration/config.hpp")
-    #include "configuration/config.hpp"
-#else
-    #include "configuration/config_default.hpp"
-#endif*/
 
+#include "globals.hpp"
 #include "configuration/config.cpp"
 #include "mcu/configuration/settings.hpp"
 #include "gpio/pin.hpp"
@@ -20,9 +15,6 @@
 #include <string>
 
 using namespace std;
-
-class Device;
-extern Device* device;
 
 /**
  * @brief Represent MCU(STM32) on board(device)
