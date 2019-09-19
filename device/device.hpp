@@ -18,6 +18,7 @@
 #include "cli/cli.hpp"
 #include "filesystem/filesystem.hpp"
 #include "gpio/pin.hpp"
+#include "events/planner/planner.hpp"
 
 class Component;
 
@@ -36,7 +37,7 @@ public:
 
     vector<Component *> components;
 
-    vector<Component*> components;
+    vector<Planner *> planners;
 
 private:
     Device() = default;
@@ -48,6 +49,10 @@ public:
      *          Runs initialization of mcu
      */
     void Init();
+
+    /***************************************************
+    *                      CLI
+    * *************************************************/
 
     /**
      * @brief Creates and initialize CLI for device
@@ -65,6 +70,10 @@ public:
      */
     bool CLI_available();
 
+    /***************************************************
+    *                 FILESYSTEM
+    * *************************************************/
+
     /**
      * @brief   Creates and initialize Filesystem for device
      *          File system need to have enabled CLI
@@ -81,15 +90,48 @@ public:
      */
     bool Filesystem_available();
 
+    /***************************************************
+    *                COMPONENTS
+    * *************************************************/
+
     /**
      * @brief Add component to vector of known components
      *
      * @param new_component Pointer to component to add
      * @return string       New name of component
      */
-    string Register_component(Component* new_component);
+    string Register_component(Component *new_component);
+
+    /***************************************************
+    *                 PLANNERS
+    * *************************************************/
+
+    /**
+     * @brief Register planner
+     *
+     * @param planner   Pointer to planner
+     * @return int      Number of registred planners
+     */
+    int Register_planner(Planner *planner);
+
+    /**
+     * @brief Remove planner from registred planners
+     *
+     * @param planner   Pointer to planner
+     * @return int      Number of registred planners
+     */
+    int Unregister_planner(Planner *planner);
+
+    /**
+     * @brief Return planner designated by name
+     *
+     * @param name      Name of planner
+     * @return Planner* Pointer to planner with given name
+     */
+    Planner * Get_planner(string name);
 
 private:
+
     /**
      * @brief Creates new enumerated name from generic component name
      *

@@ -59,3 +59,31 @@ string Device::New_component_name(string original_name){
         });
     return original_name + "_" + to_string(same_name_prefix);
 }
+
+int Device::Register_planner(Planner *planner){
+    for(auto p:planners){
+        if (planner->Name() == p->Name()){
+            return -1;
+        }
+    }
+    planners.emplace_back(planner);
+    return planners.size();
+}
+
+int Device::Unregister_planner(Planner *planner){
+    for(auto p:planners){
+        if (planner == p){
+            delete p;
+            planners.erase(remove(planners.begin(), planners.end(), p), planners.end());
+        }
+    }
+}
+
+Planner * Device::Get_planner(string name){
+    for(auto planner:planners){
+        if (planner->Name() == name){
+            return planner;
+        }
+    }
+    return nullptr;
+}
