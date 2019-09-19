@@ -20,8 +20,8 @@ class Invocation_wrapper_base{
 public:
     Invocation_wrapper_base() =default;
     virtual ~Invocation_wrapper_base() =default;
-    virtual return_T Invoke(args_T arg) const = 0;
-    virtual bool operator==(const Invocation_wrapper_base<return_T, args_T> & compare) const = 0;
+    virtual return_T Invoke(args_T arg) const {return return_T();};
+    virtual bool operator==(const Invocation_wrapper_base<return_T, args_T> & compare) const {return false;};
 };
 
 /**
@@ -35,8 +35,8 @@ class Invocation_wrapper_base<return_T, void>{
 public:
     Invocation_wrapper_base() =default;
     virtual ~Invocation_wrapper_base() =default;
-    virtual return_T Invoke() const = 0;
-    virtual bool operator==(const Invocation_wrapper_base<return_T, void> & compare) const = 0;
+    virtual return_T Invoke() const {return return_T();};
+    virtual bool operator==(const Invocation_wrapper_base<return_T, void> & compare) const {return false;};
 };
 
 /**
