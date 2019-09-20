@@ -9,7 +9,7 @@ int Planner_phase::Add_trigger(int trigger_id){
         return EEXIST;
     }
     // Create new trigger
-    triggers.emplace_back(make_pair(trigger_id, false));
+    triggers.insert(make_pair(trigger_id, false));
     return 0;
 }
 
