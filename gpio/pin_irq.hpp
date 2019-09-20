@@ -21,7 +21,7 @@ extern IRQ_multi_handler<int> EXT_IRQ;
 class Pin_IRQ {
 
 public:
-    enum Trigger{
+    enum class Trigger{
         Disabled,
         Rising_edge,
         Falling_edge,
