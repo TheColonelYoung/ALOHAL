@@ -13,6 +13,8 @@
 #include <vector>
 
 #include "i2c/i2c_device.hpp"
+#include "gpio/pin_irq.hpp"
+#include "gpio/pin.hpp"
 
 /**
  * @brief GPIO expander driven by MCU via I2C bus
@@ -24,12 +26,6 @@
 class MCP23017: public I2C_device
 {
 private:
-    enum IRQ_trigger{     // GPINTEN  DEFVAL  INTCON
-        disabled     = 0, //    0       X       X
-        on_change    = 1, //    1       X       0
-        rising_edge  = 2, //    1       0       1
-        falling_edge = 3  //    1       1       1
-    };
 
     /**
      * Variables below are mirroring registers in MCP23017
@@ -45,8 +41,22 @@ private:
     uint16_t direction  = 0xffff;     // at default is all set as input
     uint16_t pull_up    = 0x0000;     // at default is pull_up disabled
 
-    // TODO IRQ trigger, need to be defined in main IRQ file
-    vector<IRQ_trigger> irq_trigger();
+    /**
+     * @brief   Vector represents IRq trigger for all pins
+     *          Below is register setting which coresponds with generic IRQ trigger type
+     *               GPINTEN  DEFVAL  INTCON
+     *  Disabled         0       X       X
+     *  On change        1       X       0
+     *  Rising edge      1       0       1
+     *  Falling edge     1       1       1
+     */
+    vector<Pin_IRQ::Trigger> irq_triggers{vector<Pin_IRQ::Trigger>(16, Pin_IRQ::Trigger::Disabled)};
+
+    /**
+     * @brief   Pin on which is MCP23017 reposting pending interrupt must be configured to falling edge
+     *          Due to mirroring of IRQ ports is only one pin needed for both ports
+     */
+    Pin *IRQ_input = nullptr;
 
     enum REG{
         IODIR   = 0x00,  // IO Dirrection 1-Input/0-Outpus
@@ -173,6 +183,17 @@ public:
      * @return int  Status of transmission
      */
     int Pull_up(uint16_t port);
+
+    /**
+     * @brief   Enable IRQ subsystem of MCP23017
+     *          After enabling of IRQ all pins have diabled IRQ are must be enabled
+     *              separately for each pin viamethod IRQ_setup
+     *          Reporting pin must be setup as interrupt capable and set for falling edge
+     *
+     * @param IRQ_input     Pin on which MCP23017 reports pending IRQ
+     * @return int          Error code
+     */
+    int IQR_Enable(Pin IRQ_input);
 
     /**
      * @brief Setup trigger of IRQ on pin or disable IRQ
