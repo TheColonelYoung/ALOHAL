@@ -76,8 +76,8 @@ class Timer;
     ALOHAL_TIM_CHAN_BACKPOINTER(name)
 
 #define ALOHAL_TIM_CHAN_BACKPOINTER(timer) \
-    for (uint i = 0; i < timer.channel.size(); i++) { \
-        timer.channel[i]._parent_timer = &timer; }
+    for (uint i = 0; i < timer->channel.size(); i++) { \
+        timer->channel[i]._parent_timer = timer; }
 
 #ifdef TIM_1_EN
 # include "timer/timer.hpp"
