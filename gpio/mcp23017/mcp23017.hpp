@@ -202,7 +202,7 @@ public:
      * @param trigger  Type of trigger
      * @return int     Status of transmission
      */
-    int IRQ_setup(uint8_t pin, IRQ_trigger trigger);
+    int IRQ_setup(uint8_t pin, Pin_IRQ::Trigger trigger);
 
     /**
      * @brief Read IRQ status of given pin
