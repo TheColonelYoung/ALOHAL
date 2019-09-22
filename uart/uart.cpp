@@ -1,5 +1,7 @@
 #include "uart.hpp"
 
+#include "device/device.hpp"
+
 unsigned char UART_1_buffer_temp[10];
 unsigned char UART_2_buffer_temp[10];
 unsigned char UART_3_buffer_temp[10];
