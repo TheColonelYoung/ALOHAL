@@ -21,7 +21,7 @@ public:
     /**
      * @brief Handler external interupts, IRQ must be configured in CubeMX
      */
-    Pin_IRQ *IRQ = new Pin_IRQ();
+    Pin_IRQ *IRQ = nullptr;
 
 public:
     /**
