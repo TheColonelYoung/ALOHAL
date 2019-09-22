@@ -11,8 +11,6 @@ void MCU::Filesystem_interface_initialization(){
         return;
     }
 
-    device()->cli->Print("FS MCU INIT\r\n");
-
     #ifdef ADC_1_EN
     #ifdef ADC_CHANNEL_TEMPSENSOR
     if(ADC_1 != nullptr){
@@ -31,6 +29,8 @@ void MCU::Filesystem_interface_initialization(){
 }
 
 void MCU::Init_peripherals(){
+
+    EXT_IRQ = new IRQ_multi_handler<int>();
 
     // ADC
     #ifdef ADC_1_EN

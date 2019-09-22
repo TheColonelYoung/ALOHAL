@@ -53,6 +53,8 @@ public:
 
     // Peripherals
 
+    IRQ_multi_handler<int> *EXT_IRQ = nullptr;
+
     // ADC
     #ifdef ADC_1_EN
     AD_C *ADC_1 = nullptr;

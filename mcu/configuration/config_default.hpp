@@ -14,11 +14,6 @@
 
 #warning "Default configuration from ALOHAL library is used, create project specific configuration"
 
-/* External IRQ support
-Enable this to support registring functions to external interupt event handler
-*/
-
-// #define EXT_IRQ_EN
 
 #define ADC_1_EN
 // #define ADC_2_EN

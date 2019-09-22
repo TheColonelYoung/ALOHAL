@@ -10,14 +10,6 @@
 
 #include "global_includes.hpp"
 
-// EXT_IRQ
-#ifdef EXT_IRQ_EN
-# include "irq/irq_multi_handler.hpp"
-extern IRQ_multi_handler<int> EXT_IRQ;
-# include "gpio/pin_irq.hpp"
-#endif
-
-
 // FLASH
 class Flash_mem;
 #ifdef FLASH_EN
