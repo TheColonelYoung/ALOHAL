@@ -23,7 +23,7 @@ int TIM_channel::PWM_Generate(float percentage){
 }
 
 void TIM_channel::PWM_Start(){
-    HAL_TIM_PWM_Start(_parent_timer->Handler(), TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(_parent_timer->Handler(), _address);
 }
 
 void TIM_channel::PWM_Stop(){
