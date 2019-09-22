@@ -4,4 +4,4 @@ typedef unsigned int uint;
 
 class Device;
 
-Device* device();
+Device * const  device();

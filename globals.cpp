@@ -2,6 +2,6 @@
 
 #include "device/device.hpp"
 
-Device* device(){
+Device * const device(){
     return Device::Instance();
 }
