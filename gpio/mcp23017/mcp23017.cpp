@@ -85,7 +85,78 @@ int MCP23017::Pull_up(uint16_t port){
 
 }
 
+int MCP23017::IQR_Enable(Pin *IRQ_input){
+    this->IRQ_input = IRQ_input;
+    this->IRQ_input->IRQ->Register(this, &MCP23017::IRQ_event);
+
+    return 0;
+}
+
+int MCP23017::IRQ_setup(uint8_t pin, Pin_IRQ::Trigger trigger){
+    if((pin > 15)){
+        // Invalid pin number
+        return ENOTTY;
+    }
+
+    if((direction & (1<<pin)) == 0){
+        // Selected pin is not configured as input
+        return EIO;
+    }
+
+    irq_triggers[pin] = trigger;
+
+    uint16_t int_en = 0;
+    uint16_t intcon = 0;
+    uint16_t defval = 0;
+
+    for(int i = 0; i < 16; i++){
+        if (irq_triggers[i] == Pin_IRQ::Trigger::Disabled){
+            int_en &= ~(1<<i);
+        } else if (irq_triggers[i] == Pin_IRQ::Trigger::On_change){
+            int_en |= (1<<i);
+            intcon &= ~(1<<i);
+        } else if (irq_triggers[i] == Pin_IRQ::Trigger::Falling_edge){
+            int_en |= (1<<i);
+            intcon |= (1<<i);
+            defval |= (1<<i);
+        } else if(irq_triggers[i] == Pin_IRQ::Trigger::Rising_edge){
+            int_en |= (1<<i);
+            intcon |= (1<<i);
+            defval &= ~(1<<i);
+        }
+    }
+
+    Transmit_16b(REG::GPINTEN, int_en);
+    Transmit_16b(REG::INTCON, intcon);
+    Transmit_16b(REG::DEFVAL, defval);
+
+    return 0;
+}
+
+void MCP23017::IRQ_event(){
+    // Perform reading from
+    Transmit(vector<uint8_t> {REG::INTF});
+
+    // Contains which pin caused interrupt
+    auto received = Receive(2);
+
+    // check all bits in both registers, if some is set notify IRQ handler
+    for(int byte_position = 0; byte_position < 2; byte_position++){
+        for(int bit_position = 0; bit_position < 8; bit_position++){
+            if ((received[byte_position] & (1<<bit_position)) > 0){
+                IRQ.Notify(bit_position *byte_position);
+            }
+        }
+    }
+}
+
 vector<uint8_t> MCP23017::Memory_dump(){
     Transmit(vector<uint8_t> {0x00});
     return Receive(22);
+}
+
+int MCP23017::Transmit_16b(REG target_register, uint16_t data){
+    return Transmit(vector<uint8_t> {   static_cast<uint8_t>(target_register),
+                                        static_cast<uint8_t>(data & 0x00ff),
+                                        static_cast<uint8_t>((data & 0xff00)>>8)});
 }

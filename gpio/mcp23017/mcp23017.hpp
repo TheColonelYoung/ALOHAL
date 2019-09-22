@@ -11,10 +11,12 @@
 #pragma once
 
 #include <vector>
+#include <cerrno>
 
 #include "i2c/i2c_device.hpp"
 #include "gpio/pin_irq.hpp"
 #include "gpio/pin.hpp"
+#include "irq/irq_multi_handler.hpp"
 
 /**
  * @brief GPIO expander driven by MCU via I2C bus
@@ -57,6 +59,8 @@ private:
      *          Due to mirroring of IRQ ports is only one pin needed for both ports
      */
     Pin *IRQ_input = nullptr;
+
+    IRQ_multi_handler<int> IRQ;
 
     enum REG{
         IODIR   = 0x00,  // IO Dirrection 1-Input/0-Outpus
@@ -193,16 +197,24 @@ public:
      * @param IRQ_input     Pin on which MCP23017 reports pending IRQ
      * @return int          Error code
      */
-    int IQR_Enable(Pin IRQ_input);
+    int IQR_Enable(Pin *IRQ_input);
 
     /**
      * @brief Setup trigger of IRQ on pin or disable IRQ
      *
      * @param pin      Number of pin which is configured
      * @param trigger  Type of trigger
-     * @return int     Status of transmission
+     * @return int     Error code
      */
     int IRQ_setup(uint8_t pin, Pin_IRQ::Trigger trigger);
+
+    /**
+     * @brief   This method is called when IRQ occurs on IRQ input pin
+     *          This means that MCP23017 is reporting IRQ on some pin
+     *          During this method is determinated, which pin triggered IRQ
+     *          Reporting pin must be set to falling edge IRQ
+     */
+    void IRQ_event();
 
     /**
      * @brief Read IRQ status of given pin
@@ -229,6 +241,17 @@ public:
      * @return vector<uint8_t> Whole memory region
      */
     vector<uint8_t> Memory_dump();
+
+private:
+    /**
+     * @brief   Transmit 2 bytes to MCP23017, whole transmittion consists of 3 bytes
+     *          First byte is target memory address, another two are data
+     *
+     * @param target_register   Address for writing (must add register address of MCP23017)
+     * @param data              Data to write
+     * @return int              Transmition status
+     */
+    int Transmit_16b(REG target_register, uint16_t data);
 
 };
 
