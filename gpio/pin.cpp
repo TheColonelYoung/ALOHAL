@@ -1,8 +1,10 @@
 #include "pin.hpp"
 
+#include "device/device.hpp"
+
 Pin::Pin(char port, uint8_t pin_number):
     port(port), pin_number(pin_number){
-    IRQ->pin_number = (1 << pin_number);
+    IRQ = new Pin_IRQ(pin_number, device()->mcu->EXT_IRQ);
 }
 
 void Pin::Toggle(){
