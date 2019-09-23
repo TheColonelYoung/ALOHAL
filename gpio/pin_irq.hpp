@@ -15,6 +15,10 @@
  *        Every pin, which is IRQ capable contains this class or class derivated from this class
  */
 class Pin_IRQ {
+private:
+    int pin_number;
+
+    IRQ_multi_handler<int> * multi_handler = nullptr;
 public:
 
     /**
@@ -27,8 +31,6 @@ public:
         On_change
     };
 
-    int pin_number;
-
     Pin_IRQ() = default;
 
     /**
@@ -36,7 +38,7 @@ public:
      *
      * @param pin_number Interrupt channel of pin (pin number)
      */
-    Pin_IRQ(int pin_number);
+    Pin_IRQ(int pin_number, IRQ_multi_handler<int> * multi_handler);
 
     /**
      * @brief   Register object and his method as callback, when external interrupt occurs
@@ -48,7 +50,7 @@ public:
      */
     template <typename class_T>
     void Register(class_T *object, void (class_T::*method_pointer_set)()){
-        EXT_IRQ_gettor()->Register(pin_number, object, method_pointer_set);
+        multi_handler->Register(pin_number, object, method_pointer_set);
     }
 
     /**
@@ -57,21 +59,11 @@ public:
      * @param function_pointer_set Pointer to method, which will be called
      */
     void Register(void (*function_pointer_set)(void)){
-        EXT_IRQ_gettor()->Register(pin_number, function_pointer_set);
+        multi_handler->Register(pin_number, function_pointer_set);
     }
 
-private:
-
-    /**
-     * @brief   This method is only wrapper around pointer to multi handler which serves for
-     *              external interrupts, because pointer cannot abe obtained directly from singleton
-     *          This problem is due to dependency loop, so singleton or wrapper around singleton
-     *              cannot be called from .hpp file, so cannot be used in templates
-     *
-     * @return IRQ_multi_handler<int>* Pointer to multihandler which serves external interrupts
-     */
-    IRQ_multi_handler<int> * EXT_IRQ_gettor();
 };
+
 
 /**
  * @brief Callback which is called by HAL when IRQ event occurs at some
