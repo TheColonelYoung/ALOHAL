@@ -85,7 +85,7 @@ int MCP23017::Pull_up(uint16_t port){
 
 }
 
-int MCP23017::IQR_Enable(Pin *IRQ_input){
+int MCP23017::IRQ_Enable(Pin *IRQ_input){
     this->IRQ_input = IRQ_input;
     this->IRQ_input->IRQ->Register(this, &MCP23017::IRQ_event);
 

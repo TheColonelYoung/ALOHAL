@@ -60,7 +60,7 @@ private:
      */
     Pin *IRQ_input = nullptr;
 
-    IRQ_multi_handler<int> IRQ;
+
 
     enum REG{
         IODIR   = 0x00,  // IO Dirrection 1-Input/0-Outpus
@@ -82,6 +82,8 @@ private:
     };
 
 public:
+
+    IRQ_multi_handler<int> IRQ;
 
     /**
      * @brief Constructors are inherited from I2C_device
@@ -197,7 +199,7 @@ public:
      * @param IRQ_input     Pin on which MCP23017 reports pending IRQ
      * @return int          Error code
      */
-    int IQR_Enable(Pin *IRQ_input);
+    int IRQ_Enable(Pin *IRQ_input);
 
     /**
      * @brief Setup trigger of IRQ on pin or disable IRQ
