@@ -15,9 +15,30 @@ typedef unsigned int uint;
  */
 class Graphical_display: public Display
 {
-private:
-
 public:
+    /**
+     * @brief Construct a new Graphical_display object with selected resolution
+     *
+     * @param res_x Resolution in X axis
+     * @param res_y Resolution in y axis
+     */
+    Graphical_display(uint res_x, uint res_y);
+
+    /**
+     * @brief Lights on pixel at given position
+     *
+     * @param x     Pixel posion on X axis
+     * @param y     Pixel posion on Y axis
+     * @return int  Error code
+     */
     virtual int Put(uint x, uint y) = 0;
+
+    /**
+     * @brief Turns off pixel at given position
+     *
+     * @param x     Pixel posion on X axis
+     * @param y     Pixel posion on Y axis
+     * @return int  Error code
+     */
     virtual int Clear(uint x, uint y) = 0;
 };
