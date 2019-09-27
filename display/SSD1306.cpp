@@ -9,13 +9,38 @@ void SSD1306::Init(){
 
     Transmit(vector<uint8_t>{0x00, 0xd3, 0x00}); //Set display offset
 
-    Send_command(0x40); //Set Display Start Line
+    Send_command(0xD4); // Set Display Clock Divide Ratio / OSC Frequency
+    Send_command(0x80); // Display Clock Divide Ratio / OSC Frequency
+
+    Send_command(0xA8); // Set Multiplex Ratio
+    Send_command(0x3F); // Multiplex Ratio for 128x64 (64-1)
+
+    Send_command(0xD3); // Set Display Offset
+    Send_command(0x00); // Display Offset
+
+    Send_command(0x40); // Set Display Start Line
+
+    Send_command(0x8D); // Set Charge Pump
+    Send_command(0x14); // Charge Pump (0x10 External, 0x14 Internal DC/DC)
+
+    Send_command(0xA1); // Set Segment Re-Map
+    Send_command(0xC8); // Set Com Output Scan Direction
+
+    Send_command(0xDA); // Set COM Hardware Configuration
+    Send_command(0x12); // COM Hardware Configuration
+
+    Send_command(0xD9); // Set Pre-Charge Period
+    Send_command(0xF1); // Set Pre-Charge Period (0x22 External, 0xF1 Internal)
+
+    Send_command(0xDB); // Set VCOMH Deselect Level
+    Send_command(0x40); // VCOMH Deselect Level
+
+    Send_command(0x40); // Set Display Start Line
 
     Send_command(0xa4); // Pixels reflect RAM
     Send_command(0xa6); // Non-inverted display mode
 
     Set_contrast(127);
-
 }
 
 void SSD1306::On(){
