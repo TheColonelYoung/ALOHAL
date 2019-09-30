@@ -79,9 +79,11 @@ void SSD1306::Print(){
 
 void SSD1306::Clear_all(){
     Set_address(0,0);
-    vector<uint8_t> clear(8*127,0);
+    vector<uint8_t> clear(64,0);
     clear.insert(clear.begin(), 0x40);
-    Transmit(clear);
+    for(int i = 0; i < 16; i++){
+        Transmit(clear);
+    }
 }
 
 int SSD1306::Set_address(uint8_t page, uint8_t column){
@@ -89,8 +91,8 @@ int SSD1306::Set_address(uint8_t page, uint8_t column){
         return ERANGE;
     }
 
-    Transmit(vector<uint8_t>{0x00, 0x22, page  , 0x03});
-    Transmit(vector<uint8_t>{0x00, 0x21, column, 0x8f});
+    Transmit(vector<uint8_t>{0x00, 0x22, page  , 0xff});
+    Transmit(vector<uint8_t>{0x00, 0x21, column, 0xff});
 
     return 0;
 
