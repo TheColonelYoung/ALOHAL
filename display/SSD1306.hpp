@@ -57,6 +57,12 @@ public:
      */
     void All_on();
 
+    void Print();
+
+    void Clear_all();
+
+    int Set_address(uint8_t page, uint8_t column);
+
 private:
     /**
      * @brief   Transmit command to OLED constroller, before command self is transmitted empty byte,

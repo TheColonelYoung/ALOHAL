@@ -23,6 +23,7 @@ void SSD1306::Init(){
     Send_command(0x8D); // Set Charge Pump
     Send_command(0x14); // Charge Pump (0x10 External, 0x14 Internal DC/DC)
 
+
     Send_command(0xA1); // Set Segment Re-Map
     Send_command(0xC8); // Set Com Output Scan Direction
 
@@ -39,6 +40,8 @@ void SSD1306::Init(){
 
     Send_command(0xa4); // Pixels reflect RAM
     Send_command(0xa6); // Non-inverted display mode
+
+    Transmit(vector<uint8_t>{0x00, 0x20, 0x00}); // Horizontal addressing mode
 
     Set_contrast(127);
 }
@@ -68,4 +71,17 @@ void SSD1306::All_on(){
 
 int SSD1306::Set_contrast(uint8_t contrast){
     return Transmit(vector<uint8_t>{0x00, 0x81, contrast});
+}
+
+void SSD1306::Print(){
+    //Transmit(vector<uint8_t>{0x00, 0xff, 0x00});
+    Transmit(vector<uint8_t>{0x40, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00});
+}
+
+void SSD1306::Clear_all(){
+    Send_command(0xa4);
+}
+
+int SSD1306::Set_address(uint8_t page, uint8_t column){
+
 }
