@@ -74,14 +74,24 @@ int SSD1306::Set_contrast(uint8_t contrast){
 }
 
 void SSD1306::Print(){
-    //Transmit(vector<uint8_t>{0x00, 0xff, 0x00});
-    Transmit(vector<uint8_t>{0x40, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff, 0x00});
+    Transmit(vector<uint8_t>{0x40, 0x00, 0x00, 0xff, 0xff});
 }
 
 void SSD1306::Clear_all(){
-    Send_command(0xa4);
+    Set_address(0,0);
+    vector<uint8_t> clear(8*127,0);
+    clear.insert(clear.begin(), 0x40);
+    Transmit(clear);
 }
 
 int SSD1306::Set_address(uint8_t page, uint8_t column){
+    if ((page > 7) || (column > 127)){
+        return ERANGE;
+    }
+
+    Transmit(vector<uint8_t>{0x00, 0x22, page  , 0x03});
+    Transmit(vector<uint8_t>{0x00, 0x21, column, 0x8f});
+
+    return 0;
 
 }

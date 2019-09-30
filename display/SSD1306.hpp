@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <cerrno>
+
 #include "graphical_display.hpp"
 #include "i2c/i2c_device.hpp"
 
@@ -61,7 +63,22 @@ public:
 
     void Clear_all();
 
+    /**
+     * @brief
+     *
+     * @param page      Number of page (0-7)
+     * @param column    Number of column of display (0-127)
+     * @return int      Error code
+     */
     int Set_address(uint8_t page, uint8_t column);
+
+    /**
+     * @brief
+     *
+     * @param content
+     * @return int
+     */
+    int Set_column(uint8_t content);
 
 private:
     /**
