@@ -42,8 +42,22 @@ public:
      */
     virtual void Init() final override;
 
+    /**
+     * @brief Set pixel determinated by coordinates to white(1)
+     *
+     * @param x     X coordinates
+     * @param y     Y coordinates
+     * @return int  Error code
+     */
     virtual int Put(uint x, uint y) final override;
 
+    /**
+     * @brief Set pixel determinated by coordinates to black(0)
+     *
+     * @param x     X coordinates
+     * @param y     Y coordinates
+     * @return int  Error code
+     */
     virtual int Clear(uint x, uint y) final override;
 
     /**
@@ -61,10 +75,13 @@ public:
 
     void Print();
 
+    /**
+     * @brief Set all pixel in image to zero(black)
+     */
     void Clear_all();
 
     /**
-     * @brief
+     * @brief           Set RAM address pointer to selected column inside selected page
      *
      * @param page      Number of page (0-7)
      * @param column    Number of column of display (0-127)
@@ -73,12 +90,21 @@ public:
     int Set_address(uint8_t page, uint8_t column);
 
     /**
-     * @brief
+     * @brief   Write given data at display to the currently selected address
+     *          This operation increments RAM address pointer of display
      *
-     * @param content
-     * @return int
+     * @param content   Content of one column - 8 pixels
+     * @return int      Error code
      */
-    int Set_column(uint8_t content);
+    int Set_column_content(uint8_t content);
+
+    /**
+     * @brief   Read data from display GDDRAM, reading is performed from currently set address
+     *          This operation increments RAM address pointer of display
+     *
+     * @return uint8_t      Content of column
+     */
+    uint8_t Read_column_content();
 
 private:
     /**

@@ -55,7 +55,10 @@ void SSD1306::Off(){
 }
 
 int SSD1306::Put(uint x, uint y){
-
+    Set_address(0,0);
+    auto r = Read_column_content();
+    Set_address(0,3);
+    Set_column_content(r);
 }
 
 int SSD1306::Clear(uint x, uint y){
@@ -74,7 +77,7 @@ int SSD1306::Set_contrast(uint8_t contrast){
 }
 
 void SSD1306::Print(){
-    Transmit(vector<uint8_t>{0x40, 0x00, 0x00, 0xff, 0xff});
+    Transmit(vector<uint8_t>{0x40, 0xf0, 0xf0, 0xf0, 0xf0});
 }
 
 void SSD1306::Clear_all(){
@@ -84,6 +87,16 @@ void SSD1306::Clear_all(){
     for(int i = 0; i < 16; i++){
         Transmit(clear);
     }
+}
+
+int SSD1306::Set_column_content(uint8_t content){
+    return Transmit(vector<uint8_t>{0x40, content});
+}
+
+uint8_t SSD1306::Read_column_content(){
+    Transmit(vector<uint8_t>{0x40});
+    auto col = Receive(2);
+    return col[0];
 }
 
 int SSD1306::Set_address(uint8_t page, uint8_t column){
