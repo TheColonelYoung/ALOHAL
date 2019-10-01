@@ -8,6 +8,8 @@
 #pragma once
 
 #include <cerrno>
+#include <vector>
+#include <map>
 
 #include "graphical_display.hpp"
 #include "i2c/i2c_device.hpp"
@@ -18,6 +20,19 @@ typedef unsigned int uint;
  * @brief   OLED display with I2C capable controller
  */
 class SSD1306: public Graphical_display, public I2C_device{
+private:
+    /**
+     * @brief   Represents pixels of display, coresponds with memory organization of GDDRAM
+     *          in display controller. Vector represents page, number in vector is column, records in map are pages.
+     */
+    map<uint8_t,vector<uint8_t>> bitmap;
+
+    /**
+     * @brief   Represent address pointer to GDDRAM of display
+     *          First element is page, second is column
+     */
+    pair<uint8_t, uint8_t> address = pair<uint8_t, uint8_t>{0,0};
+
 public:
     /**
      * @brief Constructor inherited from I2C device
@@ -73,8 +88,6 @@ public:
      */
     void All_on();
 
-    void Print();
-
     /**
      * @brief Set all pixel in image to zero(black)
      */
@@ -100,7 +113,7 @@ public:
 
     /**
      * @brief   Read data from display GDDRAM, reading is performed from currently set address
-     *          This operation increments RAM address pointer of display
+     *          This operation does not increments RAM address pointer of display.
      *
      * @return uint8_t      Content of column
      */

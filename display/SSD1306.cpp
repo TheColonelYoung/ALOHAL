@@ -88,6 +88,12 @@ void SSD1306::Print(){
 }
 
 void SSD1306::Clear_all(){
+    // Create new clear map of pixels
+    bitmap.clear();
+    for (size_t i = 0; i < resolution_y/8; i++){
+        bitmap.insert(pair<uint8_t, vector<uint8_t>>(i,vector<uint8_t>(128,0)));
+    }
+    // Send empty pixels for whole display
     Set_address(0,0);
     vector<uint8_t> clear(64,0);
     clear.insert(clear.begin(), 0x40);
@@ -97,19 +103,32 @@ void SSD1306::Clear_all(){
 }
 
 int SSD1306::Set_column_content(uint8_t content){
+    // set new content to bitmap
+    bitmap[address.first][address.second] = content;
+
+    // increment address
+    address.second += 1;
+    if (address.second == resolution_x){
+        address.second = 0;
+        address.first += 1;
+    }
+    if (address.first == resolution_y/8){
+        address.first = 0;
+    }
+
     return Transmit(vector<uint8_t>{0x40, content});
 }
 
 uint8_t SSD1306::Read_column_content(){
-    Transmit(vector<uint8_t>{0x40});
-    auto col = Receive(2);
-    return col[0];
+    return bitmap[address.first][address.second];
 }
 
 int SSD1306::Set_address(uint8_t page, uint8_t column){
-    if ((page > 7) || (column > 127)){
+    if ((page > resolution_y/8) || (column > resolution_x)){
         return ERANGE;
     }
+    address.first = page;
+    address.first = column;
 
     Transmit(vector<uint8_t>{0x00, 0x22, page  , 0xff});
     Transmit(vector<uint8_t>{0x00, 0x21, column, 0xff});
