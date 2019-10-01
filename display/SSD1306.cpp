@@ -55,13 +55,20 @@ void SSD1306::Off(){
 }
 
 int SSD1306::Put(uint x, uint y){
+    if ((y > resolution_y) || (x > resolution_x)){
+        return ERANGE;
+    }
+    // set pixel in bit map
+    bitmap[y/8][x] |= (1<<(y%8));
+    Set_address(y/8,x);
+    int ret = Set_column_content(bitmap[y/8][x]);
     Set_address(0,0);
-    auto r = Read_column_content();
-    Set_address(0,3);
-    Set_column_content(r);
+    return ret;
 }
 
 int SSD1306::Clear(uint x, uint y){
+
+
 }
 
 void SSD1306::Send_command(uint8_t cmd){
