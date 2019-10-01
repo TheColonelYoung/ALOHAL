@@ -18,6 +18,16 @@ typedef unsigned int uint;
 
 /**
  * @brief   OLED display with I2C capable controller
+ *          Maximal length of transmitted data is 64 bytes (this not count address and first selection byte of communivation)
+ *          If display is connected via other than parallel port, data cannot be read from it.
+ *              Due to this must MCU contains content of whole display, this will tak around 1kB of RAM
+ *          Memory architecture consists of pages. Page represent 8 lines of display. Page can have up to 128 columns.
+ *              Column of page is type uint8_t. Represent 8 pixels beneath.
+ *          Memory have adddress pointer to actual position, which consists of page and column pointer
+ *              Smallest element which can be changed is column.
+ *          In initialization is set horizontal mode, in this mode when column pointer overflows over 127,
+ *              will increment page pointer. Example, P0,C127 -> P1,C0
+ *          NOTE: setting addres other then 0,0 will restrict available area to square under this pixel
  */
 class SSD1306: public Graphical_display, public I2C_device{
 private:

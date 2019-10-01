@@ -68,7 +68,6 @@ int SSD1306::Put(uint x, uint y){
 
 int SSD1306::Clear(uint x, uint y){
 
-
 }
 
 void SSD1306::Send_command(uint8_t cmd){
@@ -81,10 +80,6 @@ void SSD1306::All_on(){
 
 int SSD1306::Set_contrast(uint8_t contrast){
     return Transmit(vector<uint8_t>{0x00, 0x81, contrast});
-}
-
-void SSD1306::Print(){
-    Transmit(vector<uint8_t>{0x40, 0xf0, 0xf0, 0xf0, 0xf0});
 }
 
 void SSD1306::Clear_all(){
