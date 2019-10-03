@@ -38,7 +38,7 @@ UART::UART(UART_HandleTypeDef *UART_Handler_set){
 }
 
 int UART::Send(string message){
-    if (message.length() == 0){
+    if (message.length() == 0) {
         return 0;
     }
 
@@ -65,28 +65,26 @@ int UART::Clear_buffer(){
 }
 
 int UART::Resend(){
-
-    TX_buffer.erase(TX_buffer.begin()); //Erase message which transfer is complete
-    if (TX_buffer.size() > 0) { //Send next message in line
-        //Pin('B',3).Set(1);
+    TX_buffer.erase(TX_buffer.begin()); // Erase message which transfer is complete
+    if (TX_buffer.size() > 0) {         // Send next message in line
         HAL_UART_Transmit_IT(UART_Handler, (unsigned char *) TX_buffer.front().c_str(), TX_buffer.front().length());
-    }else{  //Now is UART unoccupied
+    } else  { // Now is UART unoccupied
         busy = false;
     }
     return TX_buffer.size();
 }
 
 string UART::Read(int length){
-    string output = RX_buffer.substr(0,length);
-    RX_buffer.erase(0,length);
+    string output = RX_buffer.substr(0, length);
+    RX_buffer.erase(0, length);
     return output;
 }
 
 string UART::Read(string delimiter){
     size_t position = RX_buffer.find(delimiter, 0);
-    if(position != string::npos){
-        string output = RX_buffer.substr(0,position + delimiter.length());
-        RX_buffer.erase(0,position + delimiter.length());
+    if (position != string::npos) {
+        string output = RX_buffer.substr(0, position + delimiter.length());
+        RX_buffer.erase(0, position + delimiter.length());
         return output;
     } else {
         return "";
