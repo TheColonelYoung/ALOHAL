@@ -19,6 +19,7 @@
 #include "filesystem/filesystem.hpp"
 #include "gpio/pin.hpp"
 #include "events/planner/planner.hpp"
+#include "cmsis_os.h"
 
 class Component;
 
