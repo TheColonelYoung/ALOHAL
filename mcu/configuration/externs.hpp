@@ -170,7 +170,7 @@ extern Timer TIM_16;
 
 
 class I2C_master;
-#if defined(I2C_1_EN) || defined(I2C_2_EN) || defined(I2C_1_EN) || defined(I2C_3_EN)
+#if defined(I2C_1_EN) || defined(I2C_2_EN) || defined(I2C_3_EN) || defined(I2C_4_EN)
 # include "i2c/i2c_master.hpp"
 #endif
 
@@ -188,7 +188,7 @@ extern I2C_HandleTypeDef hi2c4;
 #endif
 
 class SPI_master;
-#if defined(SPI_1_EN) || defined(SPI_2_EN) || defined(SPI_1_EN) || defined(SPI_3_EN)
+#if defined(SPI_1_EN) || defined(SPI_2_EN) || defined(SPI_3_EN) || defined(SPI_4_EN)
 # include "spi/spi_master.hpp"
 #endif
 
