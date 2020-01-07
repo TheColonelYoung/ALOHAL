@@ -75,9 +75,4 @@ inline osThreadId_t  Create_thread(string name, class_T *object, void (class_T::
 }
 
 
-void Thread_starter(void *){
-
-}
-
-
 }
