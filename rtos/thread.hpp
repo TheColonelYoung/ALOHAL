@@ -10,7 +10,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "cmsis_os.h"
+#include "cmsis_os2.h"
+#include "FreeRTOS.h"
 
 using namespace std;
 
@@ -45,18 +46,38 @@ struct Thread_seed {
     Thread_seed(class_T *object, void(class_T::*method)(void)) : object(object), method(method){ }
 };
 
+/**
+ * @brief   Create RTOS thread on object and his method.
+ *          For stating of thread created lambda function which invocated method on given object.
+ *          From object and his method is created Thread_seed which is passed to lambda.
+ *          Cannot be called from ISR(IRQ) -> Thread starter must be used.
+ *
+ * @tparam class_T Class of object
+ * @param name          Name of thread, for identification by hash
+ * @param object        Object on which is thread started
+ * @param method        Method to start as thread entrance point
+ * @param priority      RTOS priority of thread
+ * @param stack_size    Stack size of thread
+ * @return osThreadId_t ThreadID
+ */
 template <typename class_T>
-inline osThreadId Create_thread(string name, class_T *object, void (class_T::*method) (void), Priority priority, uint8_t stack_size = 128, uint8_t instances = 1){
+inline osThreadId_t  Create_thread(string name, class_T *object, void (class_T::*method) (void), Priority priority = Priority::Normal, uint8_t stack_size = 128){
     hash<string> hasher;
     int hash_value = hasher(name);
     auto seed      = new Thread_seed<class_T>(object, method);
-    osThreadDef(1,
-      [](void const *seed_void) -> void {
-            auto seed = const_cast<Thread_seed<class_T> *>(reinterpret_cast<const Thread_seed<class_T> *>(seed_void));
+    return osThreadNew(
+        [](void *seed_void) -> void {
+            auto seed = reinterpret_cast<Thread_seed<class_T> *>(seed_void);
             (*(seed->object).*(seed->method))();
             delete seed;
         },
-      osPriorityLow, instances, stack_size);
-    return osThreadCreate(osThread(1), seed);
+        seed, NULL);
 }
+
+
+void Thread_starter(void *){
+
+}
+
+
 }
