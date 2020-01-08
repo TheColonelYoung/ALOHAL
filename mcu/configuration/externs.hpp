@@ -43,7 +43,7 @@ extern DA_C DAC_1;
 #endif
 
 class UART;
-#if defined(UART_1_EN) || defined(UART_2_EN) || defined(UART_1_EN) || defined(UART_3_EN)
+#if defined(UART_1_EN) || defined(UART_2_EN) || defined(UART_3_EN) || defined(UART_4_EN)
 # include "uart/uart.hpp"
 #endif
 
