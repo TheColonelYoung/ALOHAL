@@ -113,7 +113,7 @@ void MCU::Init_peripherals(){
     ALOHAL_CREATE_TIMER(TIM_15, htim15, 16, 4)
     #endif
     #ifdef TIM_16_EN
-    ALOHAL_CREATE_TIMER(TIM_15, htim15, 16, 1)
+    ALOHAL_CREATE_TIMER(TIM_16, htim16, 16, 1)
     #endif
 
     // I2C

@@ -1,7 +1,9 @@
 #include "TIM_channel.hpp"
 
+#include "timer/timer.hpp"
+
 TIM_channel::TIM_channel(Timer *parent, uint32_t address)
-    : _parent_timer(parent), _address(address){ }
+    : _address(address), _parent_timer(parent) { }
 
 int TIM_channel::Set_mode(string mode){
     return 0; // TODO Timer modes
