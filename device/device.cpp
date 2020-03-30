@@ -57,7 +57,7 @@ string Device::New_component_name(string original_name){
         [original_name](Component* comp){
             return comp->Name().substr(0, original_name.length()) == original_name;
         });
-    return original_name + "_" + to_string(same_name_prefix);
+    return original_name + "_#" + to_string(same_name_prefix);
 }
 
 int Device::Register_planner(Planner *planner){
@@ -77,6 +77,7 @@ int Device::Unregister_planner(Planner *planner){
             planners.erase(remove(planners.begin(), planners.end(), p), planners.end());
         }
     }
+    return planners.size();
 }
 
 Planner * Device::Get_planner(string name){
