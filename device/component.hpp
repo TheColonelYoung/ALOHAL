@@ -63,4 +63,15 @@ protected:
         }
         return true;
     }
+
+    template<typename class_T>
+    bool Create_virtual_file(string name, class_T* object, string(class_T::*method)(void)){
+        if (device()->Filesystem_available()){
+            File<class_T>* component_file = new File<class_T>(name, object, method);
+            device()->fs->Add_entry("/components/" + Name() + "/" + name, component_file);
+        } else {
+            return false;
+        }
+        return true;
+    }
 };
