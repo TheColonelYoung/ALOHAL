@@ -7,7 +7,3 @@ Component::Component(string name):
 
     this->name = device()->Register_component(this);
 }
-
-string Component::Name() const{
-    return name;
-}
