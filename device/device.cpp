@@ -33,6 +33,7 @@ int Device::Enable_Filesystem(){
         return -1;
     }
     fs = new Filesystem(cli);
+    fs->Make_directory("/apps");
     fs->Make_directory("/components");
     fs->Make_directory("/mcu");
     mcu->Filesystem_interface_initialization();
@@ -41,6 +42,20 @@ int Device::Enable_Filesystem(){
 
 bool Device::Filesystem_available(){
     return (fs != nullptr);
+}
+
+int Device::Register_application(Application *new_application){
+    // Test if application with same name already exists
+    for( auto &app: applications){
+        if (app->Name() == new_application->Name()){
+            return -1;
+        }
+    }
+    applications.emplace_back(new_application);
+    if(Filesystem_available()){
+        fs->Make_executable("/apps/" + new_application->Name(), new_application, &Application::Run);
+    }
+    return 0;
 }
 
 string Device::Register_component(Component* new_component){
