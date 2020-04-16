@@ -6,27 +6,7 @@
  */
 #pragma once
 
-#include "mcu/configuration/settings.hpp"
 #include "global_includes.hpp"
-
-#if   defined(MCU_FAMILY_STM32_F0)
-# include "stm32f0xx_hal_tim.h"
-#elif defined(MCU_FAMILY_STM32_F1)
-# include "stm32f1xx_hal_tim.h"
-#elif defined(MCU_FAMILY_STM32_F3)
-# include "stm32f3xx_hal_tim.h"
-#elif defined(MCU_FAMILY_STM32_F4)
-# include "stm32f4xx_hal_tim.h"
-#elif defined(MCU_FAMILY_STM32_F7)
-# include "stm32f7xx_hal_tim.h"
-#elif defined(MCU_FAMILY_STM32_L0)
-# include "stm32l0xx_hal_tim.h"
-#elif defined(MCU_FAMILY_STM32_L1)
-# include "stm32l1xx_hal_tim.h"
-#elif defined(MCU_FAMILY_STM32_L4)
-# include "stm32l4xx_hal_tim.h"
-#endif
-
 #include "globals.hpp"
 #include "timer/TIM_channel.hpp"
 #include "irq/irq_handler.hpp"
@@ -74,8 +54,6 @@ public:
 
     void Enable_IRQ();
     void Disable_IRQ();
-
-
 
 private:
     void Optimize_for(int time_us); // opzimize prescaler for given time
