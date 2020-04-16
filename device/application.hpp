@@ -40,7 +40,7 @@ public:
     /**
      * @brief Destroy the Application object
      */
-    ~Application();
+    ~Application() =default;
 
     /**
      * @brief   Initialization method which is executed at only once at device startup
@@ -48,7 +48,7 @@ public:
      *
      * @return int  Return code of application, should use errno
      */
-    virtual int Init();
+    virtual int Init() = 0;
 
     /**
      * @brief   This method serves as executable for file structure
@@ -57,7 +57,7 @@ public:
      * @param args  Arguments of application
      * @return int  Return code of application, should use errno
      */
-    virtual int Run(vector<string> args);
+    virtual int Run(vector<string> args) = 0;
 
     /**
      * @brief   Return name of application
