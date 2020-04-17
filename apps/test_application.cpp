@@ -1,13 +1,17 @@
 #include "test_application.hpp"
 
 int Test_application::Init(){
-    // None
+    // Nothing
     return 0;
 }
 
 int Test_application::Run(vector<string> args){
     if (device()->CLI_available()){
-        device()->cli->Print("Test of example application in progress...\r\nDone successfully\r\n");
+        device()->cli->Print("Test of example application in progress...\r\n Argumenst: \r\n");
+        for( auto &arg : args){
+            device()->cli->Print(arg + "\r\n");
+        }
+        device()->cli->Print("Done successfully\r\n");
         return 0;
     }
     return 1;
