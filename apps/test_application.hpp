@@ -28,7 +28,7 @@ public:
      *
      * @return int Always 0
      */
-    virtual int Init() override;
+    virtual int Init() final override;
 
     /**
      * @brief   Print test text on cli if available
@@ -37,5 +37,5 @@ public:
      * @param args  Anything
      * @return int  0 if CLi is available, 1 otherwise
      */
-    virtual int Run(vector<string> args) override;
+    virtual int Run(vector<string> args) final override;
 };
