@@ -96,7 +96,7 @@ private:
      * @param flags     Always empty, use only params
      * @return int      Number of axis which was been really moved (not counting axis, which is not enabled or etc.)
      */
-    int G_code_G0(map<char, double> params, vector<char> flags);
+    int G_code_G0(map<char, double> params, vector<char> flags) {};
 
     /**
      * @brief Move axis by given distance
@@ -105,7 +105,7 @@ private:
      * @param flags     Always empty, use only params
      * @return int      Number of axis which was been really moved (not counting axis, which is not enabled or etc.)
      */
-    int G_code_G1(map<char, double> params, vector<char> flags);
+    int G_code_G1(map<char, double> params, vector<char> flags) {};
 
     /**
      * @brief   Home given axis or all if no flag is given
@@ -114,7 +114,7 @@ private:
      * @param flags     Names of axis, which will be homed, if empty all axis will be homing
      * @return int      Number of axis which are homing
      */
-    int G_code_G28(map<char, double> params, vector<char> flags);
+    int G_code_G28(map<char, double> params, vector<char> flags) {};
 
     /**
      * @brief   Perform emergency hard stop at given or all axis
@@ -123,7 +123,7 @@ private:
      * @param flags     Names of axis, which will be stopped, if empty all axis will stop
      * @return int      Number of axis which was been hard stopped
      */
-    int G_code_E0(map<char, double> params, vector<char> flags);
+    int G_code_E0(map<char, double> params, vector<char> flags) {};
 
     /**
      * @brief   Perform soft stop at given or all axis
@@ -132,5 +132,5 @@ private:
      * @param flags     Names of axis, which will be stopped, if empty all axis will stop
      * @return int      Number of axis which was been soft stopped
      */
-    int G_code_E1(map<char, double> params, vector<char> flags);
+    int G_code_E1(map<char, double> params, vector<char> flags) {};
 };
