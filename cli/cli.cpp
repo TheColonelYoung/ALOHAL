@@ -1,6 +1,7 @@
 #include "cli.hpp"
 
 #include "globals.hpp"
+#include "filesystem/filesystem.hpp"
 
 void CLI::Connect(UART *connection){
     serial_connection = connection;
@@ -11,22 +12,56 @@ void CLI::Connect(UART *connection){
 void CLI::Start(){
     Register_command("help", "Print available commands or help for given command, example: help, help build", this, &CLI::Help);
     Register_command("build_info", "Print information about compilation as compiler version and date of compilation", this, &CLI::Build_info);
-    New_line();
+    Clear_line();
 }
 
 void CLI::Char_load(){
-    string received_char = serial_connection->Read(1);
-    if (static_cast<int>(received_char[0]) == 13){ // newline (screen - \r)
-        Process_line();
-        New_line();
+    char received_char = serial_connection->Read(1)[0];
+
+    if (escape_sequency_remaining > 1){
+        escape_sequency_remaining--;
         return;
-    } else if (static_cast<int>(received_char[0]) == 127){ // backspace (screen - DEL)
-        if (actual_line.length() > (line_opening.length() + filesystem_prefix.length())){
-            serial_connection->Send("\r" + string(actual_line.length() + filesystem_prefix.length(),' '));
-            actual_line.assign(actual_line.substr(0, actual_line.length() - 1));
+    }
+
+    // Newline (picocom - \r)
+    if (received_char == 13){
+        Process_line();
+        Clear_line();
+        return;
+    }
+    // Escape sequence -> skip next character [, after that use arrow sign
+    else if(received_char == 27){
+        escape_sequency_remaining = 2;
+        return;
+    }
+    // Backspace (screen - DEL)
+    else if (received_char == 127){ // backspace (screen - DEL)
+        if (actual_line.length() > (line_opening.length() + filesystem_prefix.length()))
+        {
+            actual_line = actual_line.substr(0, actual_line.length() - 1);
         }
-    } else if(isprint(static_cast<int>(received_char[0]))) {
-        actual_line += received_char;
+    }
+    // Handle escape sequence for arrows
+    else if(escape_sequency_remaining == 1){
+        if (History()){
+            // History arrow up
+            if(received_char == 65){
+                Set_line(command_history->Up());
+            }
+            // History arrow down
+            else if(received_char == 66){
+                Set_line(command_history->Down());
+            }
+        }
+        escape_sequency_remaining = 0;
+    }
+    // Autocomplete
+    else if(received_char == 9){
+        Print("Autocomplete\r\n");
+    }
+    // Any other printable character
+    else if(isprint(received_char)) {
+        actual_line += string(1,received_char);
     }
     Redraw_line();
 }
@@ -38,8 +73,16 @@ int CLI::Process_line(){
     // only Enter is pressed
     if(cmd_line == ""){
         Print("\r\n");
-        New_line();
+        Clear_line();
+        if (History()){
+            command_history->Reset_pointer();
+        }
         return 0;
+    }
+
+    // Add new record to history if is enabled
+    if (History()){
+        command_history->Update(cmd_line);
     }
 
     // parse command line into vector of strings (first is command, next are arguments)
@@ -114,6 +157,14 @@ void CLI::New_line(){
 int CLI::Print(const string text){
     serial_connection->Send(text);
     return text.length();
+}
+
+int CLI::Enable_history(uint size_of_history){
+    if (command_history != nullptr){
+        return -1;
+    }
+    command_history = new CLI_history(size_of_history);
+    return 0;
 }
 
 int CLI::Help(vector<string> args){

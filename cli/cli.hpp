@@ -5,6 +5,7 @@
 
 #include "uart/uart.hpp"
 #include "command.hpp"
+#include "history.hpp"
 
 class Filesystem;
 
@@ -14,12 +15,35 @@ private:
     UART *serial_connection = nullptr;
     string actual_line = "";
 
+    /**
+     * @brief   Last printed line used to determinated how much white space is needed for
+     *              redrawing trailing printed character
+     *          Without it adding white space: AB -> C => CB
+     */
+    string last_printed_line = "";
+
+    /**
+     * @brief Content which is inserted to every new line
+     */
     const string line_opening = "\u001b[1m\u001b[32;1m>\x20\u001b[0m";
 
     Filesystem* fs = nullptr;
     string filesystem_prefix = "";
 
     vector<Command_base *> commands;
+
+    /**
+     * @brief   Pointer to object which add support for command history
+     */
+    CLI_history *command_history = nullptr;
+
+    /**
+     * @brief   Number of remaining characters of escape sequence
+     *          If higher then 0, escape sequence is recording
+     *          Now are only supported ^[A (arrow up) and ^[B (arrow down)
+     *              for command history browsing
+     */
+    unsigned short escape_sequency_remaining = 0;
 
 public:
     CLI() =default;
@@ -48,7 +72,25 @@ public:
      *
      * @return int Size of actual line
      */
-    int Redraw_line();
+    int Print(string text);
+
+    /**
+     * @brief   Enable command history and listing in it for CLI
+     *          Can be only used once, another usage has no effect
+     *          Size of command history cannot be changed during run
+     *
+     * @param size_of_history   Number of commands which will be stored in history buffer
+     * @return int              -1 if history already exists
+     */
+    int Enable_history(uint size_of_history);
+
+    /**
+     * @brief   Enable to run any executable from file system, executable cannot have name of any command
+     *
+     * @param fs Pointer to filesystem, from which will be executable loaded
+     * @return int 0 if OK, 1 if filesystem is already set
+     */
+    int Enable_filesystem_executable(Filesystem* fs);
 
     /**
      * @brief   Save prefix which will be printed before line opening,
@@ -77,7 +119,7 @@ public:
      *
      * @return int Status of operation
      */
-    int Process_line();
+    int Set_line(string text);
 
     /**
      * @brief   Enable to run any executable from file system, executable cannot have name of any command
