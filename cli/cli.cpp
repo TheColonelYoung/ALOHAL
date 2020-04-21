@@ -57,7 +57,11 @@ void CLI::Char_load(){
     }
     // Autocomplete
     else if(received_char == 9){
-        Print("Autocomplete\r\n");
+        // If nothing on line skip autocomplete
+        if ((actual_line.back() != ' ') or (actual_line != filesystem_prefix + line_opening)){
+            // Autocomplete for string between last space and and of line
+            Autocomplete(actual_line.substr(actual_line.find_last_of(" ")+1, actual_line.length()));
+        }
     }
     // Any other printable character
     else if(isprint(received_char)) {
@@ -204,5 +208,39 @@ int CLI::Build_info(vector<string> args){
     output += "C++ standard: "  + to_string(__cplusplus) + "\r\n";
     Print( output );
     return 0;
+}
+
+int CLI::Autocomplete(string to_complete){
+    //Print("To complete: " + to_complete + "\r\n");
+
+    if (!fs){
+        // Cannot perform autocomplete, FS is not available
+        return -1;
+    }
+
+    // Get names of entries in actual location
+    vector<string> all_names = fs->Current_location_content();
+
+    vector<string> candidate_names;
+
+    for(auto &entry:all_names){
+        if (entry.find(to_complete) == 0){
+            candidate_names.push_back(entry);
+        }
+    }
+
+    if (candidate_names.size() > 1)
+    {
+        Print("\r\n");
+        for(auto &candidate:candidate_names){
+            Print(candidate + "\r\n");
+        }
+    } else if (candidate_names.size() == 1){
+        actual_line += candidate_names.front().substr(to_complete.length(),candidate_names.front().length());
+    }
+
+
+
+
 }
 

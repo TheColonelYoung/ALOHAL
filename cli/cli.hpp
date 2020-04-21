@@ -32,7 +32,7 @@ private:
     /**
      * @brief Content which is inserted to every new line
      */
-    const string line_opening = "\u001b[1m\u001b[32;1m>\x20\u001b[0m";
+    const string line_opening = "\u001b[1m\u001b[32;1m>\u001b[0m ";
 
     /**
      * @brief Pointer to filesystem, which is connected to CLI
@@ -190,4 +190,7 @@ private:
      * @return false    Command history function is not available
      */
     bool History() { return command_history != nullptr;};
+
+
+    int Autocomplete(string to_complete);
 };
