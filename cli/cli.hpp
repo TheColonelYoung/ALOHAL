@@ -12,7 +12,14 @@ class Filesystem;
 class CLI
 {
 private:
+    /**
+     * @brief Communication interface used for all CLI interaction
+     */
     UART *serial_connection = nullptr;
+
+    /**
+     * @brief Content of line on screen including FS prefix and line opening
+     */
     string actual_line = "";
 
     /**
@@ -27,9 +34,21 @@ private:
      */
     const string line_opening = "\u001b[1m\u001b[32;1m>\x20\u001b[0m";
 
+    /**
+     * @brief Pointer to filesystem, which is connected to CLI
+     */
     Filesystem* fs = nullptr;
+
+    /**
+     * @brief   Prefix before line opening, contains location inside filesystem, updated with every usage of command cd
+     *          Used before line opening on new line
+     */
     string filesystem_prefix = "";
 
+    /**
+     * @brief   List of command which can be used inside CLI
+     *          Contains generic linux commands as ls, cd, pwd ...
+     */
     vector<Command_base *> commands;
 
     /**
@@ -62,15 +81,18 @@ public:
     void Start();
 
     /**
-     * @brief Load next available char from UART, eventually start processing of line
+     * @brief   Load next available char from UART, eventually start processing of line
+     *          Called from IRQ Handler
      *
      */
     void Char_load();
 
     /**
-     * @brief Print new string on actual line
+     * @brief   Print given string to CLI to new line
+     *          New line characters "\r\n" must be added by programer to end line
      *
-     * @return int Size of actual line
+     * @param text text to print on CLI screen
+     * @return int Length of new line
      */
     int Print(string text);
 
@@ -95,54 +117,11 @@ public:
     /**
      * @brief   Save prefix which will be printed before line opening,
      *          This prefix means current location inside filesystem
+     *          Called by filesystem everytime when 'cd' command is used
      *
      * @param prefix    Position in filesystem
      */
     void Set_filesystem_prefix(const string prefix);
-
-    /**
-     * @brief Print new empty line to CLI
-     *
-     */
-    void New_line();
-
-    /**
-     * @brief Print given string to CLI to new line
-     *
-     * @param text text to print on CLI screen
-     * @return int Length of new line
-     */
-    int Print(string text);
-
-    /**
-     * @brief Process line (after entering enter), run command
-     *
-     * @return int Status of operation
-     */
-    int Set_line(string text);
-
-    /**
-     * @brief   Enable to run any executable from file system, executable cannot have name of any command
-     *
-     * @param fs Pointer to filesystem, from which will be executable loaded
-     * @return int 0 if OK, 1 if filesystem is already set
-     */
-    int Enable_filesystem_executable(Filesystem* fs);
-
-    /**
-     * @brief CLI command, show available command or help for commands
-     *
-     * @param args Arguments on CLI for command
-     * @return int Number of commands available
-     */
-    int Help(vector<string> args);
-    /**
-     * @brief CLI command, show information about compilation settings and date
-     *
-     * @param args Arguments on CLI for command
-     * @return int Nothing
-     */
-    int Build_info(vector<string> args);
 
     /**
      * @brief Register method of some object as CLI command
@@ -158,7 +137,57 @@ public:
         commands.emplace_back(new Command<registrator_class>(command, help, object, method));
     }
 
+private:
+
+    /**
+     * @brief Print new empty line to CLI
+     *
+     */
+    void Clear_line();
+
+    /**
+     * @brief Print new string on actual line
+     *
+     * @return int Size of actual line
+     */
+    int Redraw_line();
+
+    /**
+     * @brief Set text to actual line, FS prefix and line opening is added
+     *
+     * @param text  Text to set
+     * @return int  Length of line
+     */
+    int Set_line(string text);
+
+    /**
+     * @brief Process line (after entering enter), run command
+     *
+     * @return int Status of operation
+     */
+    int Process_line();
+
+    /**
+     * @brief CLI command, show available command or help for commands
+     *
+     * @param args Arguments on CLI for command
+     * @return int Number of commands available
+     */
+    int Help(vector<string> args);
+
+    /**
+     * @brief CLI command, show information about compilation settings and date
+     *
+     * @param args Arguments on CLI for command
+     * @return int Nothing
+     */
+    int Build_info(vector<string> args);
+
+    /**
+     * @brief   Check command history avalability
+     *
+     * @return true     Command history function is available
+     * @return false    Command history function is not available
+     */
+    bool History() { return command_history != nullptr;};
 };
-
-#include "filesystem/filesystem.hpp"
-

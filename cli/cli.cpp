@@ -105,9 +105,8 @@ int CLI::Process_line(){
     for(auto &command:commands){
         if(args[0] == command->Get_command()){
             int ret = command->Invoke(args);
-
-            actual_line.assign(line_opening);
-            New_line();
+            actual_line = line_opening;
+            Clear_line();
             return ret;
         }
     }
@@ -136,8 +135,20 @@ int CLI::Enable_filesystem_executable(Filesystem* fs){
 }
 
 int CLI::Redraw_line(){
-    serial_connection->Send("\r" + actual_line);
+    // Actual_line is text which will be now printed
+    int missing_spaces = last_printed_line.length() - actual_line.length();
+    if (missing_spaces > 0){
+        Print("\r" + string(last_printed_line.length(),' ') + "\r" + actual_line);
+    } else {
+        Print("\r" + actual_line);
+    }
+    last_printed_line = actual_line;
     return actual_line.length();
+}
+
+int CLI::Set_line(string text){
+    actual_line = filesystem_prefix + line_opening + text;
+    return actual_line.size();
 }
 
 void CLI::Set_filesystem_prefix(const string prefix){
@@ -146,11 +157,11 @@ void CLI::Set_filesystem_prefix(const string prefix){
         filesystem_prefix.erase(filesystem_prefix.length()-1);
     }
     filesystem_prefix = "\u001b[34;1m" + filesystem_prefix + "\u001b[0m";
-    New_line();
+    Clear_line();
 }
 
-void CLI::New_line(){
-    actual_line.assign(filesystem_prefix + line_opening);
+void CLI::Clear_line(){
+    actual_line = filesystem_prefix + line_opening;
     Redraw_line();
 }
 
