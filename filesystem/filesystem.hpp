@@ -86,21 +86,6 @@ public:
         return Add_entry(path, new_exec);
     }
 
-    /**
-     * @brief   Creates absolute path from given path
-     *
-     * @param path          Any type of path (absolute remain unchanged)
-     * @return const string Absolute path to entry
-     */
-    string Absolute_path(string path) const;
-
-    /**
-     * @brief Breaks path in string to path consists of folder names (last is file name)
-     *
-     * @param filename      Path to file as string (absolute or relative)
-     * @return const vector<string>    Names oif folders from root
-     */
-    vector<string> Create_entry_path(string filename) const;
 
     /**
      * @brief return FS_entry defined by relative or absolute path
@@ -171,6 +156,51 @@ public:
      */
     int Delete(FS_entry *entry);
 
+    /**
+     * @brief Set current location in file system if exists
+     *
+     * @param path
+     * @return int
+     */
+    int Set_location(string path);
+
+    /**
+     * @brief Return current location in filesystem
+     *
+     * @return Directory* Pointer to current directory
+     */
+    inline Directory *Current_location() const {return actual_position;};
+
+    /**
+     * @brief Return name of all entries in currently selected folder
+     *
+     * @return vector<string>   Names of entries
+     */
+    vector<string> Current_location_content() const {return Current_location()->Content_names();};
+
 private:
+    /**
+     * @brief Check if input arguments of generic commands are valid
+     *
+     * @param args      Command arguments
+     * @return string   Absolute path for first argument
+     */
     string Command_check(vector<string> args) const;
+
+    /**
+     * @brief   Creates absolute path from given path
+     *
+     * @param path          Any type of path (absolute remain unchanged)
+     * @return const string Absolute path to entry
+     */
+    string Absolute_path(string path) const;
+
+    /**
+     * @brief Breaks path in string to path consists of folder names (last is file name)
+     *
+     * @param filename      Path to file as string (absolute or relative)
+     * @return const vector<string>    Names oif folders from root
+     */
+    vector<string> Create_entry_path(string filename) const;
+
 };

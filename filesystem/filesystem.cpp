@@ -35,26 +35,36 @@ int Filesystem::Command_ls(vector<string> args){
     return 0;
 }
 
-int Filesystem::Command_cd(vector<string> args){
-    string directory_name = Command_check(args);
-    if (directory_name == "") {
-        return -1;
-    }
-
-    Directory *target_directory = static_cast<Directory *>(Get_entry(directory_name));
+int Filesystem::Set_location(string path){
+    Directory *target_directory = static_cast<Directory *>(Get_entry(path));
     if (target_directory == nullptr) {
-        cli->Print("Target location is unreachable - null returned \r\n");
         return ENOENT;
     }
 
     if (target_directory->Type_of() != FS_entry::Type::Directory) {
-        cli->Print("Target location is not a directory \r\n");
         return ENOTDIR;
     }
 
     actual_position = target_directory;
     cli->Set_filesystem_prefix(actual_position->Path());
     return 0;
+}
+
+int Filesystem::Command_cd(vector<string> args){
+    string directory_name = Command_check(args);
+    if (directory_name == "") {
+        return -1;
+    }
+
+    int return_code = Set_location(directory_name);
+
+    if (return_code == ENOENT){
+        cli->Print("Target location is unreachable - null returned \r\n");
+    } else if (return_code == ENOTDIR){
+        cli->Print("Target location is not a directory \r\n");
+    }
+
+    return return_code;
 }
 
 int Filesystem::Command_cat(vector<string> args){
