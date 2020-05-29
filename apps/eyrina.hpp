@@ -7,13 +7,13 @@
 
 #pragma once
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <map>
 
+#include "modifiers/loggable.hpp"
 #include "device/application.hpp"
-#include "globals.hpp"
-#include "device/device.hpp"
 #include "construction/motion_axis.hpp"
 
 using namespace std;
@@ -23,7 +23,7 @@ using namespace std;
  *          Accepts G-code commands and perform them
  *          Also initialize whole device and components
  */
-class Eyrina : public Application
+class Eyrina : public Application, public Loggable
 {
 private:
 
@@ -36,7 +36,7 @@ private:
      * @var flags   Allowed characters as flags, is or isn't used
      */
     struct gcode_settings {
-        int          (Eyrina::*method)(map<char, double>, vector<char> );
+        int          (Eyrina::*method)(map<char, double>&, vector<char> &);
         vector<char> params;
         vector<char> flags;
     };
@@ -48,8 +48,8 @@ private:
      * @member value    Structure gcode_settings, which defines the command
      */
     const map<string, gcode_settings> g_code_commands = {
-        { "G1",  { &Eyrina::G_code_G1,  { 'X', 'Y', 'Z', 'T', 'R', 'F' }, {   } } },
         { "G0",  { &Eyrina::G_code_G0,  { 'X', 'Y', 'Z', 'T', 'R', 'F' }, {   } } },
+        { "G1",  { &Eyrina::G_code_G1,  { 'X', 'Y', 'Z', 'T', 'R', 'F' }, {   } } },
         { "G28", { &Eyrina::G_code_G28, {   }, { 'X','Y', 'Z', 'T', 'R', 'F' } } },
         { "E0",  { &Eyrina::G_code_E0,  {   }, { 'X','Y', 'Z', 'T', 'R', 'F' } } },
         { "E1",  { &Eyrina::G_code_E1,  {   }, { 'X','Y', 'Z', 'T', 'R', 'F' } } },
@@ -80,32 +80,46 @@ public:
 private:
     /**
      * @brief   Parse input command into g-code command, check if parameters are valid and pass them to command method
-     *
+     *          Controls syntax of command
+     * 
      * @param gcode Separated ordered string which are parts of command: [Name] [Params + Value]* [Flags]
-     * @return int  Return value of gcode if gcode is accepted, otherwise,
+     * @return int  Same as Validation, is only passing return value or add own
+     *                  -4 if format of gcode command tag in invalid
+     *                  -5 if format of parameter or flag is invalid
+     */
+    int Parse(vector<string> &gcode);
+    
+    /**
+     * @brief   Check if given command is valid, so if correspods to table g_code_commands
+     *          Controls semantic of code
+     * 
+     * @param params        Parameters of command
+     * @param flags         Flags of command
+     * @param g_code_method Pointer to which is saved corrent g code setting struct containing g code method, returned to Parser
+     * @return int      Return value of gcode if gcode is accepted, otherwise,
      *                  -1 if gcode with this name does not exists,
      *                  -2 if gcode with this name does not have given params
      *                  -3 if gcode with this name does not have given flags
      */
-    int Parse(vector<string> gcode);
+    int Validation(string &command, map<char, double> &params, vector<char> &flags, const gcode_settings *g_code_method);
 
     /**
-     * @brief Move axis to given position
+     * @brief Move axis to given position, absolute
      *
      * @param params    Names and positions of axis, which will be shifted, position is absolute
      * @param flags     Always empty, use only params
      * @return int      Number of axis which was been really moved (not counting axis, which is not enabled or etc.)
      */
-    int G_code_G0(map<char, double> params, vector<char> flags) {};
+    int G_code_G0(map<char, double> &params, vector<char> &flags);
 
     /**
-     * @brief Move axis by given distance
+     * @brief Move axis by given distance, relative
      *
      * @param params    Names and distances of axis, which will be shifted, distances are relative to actual position
      * @param flags     Always empty, use only params
      * @return int      Number of axis which was been really moved (not counting axis, which is not enabled or etc.)
      */
-    int G_code_G1(map<char, double> params, vector<char> flags) {};
+    int G_code_G1(map<char, double> &params, vector<char> &flags);
 
     /**
      * @brief   Home given axis or all if no flag is given
@@ -114,7 +128,7 @@ private:
      * @param flags     Names of axis, which will be homed, if empty all axis will be homing
      * @return int      Number of axis which are homing
      */
-    int G_code_G28(map<char, double> params, vector<char> flags) {};
+    int G_code_G28(map<char, double> &params, vector<char> &flags);
 
     /**
      * @brief   Perform emergency hard stop at given or all axis
@@ -123,7 +137,7 @@ private:
      * @param flags     Names of axis, which will be stopped, if empty all axis will stop
      * @return int      Number of axis which was been hard stopped
      */
-    int G_code_E0(map<char, double> params, vector<char> flags) {};
+    int G_code_E0(map<char, double> &params, vector<char> &flags);
 
     /**
      * @brief   Perform soft stop at given or all axis
@@ -132,5 +146,5 @@ private:
      * @param flags     Names of axis, which will be stopped, if empty all axis will stop
      * @return int      Number of axis which was been soft stopped
      */
-    int G_code_E1(map<char, double> params, vector<char> flags) {};
+    int G_code_E1(map<char, double> &params, vector<char> &flags);
 };
