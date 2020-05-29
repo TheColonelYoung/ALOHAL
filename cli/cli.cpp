@@ -238,9 +238,7 @@ int CLI::Autocomplete(string to_complete){
     } else if (candidate_names.size() == 1){
         actual_line += candidate_names.front().substr(to_complete.length(),candidate_names.front().length());
     }
-
-
-
-
+    
+    return 0;
 }
 
