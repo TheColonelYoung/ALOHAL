@@ -10,9 +10,8 @@
 #include <vector>
 #include <string>
 
-#include "globals.hpp"
-
 using namespace std;
+typedef unsigned int uint;
 
 /**
  * @brief   Stores lastly used command in CLI

@@ -12,7 +12,7 @@ string CLI_history::Up(){
         string command = cmd_history[pointer];
         pointer = (pointer - 1);
         if (pointer == -1){
-            pointer = 4;
+            pointer = size-1;
         } else {
             pointer = pointer % size;
         }
