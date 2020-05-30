@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <queue>
 
 #include "modifiers/loggable.hpp"
 #include "device/application.hpp"
@@ -64,6 +65,8 @@ private:
      * @brief  Axis which can b controlled from application
      */
     map<char, Motion_axis*> axis;
+    
+    queue<string> command_buffer;
 
 public:
     /**
@@ -88,6 +91,14 @@ public:
     virtual int Run(vector<string> &args) final override;
     
     /**
+     * @brief Add given command to buffer
+     * 
+     * @param input     New command from user
+     * @return int      Number of commands in buffer
+     */
+    virtual int Input_load(string input) final override;
+    
+    /**
      * @brief Add new axis to list of available axis
      *
      * @param axis_name Identifier of axis
@@ -95,6 +106,13 @@ public:
      * @return int      Number of registered axis
      */
     int Add_axis(char axis_name, Motion_axis *new_axis);
+    
+    /**
+     * @brief Pop first command from buffer and process it
+     * 
+     * @return int  Number of commands in buffer
+     */
+    int Load_command();
 
 private:
     
