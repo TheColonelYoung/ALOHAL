@@ -53,3 +53,11 @@ int Directory::Delete_entry(FS_entry *entry){
     }
     return content.size();
 }
+
+vector<string> Directory::Content_names(){
+    vector<string> names;
+    for(auto &entry:content){
+        names.push_back(entry->Name());
+    }
+    return names;
+}

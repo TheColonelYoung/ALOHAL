@@ -76,4 +76,11 @@ public:
      * @return false    File not exists
      */
     const bool Exists(const string filename);
+
+    /**
+     * @brief Return names of all contained entries
+     *
+     * @return vector<string> Name of entries in directory
+     */
+    vector<string> Content_names();
 };

@@ -8,11 +8,13 @@ Main root of system is object called `device` this device is representing whole 
     - cli  
     - file system  
     - components  
+    - tools  
     - mcu  
 
 ### Device  
 `device` is global object accessible from any part of code, but as object itself does not have any functionality other then common information about system (as date of compilation and project name)  
-This `device` contains references to structure of program, these are: cli, apps, components, mcu  
+Rather device is used to access all another parts of it, like mcu and all components on board which has SW representation
+Device is implemented as singleton, this means access via function device(), which return pointer to device
 
 ### CLI  
 Provides interface for communicating with user.  
@@ -34,17 +36,17 @@ In memory file system support in some types of records:
   - Binary - pointer to allocated RAM with binary data  
   - In-Flash - pointer to space in FLASH memory where is file saved  
 All record types above are based on base class names FS_entry.  
+Folder `/` always contains folders: app, components, tools, mcu  
 
 ### Application  
 Supports input arguments, are provided to app as vector of strings.  
-Application have defined interface, containing methods for initialization of app during boot, starting application during run of device and for communication during run of application.  
-Defined methods: Boot, Start, Load_input  
-    - Boot is called when device is initialized  
-    - Start is called when app is executed from cli, have parameter  which is vector of arguments  
-    - Load_input is called when cli have available data from input  
-All methods above are called by `cli`.  
-`device` contains methods for registration of `app`, handler to `app` is provided to cli  
-Application is executable of file system  
+Application have defined interface, containing methods for initialization of app during boot, starting application during run of device
+Defined methods: Init, Run  
+    - Init is called for initialization of all parts which app needs, is called by programmer   
+    - Run is called when app is executed from cli, have parameter which is vector of arguments (strings)  
+All methods above can be called from cli connected to filesystem or even from code through device structure  
+`device` contains methods for registration of `app`, pointer to `app` is provided to filesystem  
+Application is executable inside of filesystem  
 
 ### Components  
 Represents integrated circuits and groups of chips on board.  
@@ -52,6 +54,11 @@ Are registered via methods of `device`. Every registered components have unique 
 These identifier could be generated or be provided by registration components.  
 Component can be visible from cli, and can be directly controlled, if have correct methods. -> This is only due to a development, during user usage should be disabled  
 Components is registered as form of directory, which has identifier of component, in this folder are executables or informations which component provides into cli.  
+
+### Tools  
+Are software components used in device.  
+This means any manager, handler or simply anything which is not tightly connected to hardware and should be globally accessible.  
+For example this means planners, tasker, etc.
 
 ### MCU  
 Contains basic information about MCU model, flash size, available flash, page count, frequency of main parts of mcu.  
@@ -61,6 +68,6 @@ MCU contain peripheral as Timers, UART, USB, I2C, SPI ...
 Peripherals are not accessible from cli.  
 
 # Access restrictions  
-
+No security for now  
 
 

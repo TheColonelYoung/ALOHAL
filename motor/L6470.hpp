@@ -96,7 +96,7 @@ public:
         GetStatus   = 0b11010000
     };
 
-    map<int, uint> microstepping_config {
+    const map<int, uint> microstepping_config {
         std::make_pair (1,   0b000),
         std::make_pair (2,   0b001),
         std::make_pair (4,   0b010),

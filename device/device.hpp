@@ -21,6 +21,7 @@
 #include "events/planner/planner.hpp"
 
 class Component;
+class Application;
 
 using namespace std;
 
@@ -34,6 +35,8 @@ public:
     CLI *cli;
 
     Filesystem *fs;
+
+    vector<Application *> applications;
 
     vector<Component *> components;
 
@@ -91,6 +94,18 @@ public:
     bool Filesystem_available();
 
     /***************************************************
+    *                APPLICATIONS
+    * *************************************************/
+
+    /**
+     * @brief Add application to vector of known application
+     *
+     * @param new_component Pointer to application to add
+     * @return string       Return code, 0 if all is OK,
+     */
+    int Register_application(Application *new_application);
+
+    /***************************************************
     *                COMPONENTS
     * *************************************************/
 
@@ -142,3 +157,4 @@ private:
 };
 
 #include "device/component.hpp"
+#include "device/application.hpp"
