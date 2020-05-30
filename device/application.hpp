@@ -58,6 +58,15 @@ public:
      * @return int  Return code of application, should use errno
      */
     virtual int Run(vector<string> &args) = 0;
+    
+    /**
+     * @brief   This method serves for processing of input from user
+     *          When application is running in foreground mode, every line send by user is proccessed by this method
+     *
+     * @param input     Input line from used for application
+     * @return int      Return code defined by application
+     */
+    virtual int Input_load(string input) = 0;
 
     /**
      * @brief   Return name of application
