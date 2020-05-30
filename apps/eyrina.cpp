@@ -4,9 +4,11 @@ Eyrina::Eyrina() :
     Application("eyrina")
 { }
 
-int Eyrina::Run(vector<string> args){
+int Eyrina::Run(vector<string> &args){
     Log(Log_levels::Debug, "Eyrina Run");
-    args.erase(args.begin());
+    if (args.size() > 0){
+        args.erase(args.begin());
+    }
     Parse(args);
     return 0;
 }
@@ -27,9 +29,9 @@ int Eyrina::Parse(vector<string> &gcode){
     
     // Save command name and removes it from arguments
     string command_tag = gcode[0];
-    gcode.erase(gcode.begin());
-    
-    return 0;
+    if (gcode.size() > 0){
+        gcode.erase(gcode.begin());
+    }
 
     // Create parameters and flags from command arguments
     vector<char> flags;
@@ -51,6 +53,7 @@ int Eyrina::Parse(vector<string> &gcode){
     
     // Execute validation and receive pointer to g-code execution method
     const gcode_settings *g_code_method = nullptr;
+    
     int ret_code = Validation(command_tag, params, flags, g_code_method);
     
     if(ret_code){
@@ -62,7 +65,7 @@ int Eyrina::Parse(vector<string> &gcode){
     }
 }
 
-int Eyrina::Validation(string &command, map<char, double> &params, vector<char> &flags, const gcode_settings *g_code_method){
+int Eyrina::Validation(string &command, map<char, double> &params, vector<char> &flags, const gcode_settings *&g_code_method){
     
     // Checks if commands tag exists in defined commands
     auto iterator = find_if(g_code_commands.begin(), g_code_commands.end(), 

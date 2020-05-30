@@ -75,7 +75,7 @@ public:
      * @param args  G-Code
      * @return int  0 is all is OK, otherwise errno
      */
-    virtual int Run(vector<string> args) final override;
+    virtual int Run(vector<string> &args) final override;
 
 private:
     /**
@@ -101,7 +101,7 @@ private:
      *                  -2 if gcode with this name does not have given params
      *                  -3 if gcode with this name does not have given flags
      */
-    int Validation(string &command, map<char, double> &params, vector<char> &flags, const gcode_settings *g_code_method);
+    int Validation(string &command, map<char, double> &params, vector<char> &flags, const gcode_settings *&g_code_method);
 
     /**
      * @brief Move axis to given position, absolute
