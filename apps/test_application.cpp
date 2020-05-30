@@ -16,3 +16,8 @@ int Test_application::Run(vector<string> &args){
     }
     return 1;
 }
+
+int Test_application::Input_load(string input){
+    // Nothing
+    return 0;
+}

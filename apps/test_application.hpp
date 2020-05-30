@@ -38,4 +38,12 @@ public:
      * @return int  0 if CLi is available, 1 otherwise
      */
     virtual int Run(vector<string> &args) final override;
+    
+    /**
+     * @brief Currently do nothing
+     * 
+     * @param input     Ignored
+     * @return int      Only 0
+     */
+    virtual int Input_load(string input) final override;
 };
