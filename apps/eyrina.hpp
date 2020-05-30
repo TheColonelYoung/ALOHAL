@@ -51,9 +51,19 @@ private:
         { "G0",  { &Eyrina::G_code_G0,  { 'X', 'Y', 'Z', 'T', 'R', 'F' }, {   } } },
         { "G1",  { &Eyrina::G_code_G1,  { 'X', 'Y', 'Z', 'T', 'R', 'F' }, {   } } },
         { "G28", { &Eyrina::G_code_G28, {   }, { 'X','Y', 'Z', 'T', 'R', 'F' } } },
-        { "E0",  { &Eyrina::G_code_E0,  {   }, { 'X','Y', 'Z', 'T', 'R', 'F' } } },
-        { "E1",  { &Eyrina::G_code_E1,  {   }, { 'X','Y', 'Z', 'T', 'R', 'F' } } },
+        { "M0",  { &Eyrina::G_code_M0,  {   }, { 'X','Y', 'Z', 'T', 'R', 'F' } } },
+        { "M10",  { &Eyrina::G_code_M10,  {   }, { 'X','Y', 'Z', 'T', 'R', 'F' } } },
+        { "E1",  { &Eyrina::G_code_E1,  {   }, { 'C','I'} } },
+        { "E2",  { &Eyrina::G_code_E2,  {   }, { } } },
+        { "E3",  { &Eyrina::G_code_E3,  {   }, { 'X','Y' } } },
+        { "R0",  { &Eyrina::G_code_R0,  {   }, { 'M' } } },
+        { "R10",  { &Eyrina::G_code_R10,  {   }, {   } } },
     };
+    
+    /**
+     * @brief  Axis which can b controlled from application
+     */
+    map<char, Motion_axis*> axis;
 
 public:
     /**
@@ -76,8 +86,23 @@ public:
      * @return int  0 is all is OK, otherwise errno
      */
     virtual int Run(vector<string> &args) final override;
+    
+    /**
+     * @brief Add new axis to list of available axis
+     *
+     * @param axis_name Identifier of axis
+     * @param new_axis  Pointer to new axis (type Motion_axis)
+     * @return int      Number of registered axis
+     */
+    int Add_axis(char axis_name, Motion_axis *new_axis);
 
 private:
+    
+    /**
+     * @brief Initialize all motion axis and their motors
+     */
+    void Init_motors ();
+
     /**
      * @brief   Parse input command into g-code command, check if parameters are valid and pass them to command method
      *          Controls syntax of command
@@ -131,20 +156,68 @@ private:
     int G_code_G28(map<char, double> &params, vector<char> &flags);
 
     /**
-     * @brief   Perform emergency hard stop at given or all axis
+     * @brief   Perform soft stop at given or all axis,
+     *          After stop motors are still engaged
      *
      * @param params    Always empty, use only flags
      * @param flags     Names of axis, which will be stopped, if empty all axis will stop
      * @return int      Number of axis which was been hard stopped
      */
-    int G_code_E0(map<char, double> &params, vector<char> &flags);
+    int G_code_M0(map<char, double> &params, vector<char> &flags);
 
     /**
-     * @brief   Perform soft stop at given or all axis
+     * @brief   Disable motors, possible danger of lost position accuracy
      *
      * @param params    Always empty, use only flags
-     * @param flags     Names of axis, which will be stopped, if empty all axis will stop
+     * @param flags     Names of axis, which on will will be motors disabled
      * @return int      Number of axis which was been soft stopped
      */
+    int G_code_M10(map<char, double> &params, vector<char> &flags);
+    
+    /**
+     * @brief   Set intensity of light channels
+     * 
+     * @param params    C - index of output light channel
+     *                  I - Intensity 0.0 - 100.0 %
+     * @param flags     Always empty
+     * @return int      0 if successfull, or current channel error code
+     */
     int G_code_E1(map<char, double> &params, vector<char> &flags);
+    
+    /**
+     * @brief   Enable or disable OLED display, default index of target is [3,3]
+     * 
+     * @param params    Always empty
+     * @param flags     Always empty
+     * @return int      0 if successfull
+     */
+    int G_code_E2(map<char, double> &params, vector<char> &flags);
+    
+    /**
+     * @brief   Set position of target point
+     * 
+     * @param params    X - horizontal index of position
+     *                  Y - vertical index of position
+     * @param flags     Always empty
+     * @return int      Number of position which is set
+     */
+    int G_code_E3(map<char, double> &params, vector<char> &flags);
+    
+    /**
+     * @brief   Perform emergency stop, without deceleration
+     * 
+     * @param params    Always empty
+     * @param flags     M - if set only motor are disabled otherwise also light and target point is disabled
+     * @return int      Number of disabled axis and light channels
+     */
+    int G_code_R0(map<char, double> &params, vector<char> &flags);
+    
+    /**
+     * @brief Unblock queue of commands
+     * 
+     * @param params    Always empty
+     * @param flags     Always empty
+     * @return int      Number of commands in queue
+     */
+    int G_code_R10(map<char, double> &params, vector<char> &flags);
 };

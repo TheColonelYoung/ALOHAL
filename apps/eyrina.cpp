@@ -43,9 +43,8 @@ int Eyrina::Parse(vector<string> &gcode){
             flags.emplace_back(param[0]);
             Log(Log_levels::Debug, param.substr(0, 1));
         } else {
-            //Params X-1.2
-            //double param_value = stod(param.substr(1, param.length() - 1));
-            double param_value = 0.0;
+            // Params X-1.2
+            double param_value = stod(param.substr(1, param.length() - 1));
             params.emplace(param[0], param_value);
             Log(Log_levels::Debug, param.substr(0, 1) + ":" + to_string(stod(param.substr(1, param.length() - 1))));
         }
@@ -109,27 +108,121 @@ int Eyrina::Validation(string &command, map<char, double> &params, vector<char> 
     return 0;
 }
 
+int Eyrina::Add_axis(char axis_name, Motion_axis *new_axis){
+    if (axis.count(axis_name)){
+        Log(Log_levels::Error, "Axis with this identifier already exists");
+        return -1;
+    }
+    axis.insert({axis_name, new_axis});
+    return 0;
+}
+
 int Eyrina::G_code_G0(map<char, double> &params, vector<char> &flags){
     
     return 0;
 }
 
 int Eyrina::G_code_G1(map<char, double> &params, vector<char> &flags){
-    
-    return 0;
+    int moving_axis = 0;
+    for(auto &axis_command:params){
+        // First is tag of axis, second is distance to move
+        if(axis.find(axis_command.first) != axis.end()){
+            Log(Log_levels::Notice, "Homing axis " + axis_command.first);
+            axis[axis_command.first]->Move(axis_command.second);
+            moving_axis += 1;
+        }
+    }
+    return moving_axis;
 }
 
 int Eyrina::G_code_G28(map<char, double> &params, vector<char> &flags){
-    
-    return 0;
+    if(flags.size() == 0){
+        Log(Log_levels::Notice, "Homing all axis");
+        for (auto &elem:axis){
+            elem.second->GoHome();
+        }
+        return axis.size();
+    } else {
+        int moving_axis = 0;
+        for(auto &axis_label:flags){
+            if(axis.find(axis_label) != axis.end()){
+                Log(Log_levels::Notice, "Homing axis " + axis_label);
+                axis[axis_label]->GoHome();
+                moving_axis += 1;
+            }
+        }
+        return moving_axis;
+    }
 }
 
-int Eyrina::G_code_E0(map<char, double> &params, vector<char> &flags){
-    
-    return 0;
+int Eyrina::G_code_M0(map<char, double> &params, vector<char> &flags){
+    if(flags.size() == 0){
+        Log(Log_levels::Notice, "Soft stoping all axis");
+        for (auto &elem:axis){
+            elem.second->GoHome();
+        }
+        return axis.size();
+    } else {
+        int moving_axis = 0;
+        for(auto &axis_label:flags){
+            if(axis.find(axis_label) != axis.end()){
+                Log(Log_levels::Notice, "Soft stoping axis " + axis_label);
+                axis[axis_label]->Sleep();
+                moving_axis += 1;
+            }
+        }
+        return moving_axis;
+    }
+}
+
+int Eyrina::G_code_M10(map<char, double> &params, vector<char> &flags){
+    if(flags.size() == 0){
+        Log(Log_levels::Notice, "Disabling all axis");
+        for (auto &elem:axis){
+            elem.second->GoHome();
+        }
+        return axis.size();
+    } else {
+        int moving_axis = 0;
+        for(auto &axis_label:flags){
+            if(axis.find(axis_label) != axis.end()){
+                Log(Log_levels::Notice, "Disabling axis " + axis_label);
+                axis[axis_label]->Sleep();
+                moving_axis += 1;
+            }
+        }
+        return moving_axis;
+    }
 }
 
 int Eyrina::G_code_E1(map<char, double> &params, vector<char> &flags){
     
     return 0;
+}
+
+int Eyrina::G_code_E2(map<char, double> &params, vector<char> &flags){
+    
+    return 0;
+}
+
+int Eyrina::G_code_E3(map<char, double> &params, vector<char> &flags){
+    
+    return 0;
+}
+
+int Eyrina::G_code_R0(map<char, double> &params, vector<char> &flags){
+    Log(Log_levels::Notice, "Emergency stop");
+    for (auto &elem:axis){
+        elem.second->Hard_stop();
+    }
+    return axis.size();
+}
+
+int Eyrina::G_code_R10(map<char, double> &params, vector<char> &flags){
+    
+    return 0;
+}
+
+void Eyrina::Init_motors (){
+    
 }
