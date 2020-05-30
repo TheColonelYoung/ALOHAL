@@ -11,10 +11,10 @@
 
 using namespace std;
 
-class FS_entry{
+class FS_entry {
 public:
 
-    enum class Type{
+    enum class Type {
         Undefined,
         Directory,
         File,
@@ -36,7 +36,7 @@ public:
 
     FS_entry(string name);
 
-    virtual ~FS_entry() =default;
+    virtual ~FS_entry() = default;
 
     /**
      * @brief Call destructor of object
@@ -48,7 +48,7 @@ public:
      *
      * @return string Name of entry
      */
-    const inline string Name(){return name;};
+    const inline string Name(){ return name; };
 
     /**
      * @brief   Returns path from root to actual entry in form of string
@@ -63,7 +63,7 @@ public:
      *
      * @return Type Entry type
      */
-    const inline Type Type_of(){return type;};
+    const inline Type Type_of(){ return type; };
 
     /**
      * @brief New parent can be set only when, is uninitialized (nullptr)
@@ -71,7 +71,7 @@ public:
      * @return true     New parent is set
      * @return false    Parent cannot be set, allready exists
      */
-    bool Set_parent(FS_entry* entry);
+    bool Set_parent(FS_entry *entry);
 
     /**
      * @brief New parent can be set only when, is uninitialized (nullptr)
@@ -79,7 +79,7 @@ public:
      * @return true     New parent is set
      * @return false    Parent cannot be set, allready exists
      */
-    inline FS_entry* Parent(){return parent;};
+    inline FS_entry * Parent(){ return parent; };
 
     /**
      * @brief   Virtual function which is overriden only by executable
@@ -88,5 +88,5 @@ public:
      * @param args  Ignored
      * @return int  Always -1
      */
-    virtual int Run(vector<string> args) const {return -1;};
+    virtual int Run(vector<string> &args) const { return -1; };
 };

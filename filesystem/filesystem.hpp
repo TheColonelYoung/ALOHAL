@@ -80,7 +80,7 @@ public:
      * @return int      Error number
      */
     template<typename class_T>
-    int Make_executable(string path, class_T *object, int(class_T::*method)(vector<string>)){
+    int Make_executable(string path, class_T *object, int(class_T::*method)(vector<string>&)){
         string filename = path.substr(path.find_last_of("/") + 1);
         Executable<class_T> *new_exec = new Executable<class_T>(filename, object, method);
         return Add_entry(path, new_exec);
@@ -146,7 +146,7 @@ public:
      * @param args  Arguments for executable
      * @return int  Return code of executable
      */
-    int Execute(string path, vector<string> args);
+    int Execute(string &path, vector<string> &args);
 
     /**
      * @brief Delete entry from filesystem

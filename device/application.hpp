@@ -57,7 +57,7 @@ public:
      * @param args  Arguments of application
      * @return int  Return code of application, should use errno
      */
-    virtual int Run(vector<string> args) = 0;
+    virtual int Run(vector<string> &args) = 0;
 
     /**
      * @brief   Return name of application

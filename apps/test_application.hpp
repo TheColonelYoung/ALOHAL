@@ -37,5 +37,5 @@ public:
      * @param args  Anything
      * @return int  0 if CLi is available, 1 otherwise
      */
-    virtual int Run(vector<string> args) final override;
+    virtual int Run(vector<string> &args) final override;
 };

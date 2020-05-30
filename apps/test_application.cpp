@@ -5,7 +5,7 @@ int Test_application::Init(){
     return 0;
 }
 
-int Test_application::Run(vector<string> args){
+int Test_application::Run(vector<string> &args){
     if (device()->CLI_available()){
         device()->cli->Print("Test of example application in progress...\r\nArguments: \r\n");
         for( auto &arg : args){

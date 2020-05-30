@@ -258,7 +258,7 @@ int Filesystem::Add_entry(string path, FS_entry *entry){
 
 }
 
-int Filesystem::Execute(string path, vector<string> args){
+int Filesystem::Execute(string &path, vector<string> &args){
     FS_entry* exec_file = Get_entry(path);
 
     if (exec_file == nullptr){
