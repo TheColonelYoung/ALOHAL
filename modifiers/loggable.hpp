@@ -9,7 +9,7 @@
 /**
  * @brief Extends log message method, add function names, source filename and line to logging output
  */
-#define Log(level, record) Log_record(level, record, string(__FUNCTION__), string(__FILE__), __LINE__);
+// #define Log(level, record) Log_record(level, record, string(__FUNCTION__), string(__FILE__), __LINE__);
 
 using namespace std;
 
@@ -41,4 +41,6 @@ public:
      *                  higher then 0 is size of record is logged
      */
     virtual int Log_record(Log_levels level, string record, string method, string file, unsigned int line);
+    
+    virtual int Log(Log_levels level, string record);
 };
