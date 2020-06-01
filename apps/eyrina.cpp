@@ -15,6 +15,7 @@ int Eyrina::Run(vector<string> &args){
 
 int Eyrina::Init(){
     Log(Log_levels::Debug, "Eyrina Init");
+    Init_motors();
     return 0;
 }
 
@@ -24,6 +25,10 @@ int Eyrina::Input_load(string input){
 }
 
 int Eyrina::Load_command(){
+    if (blocked_queue) {
+        return -1;
+    }
+
     string command = command_buffer.front();
 
     size_t position;
@@ -87,7 +92,7 @@ int Eyrina::Parse(vector<string> &gcode){
         // Execute method of g-code from command settings
         return (*this.*(*g_code_method).method)(params, flags);
     }
-} // Eyrina::Parse
+}  // Eyrina::Parse
 
 int Eyrina::Validation(string &command, map<char, double> &params, vector<char> &flags, const gcode_settings *&g_code_method){
     // Checks if commands tag exists in defined commands
@@ -130,7 +135,7 @@ int Eyrina::Validation(string &command, map<char, double> &params, vector<char> 
     g_code_method = &gcode_structure;
 
     return 0;
-} // Eyrina::Validation
+}  // Eyrina::Validation
 
 int Eyrina::Add_axis(char axis_name, Motion_axis *new_axis){
     if (axis.count(axis_name)) {
@@ -142,7 +147,16 @@ int Eyrina::Add_axis(char axis_name, Motion_axis *new_axis){
 }
 
 int Eyrina::G_code_G0(map<char, double> &params, vector<char> &flags){
-    return 0;
+    int moving_axis = 0;
+    for (auto &axis_command:params) {
+        // First is tag of axis, second is distance to move
+        if (axis.find(axis_command.first) != axis.end()) {
+            Log(Log_levels::Notice, string("Moving axis ") + axis_command.first);
+            axis[axis_command.first]->Move(axis_command.second);
+            moving_axis += 1;
+        }
+    }
+    return moving_axis;
 }
 
 int Eyrina::G_code_G1(map<char, double> &params, vector<char> &flags){
@@ -150,7 +164,7 @@ int Eyrina::G_code_G1(map<char, double> &params, vector<char> &flags){
     for (auto &axis_command:params) {
         // First is tag of axis, second is distance to move
         if (axis.find(axis_command.first) != axis.end()) {
-            Log(Log_levels::Notice, "Homing axis " + axis_command.first);
+            Log(Log_levels::Notice, string("Shifting axis ") + axis_command.first);
             axis[axis_command.first]->Move(axis_command.second);
             moving_axis += 1;
         }
@@ -189,7 +203,7 @@ int Eyrina::G_code_M0(map<char, double> &params, vector<char> &flags){
         int moving_axis = 0;
         for (auto &axis_label:flags) {
             if (axis.find(axis_label) != axis.end()) {
-                Log(Log_levels::Notice, "Soft stoping axis " + axis_label);
+                Log(Log_levels::Notice, string("Soft stoping axis ") + axis_label);
                 axis[axis_label]->Sleep();
                 moving_axis += 1;
             }
@@ -209,7 +223,7 @@ int Eyrina::G_code_M10(map<char, double> &params, vector<char> &flags){
         int moving_axis = 0;
         for (auto &axis_label:flags) {
             if (axis.find(axis_label) != axis.end()) {
-                Log(Log_levels::Notice, "Disabling axis " + axis_label);
+                Log(Log_levels::Notice, string("Disabling axis ") + axis_label);
                 axis[axis_label]->Sleep();
                 moving_axis += 1;
             }
@@ -219,15 +233,54 @@ int Eyrina::G_code_M10(map<char, double> &params, vector<char> &flags){
 }
 
 int Eyrina::G_code_E1(map<char, double> &params, vector<char> &flags){
+    if ((params.at('C') > 3) | (params.at('C') < 0)) {
+        return -1;
+    }
+
+    if ((params.at('I') > 100) | (params.at('I') < 0)) {
+        return -1;
+    }
+
+    Log(Log_levels::Notice, "Setting LED channel " + to_string(params.at('C')) + " to intensity " + to_string(params.at('I')) );
+
+    led_channels[static_cast<int>(params.at('C')) - 1]->Power(params.at('I'));
     return 0;
 }
 
 int Eyrina::G_code_E2(map<char, double> &params, vector<char> &flags){
+    if (display_status) {
+        display_status = false;
+        display->Off();
+    } else {
+        display_status = true;
+        display->On();
+    }
     return 0;
 }
 
 int Eyrina::G_code_E3(map<char, double> &params, vector<char> &flags){
-    return 0;
+    if ((params.at('X') > 5) | (params.at('X') < 1)) {
+        return -1;
+    }
+
+    if ((params.at('Y') > 5) | (params.at('Y') < 1)) {
+        return -1;
+    }
+
+    const int base_position_x = 33;
+    const int base_position_y = 1;
+
+    const int step = 15;
+
+    int position_x = params.at('X') - 1 * step + base_position_x;
+    int position_y = params.at('Y') - 1 * step + base_position_y;
+
+    display->Put(position_x, position_y);
+    display->Put(position_x, position_y + 1);
+    display->Put(position_x + 1, position_y);
+    display->Put(position_x + 1, position_y + 1);
+
+    return params.at('Y') * 5 + params.at('X');
 }
 
 int Eyrina::G_code_R0(map<char, double> &params, vector<char> &flags){
@@ -239,7 +292,250 @@ int Eyrina::G_code_R0(map<char, double> &params, vector<char> &flags){
 }
 
 int Eyrina::G_code_R10(map<char, double> &params, vector<char> &flags){
+    blocked_queue = false;
     return 0;
 }
 
-void Eyrina::Init_motors(){ }
+void Eyrina::Init_light(){
+    led_channels[0] = new NCL30160(&(device()->mcu->TIM_2->channel[0]), 50000, 50000);
+    led_channels[1] = new NCL30160(&(device()->mcu->TIM_2->channel[2]), 50000, 50000);
+    led_channels[2] = new NCL30160(&(device()->mcu->TIM_2->channel[1]), 50000, 50000);
+
+    SSD1306 *oled = new SSD1306(128, 64, *(device()->mcu->I2C_1), static_cast<unsigned char>(0b01111000));
+
+    oled->Init();
+    oled->Off();
+
+    oled->Set_contrast(0xff);
+    oled->Clear_all();
+}
+
+void Eyrina::Init_motors(){
+    MCP23017 mcp_A = MCP23017(*(device()->mcu->I2C_1), 0b01000000);
+    MCP23017 mcp_B = MCP23017(*(device()->mcu->I2C_1), 0b01001000);
+
+    mcp_A.Init();
+    mcp_B.Init();
+
+    mcp_A.Direction(12, 0);
+    mcp_A.Direction(8, 0);
+    mcp_A.Direction(4, 0);
+    mcp_A.Direction(0, 0);
+
+    mcp_B.Direction(12, 0);
+    mcp_B.Direction(8, 0);
+    mcp_B.Direction(4, 0);
+    mcp_B.Direction(0, 0);
+
+    mcp_A.Set(12, 1);
+    mcp_A.Set(8, 1);
+    mcp_A.Set(4, 1);
+    mcp_A.Set(0, 1);
+
+    mcp_B.Set(12, 1);
+    mcp_B.Set(8, 1);
+    mcp_B.Set(4, 1);
+    mcp_B.Set(0, 1);
+
+    Pin_MCP23017 mpc_A1 = Pin_MCP23017(mcp_A, 12);
+    Pin_MCP23017 mpc_A2 = Pin_MCP23017(mcp_A, 8);
+    Pin_MCP23017 mpc_A3 = Pin_MCP23017(mcp_A, 4);
+    Pin_MCP23017 mpc_A4 = Pin_MCP23017(mcp_A, 0);
+
+    Pin_MCP23017 mpc_B1 = Pin_MCP23017(mcp_B, 12);
+    Pin_MCP23017 mpc_B2 = Pin_MCP23017(mcp_B, 8);
+    Pin_MCP23017 mpc_B3 = Pin_MCP23017(mcp_B, 4);
+    Pin_MCP23017 mpc_B4 = Pin_MCP23017(mcp_B, 0);
+
+
+    L6470 motor_1 = L6470(*(device()->mcu->SPI_2), &mpc_A1);
+    L6470 motor_2 = L6470(*(device()->mcu->SPI_2), &mpc_A2);
+    L6470 motor_3 = L6470(*(device()->mcu->SPI_2), &mpc_A3);
+    L6470 motor_4 = L6470(*(device()->mcu->SPI_2), &mpc_A4);
+
+    L6470 motor_5 = L6470(*(device()->mcu->SPI_2), &mpc_B1);
+    L6470 motor_6 = L6470(*(device()->mcu->SPI_2), &mpc_B2);
+    L6470 motor_7 = L6470(*(device()->mcu->SPI_2), &mpc_B3);
+    L6470 motor_8 = L6470(*(device()->mcu->SPI_2), &mpc_B4);
+
+    motor_1.Status();
+    motor_2.Status();
+    motor_3.Status();
+    motor_4.Status();
+
+    motor_5.Status();
+    motor_6.Status();
+    motor_7.Status();
+    motor_8.Status();
+
+    motor_1.Reset();
+    motor_2.Reset();
+    motor_3.Reset();
+    motor_4.Reset();
+
+    motor_5.Reset();
+    motor_6.Reset();
+    motor_7.Reset();
+    motor_8.Reset();
+
+    HAL_Delay(50);
+    motor_1.Status();
+    HAL_Delay(50);
+    motor_2.Status();
+    HAL_Delay(50);
+    motor_3.Status();
+    HAL_Delay(50);
+    motor_4.Status();
+    HAL_Delay(50);
+    motor_5.Status();
+    HAL_Delay(50);
+    motor_6.Status();
+    HAL_Delay(50);
+    motor_7.Status();
+    HAL_Delay(50);
+    motor_8.Status();
+
+    HAL_Delay(100);
+
+    motor_1.Init();
+    motor_2.Init();
+    motor_3.Init();
+    motor_4.Init();
+    motor_5.Init();
+    motor_6.Init();
+    motor_7.Init();
+    motor_8.Init();
+
+    // MOTOR Z - 1
+
+    int M1_uSteps = 32;
+    motor_1.Set_microsteps(M1_uSteps);
+    motor_1.Set_acceleration(1000);
+    motor_1.Set_deceleration(1200);
+    motor_1.Set_max_speed(2400);
+    motor_1.Set_min_speed(200);
+
+    uint8_t M1_KVAL_VALUE = 0x4;
+    motor_1.Set_param(L6470::register_map::KVAL_RUN, M1_KVAL_VALUE, 8);
+    motor_1.Set_param(L6470::register_map::KVAL_ACC, M1_KVAL_VALUE, 8);
+    motor_1.Set_param(L6470::register_map::KVAL_DEC, M1_KVAL_VALUE, 8);
+    motor_1.Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
+
+    Motion_axis Z = Motion_axis(&motor_1, 0.00125 / M1_uSteps);
+    Z.Reverse(true);
+
+    Add_axis('Z', &Z);
+
+    // MOTOR T - 2
+
+    int M2_uSteps = 32;
+    motor_2.Set_microsteps(M2_uSteps);
+    motor_2.Set_acceleration(800);
+    motor_2.Set_deceleration(1000);
+    motor_2.Set_max_speed(2200);
+    motor_2.Set_min_speed(400);
+
+    uint8_t M2_KVAL_VALUE = 0x37;
+    motor_2.Set_param(L6470::register_map::KVAL_RUN, M2_KVAL_VALUE, 8);
+    motor_2.Set_param(L6470::register_map::KVAL_ACC, M2_KVAL_VALUE, 8);
+    motor_2.Set_param(L6470::register_map::KVAL_DEC, M2_KVAL_VALUE, 8);
+    motor_2.Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
+
+    Motion_axis T = Motion_axis(&motor_2, 0.003 / M2_uSteps);
+    T.Reverse(true);
+
+    Add_axis('T', &T);
+
+    // MOTOR X - 3
+    int M3_uSteps = 32;
+    motor_3.Set_microsteps(M3_uSteps);
+    motor_3.Set_acceleration(1200);
+    motor_3.Set_deceleration(1500);
+    motor_3.Set_max_speed(2400);
+    motor_3.Set_min_speed(400);
+
+    uint8_t M3_KVAL_VALUE = 0x40;
+    motor_3.Set_param(L6470::register_map::KVAL_RUN, M3_KVAL_VALUE, 8);
+    motor_3.Set_param(L6470::register_map::KVAL_ACC, M3_KVAL_VALUE, 8);
+    motor_3.Set_param(L6470::register_map::KVAL_DEC, M3_KVAL_VALUE, 8);
+    motor_3.Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
+
+    motor_3.Set_param(L6470::register_map::FS_SPD, 0x3ff, 10);
+    motor_3.Set_param(L6470::register_map::ST_SLP, 0x00, 8);
+    motor_3.Set_param(L6470::register_map::FN_SLP_ACC, 0x00, 8);
+    motor_3.Set_param(L6470::register_map::FN_SLP_DEC, 0x00, 8);
+
+    Motion_axis *X = new Motion_axis(&motor_3, 0.0025 / M3_uSteps);
+    X->Reverse(true);
+
+    Add_axis('X', X);
+
+    // MOTOR Y
+
+
+    int M4_uSteps = 32;
+    motor_4.Set_microsteps(M4_uSteps);
+    motor_4.Set_acceleration(1200);
+    motor_4.Set_deceleration(1500);
+    motor_4.Set_max_speed(2600);
+    motor_4.Set_min_speed(400);
+
+    uint8_t M4_KVAL_VALUE = 0x40;
+    motor_4.Set_param(L6470::register_map::KVAL_RUN, M4_KVAL_VALUE, 8);
+    motor_4.Set_param(L6470::register_map::KVAL_ACC, M4_KVAL_VALUE, 8);
+    motor_4.Set_param(L6470::register_map::KVAL_DEC, M4_KVAL_VALUE, 8);
+    motor_4.Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
+
+    motor_4.Set_param(L6470::register_map::FS_SPD, 0x3ff, 10);
+    motor_4.Set_param(L6470::register_map::ST_SLP, 0x00, 8);
+    motor_4.Set_param(L6470::register_map::FN_SLP_ACC, 0x00, 8);
+    motor_4.Set_param(L6470::register_map::FN_SLP_DEC, 0x00, 8);
+
+    Motion_axis Y = Motion_axis(&motor_4, 0.0025 / M4_uSteps);
+
+    Add_axis('Y', &Y);
+
+    // MOTOR R - 5
+
+    int M5_uSteps = 32;
+    motor_5.Set_microsteps(M5_uSteps);
+    motor_5.Set_acceleration(1200);
+    motor_5.Set_deceleration(2000);
+    motor_5.Set_max_speed(2500);
+    motor_5.Set_min_speed(800);
+
+    uint8_t M5_KVAL_VALUE = 0x39;
+    motor_5.Set_param(L6470::register_map::KVAL_RUN, M5_KVAL_VALUE, 8);
+    motor_5.Set_param(L6470::register_map::KVAL_ACC, M5_KVAL_VALUE, 8);
+    motor_5.Set_param(L6470::register_map::KVAL_DEC, M5_KVAL_VALUE, 8);
+    motor_5.Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
+
+    motor_5.Set_param(L6470::register_map::FS_SPD, 0x3ff, 10);
+    motor_5.Set_param(L6470::register_map::ST_SLP, 0x00, 8);
+    motor_5.Set_param(L6470::register_map::FN_SLP_ACC, 0x00, 8);
+    motor_5.Set_param(L6470::register_map::FN_SLP_DEC, 0x00, 8);
+
+    Motion_axis R = Motion_axis(&motor_5, 0.01 / M5_uSteps);
+
+    Add_axis('R', &R);
+
+
+    // MOTOR F - 6
+
+    int M6_uSteps = 32;
+    motor_6.Set_microsteps(M6_uSteps);
+    motor_6.Set_acceleration(1000);
+    motor_6.Set_deceleration(2000);
+    motor_6.Set_max_speed(800);
+    motor_6.Set_min_speed(20);
+
+    uint8_t M6_KVAL_VALUE = 0x70;
+    motor_6.Set_param(L6470::register_map::KVAL_RUN, M6_KVAL_VALUE, 8);
+    motor_6.Set_param(L6470::register_map::KVAL_ACC, M6_KVAL_VALUE, 8);
+    motor_6.Set_param(L6470::register_map::KVAL_DEC, M6_KVAL_VALUE, 8);
+    motor_6.Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
+
+    Motion_axis F = Motion_axis(&motor_6, 0.01 / M6_uSteps);
+
+    Add_axis('F', &F);
+} // Eyrina::Init_motors

@@ -16,6 +16,11 @@
 #include "modifiers/loggable.hpp"
 #include "device/application.hpp"
 #include "construction/motion_axis.hpp"
+#include "gpio/mcp23017/mcp23017.hpp"
+#include "gpio/mcp23017/mcp23017_pin.hpp"
+#include "motor/L6470.hpp"
+#include "display/SSD1306.hpp"
+#include "led/NCL30160.hpp"
 
 using namespace std;
 
@@ -66,7 +71,30 @@ private:
      */
     map<char, Motion_axis*> axis;
     
+    /**
+     * @brief Queue for g-code commands
+     */
     queue<string> command_buffer;
+    
+    /**
+     * @brief Block queue after invalid command, unblock with R10
+     */
+    bool blocked_queue = false;
+    
+    /**
+     * @brief OLED display from which target pointer is projected
+     */
+    SSD1306 *display = nullptr;
+    
+    /**
+     * @brief Reflect status of OLED display, false means OFF
+     */
+    bool display_status = false;
+    
+    /**
+     * @brief LED channels for retina illumination
+     */
+    vector<NCL30160 *> led_channels;
 
 public:
     /**
@@ -119,8 +147,13 @@ private:
     /**
      * @brief Initialize all motion axis and their motors
      */
-    void Init_motors ();
+    void Init_motors();
 
+    /**
+     * @brief Initialize lights, current sources for LEDs and target point
+     */
+    void Init_light();
+    
     /**
      * @brief   Parse input command into g-code command, check if parameters are valid and pass them to command method
      *          Controls syntax of command
