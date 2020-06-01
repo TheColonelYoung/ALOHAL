@@ -10,13 +10,15 @@
 #include <cmath>
 
 #include "motor/stepper_motor.hpp"
+#include "globals.hpp"
+#include "modifiers/loggable.hpp"
 
 /**
  * @brief   This class describes any linear or rotary axis, which can be
  *          powered by stepper motor.
  *
  */
-class Motion_axis
+class Motion_axis: public Loggable
 {
 private:
     Stepper_motor *motor;
@@ -42,7 +44,6 @@ private:
     bool reversed_direction = false;
 
 public:
-    Motion_axis() = default;
     Motion_axis(Stepper_motor *motor, double ration, Stepper_motor::Direction home = Stepper_motor::Direction::Reverse);
 
     /**
