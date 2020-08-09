@@ -32,6 +32,8 @@ typedef unsigned int uint;
 # include "stm32l1xx_hal_adc.h"
 #elif defined(MCU_FAMILY_STM32_L4)
 # include "stm32l4xx_hal_adc.h"
+#elif defined(MCU_FAMILY_STM32_G0)
+# include "stm32g0xx_hal_adc.h"
 #endif // if   defined(MCU_FAMILY_STM32_F0)
 
 typedef unsigned int uint;

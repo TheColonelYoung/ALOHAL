@@ -22,6 +22,8 @@
 # include "stm32l1xx_hal_uart.h"
 #elif defined(MCU_FAMILY_STM32_L4)
 # include "stm32l4xx_hal_uart.h"
+#elif defined(MCU_FAMILY_STM32_G0)
+# include "stm32g0xx_hal_uart.h"
 #endif
 
 #include <vector>
