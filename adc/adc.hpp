@@ -9,6 +9,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 #include "globals.hpp"
 #include "global_includes.hpp"
@@ -125,7 +126,20 @@ private:
         make_pair(Resolution::_12_bit, ADC_RESOLUTION_12B)
     };
 
-    map<Internal_channel, uint32_t> channel_map{
+    vector<uint32_t> channel_map_common = {
+        ADC_CHANNEL_0,
+        ADC_CHANNEL_1,
+        ADC_CHANNEL_2,
+        ADC_CHANNEL_3,
+        ADC_CHANNEL_4,
+        ADC_CHANNEL_5,
+        ADC_CHANNEL_6,
+        ADC_CHANNEL_7,
+        ADC_CHANNEL_8,
+        ADC_CHANNEL_9,
+    };
+
+    map<Internal_channel, uint32_t> channel_map_internal{
         #ifdef ADC_CHANNEL_VREFINT
         make_pair(Internal_channel::VREF, ADC_CHANNEL_VREFINT),
         #endif
@@ -149,14 +163,22 @@ private:
      *          This configuration should alway be same as which was used
      *              for channel configuration
      */
+
+    #ifdef MCU_FAMILY_STM32_G0
     ADC_ChannelConfTypeDef channel_config = {
-        .Channel      = 0,
-        .Rank         = 1,
+        .Channel      = ADC_CHANNEL_0,
+        .Rank         = ADC_REGULAR_RANK_1,
+        .SamplingTime = ADC_SAMPLINGTIME_COMMON_1,
+    };
+    #else
+    ADC_ChannelConfTypeDef channel_config = {
+        .Channel      = ADC_CHANNEL_0,
+        .Rank         = ADC_REGULAR_RANK_1,
         .SamplingTime = ADC_SAMPLETIME_2CYCLES_5,
         .SingleDiff   = ADC_SINGLE_ENDED,
         .OffsetNumber = ADC_OFFSET_NONE,
-        .Offset       = 0
     };
+    #endif
 
 public:
 

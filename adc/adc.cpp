@@ -6,7 +6,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
     #ifdef ADC_1_EN
     if (hadc->Instance == ADC1) {
         if (__HAL_ADC_GET_FLAG(hadc, ADC_FLAG_EOC)) {
-            // ADC_1.Set_value(HAL_ADC_GetValue(hadc));
+            device()->mcu->ADC_1->Set_value(HAL_ADC_GetValue(hadc));
         }
     }
     #endif
@@ -18,12 +18,12 @@ AD_C::AD_C(ADC_HandleTypeDef *handler, bool vrefint, bool inttemp, bool vbat) :
 }
 
 int AD_C::Calibration(){
-    HAL_ADCEx_Calibration_Start(handler, 0);
+    HAL_ADCEx_Calibration_Start(handler);
 
-    if (has_vref){
-     return Supply_voltage();
+    if (has_vref) {
+        return Supply_voltage();
     } else {
-     return 0;
+        return 0;
     }
 }
 
@@ -40,11 +40,6 @@ int AD_C::Measure_IRQ(int channel, unsigned int conversion_count){
 }
 
 double AD_C::Measure_poll(int channel){
-    /*
-     * if (handler->Init.EOCSelection != ADC_EOC_SINGLE_CONV) {
-     *  handler->Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-     *  HAL_ADC_Init(&hadc);
-     * }*/
     Set_channel(channel);
     HAL_ADC_Start(handler);
     if (HAL_ADC_PollForConversion(handler, 10) == HAL_OK) {
@@ -67,11 +62,11 @@ void AD_C::Set_value(uint16_t value){
 double AD_C::Supply_voltage(){
     // Test if this ADC have vref channel
     if (!has_vref) {
-        return -1;
+        return 3.3;
     }
 
     uint16_t reference_val = Internal_measurement(Internal_channel::VREF);
-    if (reference_val == 0){
+    if (reference_val == 0) {
         return -1;
     }
 
@@ -84,13 +79,12 @@ double AD_C::Supply_voltage(){
 
 int AD_C::Set_supply_voltage(double supply_voltage){
     int ret = 0;
-    if (this->supply_voltage != 0){
+    if (this->supply_voltage != 0) {
         ret = -1;
     }
 
     this->supply_voltage = supply_voltage;
     return ret;
-
 }
 
 double AD_C::Core_temperature(){
@@ -99,7 +93,7 @@ double AD_C::Core_temperature(){
     }
 
     uint16_t temperature_val = Internal_measurement(Internal_channel::ITEMP);
-    if (temperature_val == 0){
+    if (temperature_val == 0) {
         return -1;
     }
 
@@ -118,7 +112,7 @@ double AD_C::Battery_voltage(){
     }
 
     uint16_t battery_val = Internal_measurement(Internal_channel::VBAT);
-    if (battery_val == 0){
+    if (battery_val == 0) {
         return -1;
     }
 
@@ -145,13 +139,13 @@ int AD_C::Set_channel_sampling_rate(Sampling_rate sampling_rate){
 }
 
 int AD_C::Set_channel(int chan){
-    channel_config.Channel = (uint32_t) chan;
+    channel_config.Channel = channel_map_common[chan];
 
     return Configure_channel();
 }
 
 int AD_C::Set_channel(Internal_channel internal_channel){
-    channel_config.Channel = channel_map[internal_channel];
+    channel_config.Channel = channel_map_internal[internal_channel];
 
     return Configure_channel();
 }
@@ -173,11 +167,17 @@ uint16_t AD_C::Internal_measurement(Internal_channel internal_channel){
     Set_resolution(Resolution::_12_bit);
 
     Set_channel(internal_channel);
+
+    /*
+    #ifdef ADC_SAMPLETIME_640CYCLES_5
     Set_channel_sampling_rate(Sampling_rate::_640C5);
+    #elif defined(ADC_SAMPLETIME_160CYCLES_5)
+    Set_channel_sampling_rate(Sampling_rate::_160C5);
+    #endif*/
 
     // Perform conversion and then read value
     HAL_ADC_Start(handler);
-    if (HAL_ADC_PollForConversion(handler, 10) != HAL_OK) {
+    if (HAL_ADC_PollForConversion(handler, 100) != HAL_OK) {
         return 0;
     }
     uint16_t conversion_val = HAL_ADC_GetValue(handler);
