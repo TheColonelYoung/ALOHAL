@@ -57,23 +57,16 @@ using namespace std;
  *          For single ADC channel exists class which encapsulated it: ADC_channel
  */
 class AD_C {
+
+public:
+    #include "sampling_rate_values.hpp"
+
 public:
     enum class Resolution {
         _6_bit = 6,
         _8_bit = 8,
         _10_bit = 10,
         _12_bit = 12
-    };
-
-    enum class Sampling_rate {
-        _2C5,
-        _6C5,
-        _12C5,
-        _24C5,
-        _47C5,
-        _92C5,
-        _247C5,
-        _640C5
     };
 
     enum class Internal_channel {
@@ -108,16 +101,7 @@ public:
     Resolution resolution = Resolution::_12_bit;
 
 private:
-    map<Sampling_rate, uint32_t> sample_rate_map{
-        make_pair(Sampling_rate::_2C5, ADC_SAMPLETIME_2CYCLES_5),
-        make_pair(Sampling_rate::_6C5, ADC_SAMPLETIME_6CYCLES_5),
-        make_pair(Sampling_rate::_12C5, ADC_SAMPLETIME_12CYCLES_5),
-        make_pair(Sampling_rate::_24C5, ADC_SAMPLETIME_24CYCLES_5),
-        make_pair(Sampling_rate::_47C5, ADC_SAMPLETIME_47CYCLES_5),
-        make_pair(Sampling_rate::_92C5, ADC_SAMPLETIME_92CYCLES_5),
-        make_pair(Sampling_rate::_247C5, ADC_SAMPLETIME_247CYCLES_5),
-        make_pair(Sampling_rate::_640C5, ADC_SAMPLETIME_640CYCLES_5)
-    };
+    #include "sampling_rate_map.hpp"
 
     map<Resolution, uint32_t> resolution_map{
         make_pair(Resolution::_6_bit, ADC_RESOLUTION_6B),

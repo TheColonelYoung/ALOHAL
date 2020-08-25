@@ -48,11 +48,11 @@ double AD_C::Measure_poll(int channel){
         return -1;
     }
 
-    return (static_cast<float>(ADC_value) / static_cast<int>(resolution) * Supply_voltage());
+    return (static_cast<float>(ADC_value) / (1<<(static_cast<int>(resolution))) * supply_voltage);
 }
 
 double AD_C::Read(){
-    return (static_cast<float>(ADC_value) / static_cast<int>(resolution) * supply_voltage);
+    return (static_cast<float>(ADC_value) / (1<<(static_cast<int>(resolution))) * supply_voltage);
 }
 
 void AD_C::Set_value(uint16_t value){
@@ -72,7 +72,7 @@ double AD_C::Supply_voltage(){
 
     // Calculate internal voltage of core
     uint16_t *reference_cal = INTERNAL_VOLTAGE_REFERENCE_ADDRESS;
-    supply_voltage = (3.0 * (*reference_cal) / reference_val);
+    supply_voltage = (3.0f * (*reference_cal) / static_cast<double>(reference_val));
 
     return supply_voltage;
 }
@@ -98,10 +98,10 @@ double AD_C::Core_temperature(){
     }
 
     // Calculate temperature of core
-    float temperature_cal_1 = static_cast<float>(*INTERNAL_TEMPERATURE_CALIBRATION_1_ADDRESS);
-    float temperature_cal_2 = static_cast<float>(*INTERNAL_TEMPERATURE_CALIBRATION_2_ADDRESS);
+    uint16_t temperature_cal_1 = *(static_cast<uint16_t *>(INTERNAL_TEMPERATURE_CALIBRATION_1_ADDRESS));
+    uint16_t temperature_cal_2 = *(static_cast<uint16_t *>(INTERNAL_TEMPERATURE_CALIBRATION_2_ADDRESS));
 
-    double temperature = (((110-30)/((temperature_cal_2) - (temperature_cal_1))) * (temperature_val * (Supply_voltage()/INTERNAL_TEMPERATURE_REFERENCE_VOLTAGE) - ((temperature_cal_1)))) + 30;
+    double temperature = (((130.0f - 30.0f) / (temperature_cal_2 - temperature_cal_1)) * (temperature_val * (supply_voltage / 3.0f) - temperature_cal_1) + 30);
 
     return temperature;
 }
@@ -117,7 +117,7 @@ double AD_C::Battery_voltage(){
     }
 
     // Calculate voltage of battery
-    double battery_voltage = battery_val*3 / 4096.0f * Supply_voltage();
+    double battery_voltage = battery_val * 3.0f / (1<<(static_cast<int>(resolution))) * supply_voltage;
 
     return battery_voltage;
 }
