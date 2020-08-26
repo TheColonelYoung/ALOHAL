@@ -59,6 +59,12 @@ private:
     void Optimize_for(int time_us); // opzimize prescaler for given time
 };
 
+#ifdef TIMER_USED_AS_TIMEBASE
+void ALOHAL_Timer_IRQ_Callback(TIM_HandleTypeDef *htim);
+#else
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+#endif
+
 /*              CHANNELS
  * TIM_CHANNEL_1                      0x00000000U
  * TIM_CHANNEL_2                      0x00000004U
