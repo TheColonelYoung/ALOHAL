@@ -51,7 +51,7 @@ bool Timer::Optimize(bool flag){
 }
 
 void Timer::Optimize_for(int time_us){
-    handler->Instance->PSC = ((time_us * uticks) / (2 << (size - 1)) - 1) + 1;
+    handler->Instance->PSC =  ((unsigned long long)time_us * uticks) / ((unsigned long long)1 << size);
 }
 
 void Timer::Counter_set(uint32_t new_counter){
