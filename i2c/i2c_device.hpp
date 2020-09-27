@@ -21,19 +21,29 @@ typedef unsigned int uint;
 class I2C_device: public Bus_device
 {
 private:
+    /**
+     * @brief Object of master bus on which is device connected
+     */
     I2C_master master;
+
+    /**
+     * @brief   Address of device on I2C bus
+     *          7 highest bits of byte, bit 0 is not used for addressing but for mode (read/write)
+     *          0bxxxxxxx0, 7 bit address must be shifted to left
+     */
     uint8_t address = 0;
 
 public:
     I2C_device() = default;
     /**
-     * @brief Construct a new i2c device object
+     * @brief Construct a new I2C device object
      *
-     * @param master Object of master bus on which is device connected
-     * @param address Address of device on bus
+     * @param master Object of master I2C bus on which is device connected
+     * @param address Address of device on I2C bus
      */
     I2C_device(I2C_master master, unsigned char address);
 
+protected:
     /**
      * @brief Transmit data to device
      *
