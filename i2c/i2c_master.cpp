@@ -17,8 +17,12 @@ vector<uint8_t> I2C_master::Receive_poll(uint8_t addr, uint length)
     return data;
 }
 
-vector<uint8_t> I2C_master::Scan()
-{
-    //TODO
-    return vector<uint8_t>();
+bool I2C_master::Ping(uint8_t addr){
+    HAL_StatusTypeDef status = HAL_I2C_IsDeviceReady(handler, (uint8_t)addr, 0, 1);
+
+    if(status == HAL_OK){
+        return true;
+    } else {
+        return false;
+    }
 }
