@@ -2,37 +2,8 @@
 
 #include "device/device.hpp"
 
-unsigned char UART_1_buffer_temp[10];
-unsigned char UART_2_buffer_temp[10];
-unsigned char UART_3_buffer_temp[10];
-unsigned char UART_4_buffer_temp[10];
-
 UART::UART(UART_HandleTypeDef *UART_Handler_set){
     UART_Handler = UART_Handler_set;
-
-    #ifdef UART_1_EN
-    if (UART_Handler->Instance == USART1) {
-        UART_buffer_temp = UART_1_buffer_temp;
-    }
-    #endif
-
-    #ifdef UART_2_EN
-    if (UART_Handler->Instance == USART2) {
-        UART_buffer_temp = UART_2_buffer_temp;
-    }
-    #endif
-
-    #ifdef UART_3_EN
-    if (UART_Handler->Instance == USART3) {
-        UART_buffer_temp = UART_3_buffer_temp;
-    }
-    #endif
-
-    #ifdef UART_4_EN
-    if (UART_Handler->Instance == USART4) {
-        UART_buffer_temp = UART_4_buffer_temp;
-    }
-    #endif
 
     HAL_UART_Receive_IT(UART_Handler_set, UART_buffer_temp, 1);
 }
@@ -41,27 +12,22 @@ int UART::Send(string message){
     if (message.length() == 0) {
         return 0;
     }
-
+    // Save message to buffer if UART is now busy
     if (busy) {
         TX_buffer.emplace_back(message);
         return TX_buffer.size();
     }
+    // Send message and set UART as busy
     busy = true;
     TX_buffer.emplace_back(message);
     HAL_UART_Transmit_IT(UART_Handler, (unsigned char *) TX_buffer.front().c_str(), TX_buffer.front().length());
     return message.length();
 }
 
-int UART::Load(){
+int UART::Receive(){
     RX_buffer.push_back(UART_buffer_temp[0]);
     HAL_UART_Receive_IT(UART_Handler, UART_buffer_temp, 1);
     return 0;
-}
-
-int UART::Clear_buffer(){
-    uint length = RX_buffer.length();
-    RX_buffer = "";
-    return length;
 }
 
 int UART::Resend(){
@@ -74,48 +40,31 @@ int UART::Resend(){
     return TX_buffer.size();
 }
 
-string UART::Read(int length){
-    string output = RX_buffer.substr(0, length);
-    RX_buffer.erase(0, length);
-    return output;
-}
-
-string UART::Read(string delimiter){
-    size_t position = RX_buffer.find(delimiter, 0);
-    if (position != string::npos) {
-        string output = RX_buffer.substr(0, position + delimiter.length());
-        RX_buffer.erase(0, position + delimiter.length());
-        return output;
-    } else {
-        return "";
-    }
-}
-
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
     #ifdef UART_1_EN
     if (huart->Instance == USART1) {
-        device()->mcu->UART_1->Load();
+        device()->mcu->UART_1->Receive();
         device()->mcu->UART_1->IRQ->Notify();
         return;
     }
     #endif
     #ifdef UART_2_EN
     if (huart->Instance == USART2) {
-        device()->mcu->UART_2->Load();
+        device()->mcu->UART_2->Receive();
         device()->mcu->UART_2->IRQ->Notify();
         return;
     }
     #endif
     #ifdef UART_3_EN
     if (huart->Instance == USART3) {
-        device()->mcu->UART_3->Load();
+        device()->mcu->UART_3->Receive();
         device()->mcu->UART_3->IRQ->Notify();
         return;
     }
     #endif
     #ifdef UART_4_EN
     if (huart->Instance == USART4) {
-        device()->mcu->UART_4->Load();
+        device()->mcu->UART_4->Receive();
         device()->mcu->UART_4->IRQ->Notify();
         return;
     }
