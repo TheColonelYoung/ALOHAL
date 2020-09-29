@@ -66,6 +66,10 @@ public:
     AD_C *ADC_3 = nullptr;
     #endif
 
+    #ifdef USB_CDC_EN
+    USB_CDC *USB_port = nullptr;
+    #endif
+
     // UART
     #ifdef UART_1_EN
     UART *UART_1 = nullptr;
