@@ -60,10 +60,10 @@ public:
     /**
      * @brief Creates and initialize CLI for device
      *
-     * @param connection Uart connection which will be used for CLI
+     * @param connection Serial line connection which will be used for CLI
      * @return int
      */
-    int Enable_CLI(UART *connection);
+    int Enable_CLI(Serial_line *connection);
 
     /**
      * @brief Check if CLI for device exists

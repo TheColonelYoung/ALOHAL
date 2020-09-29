@@ -72,3 +72,22 @@ public:
  * @param GPIO_Pin Number of IRQ line to which is Pin assigned
  */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+
+
+/**
+ * @brief Callback which is called by HAL when IRQ Rising Edge event occurs at some
+ *          IRQ capable and configured pin. This is alternative function for STM G-family.
+ *          G-family is using separate functions for Rising and Falling edge detection.
+ *
+ * @param GPIO_Pin Number of IRQ line to which is Pin assigned
+ */
+void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin);
+
+/**
+ * @brief Callback which is called by HAL when IRQ Falling edge event occurs at some
+ *          IRQ capable and configured pin. This is alternative function for STM G-family.
+ *          G-family is using separate functions for Rising and Falling edge detection.
+ *
+ * @param GPIO_Pin Number of IRQ line to which is Pin assigned
+ */
+void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin);

@@ -1,7 +1,7 @@
 #include "WS2818B.hpp"
 
 WS2818B::WS2818B(Timer *timer, uint8_t channel_index, uint16_t chain_count) :
-    Component(string("WS2818B")),
+    Component("WS2818B"),
     timer(timer),
     channel_index(channel_index),
     chain_count(chain_count){

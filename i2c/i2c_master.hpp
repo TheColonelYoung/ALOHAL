@@ -57,9 +57,11 @@ public:
     vector<uint8_t> Receive_poll(uint8_t addr, uint length = 1);
 
     /**
-     * @brief Scan all available addresses and find all responsing devices
+     * @brief Test if target device is responding with ACK
      *
-     * @return vector<uint8_t> Addresses of responsing device
+     * @param addr      Address of target device
+     * @return true     Device is present and ready (sending ACK)
+     * @return false    Device is not responding with ACKs
      */
-    vector<uint8_t> Scan();
+    bool Ping(uint8_t addr);
 };

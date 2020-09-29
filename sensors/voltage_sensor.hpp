@@ -12,19 +12,35 @@
 
 using namespace std;
 
-class Voltage_sensor: public Sensor
+/**
+ * @brief   Basic voltage measuring object. Assumes that voltage is directly connected
+ *              to input ADC pin. So that no voltage divider is used.
+ */
+class Voltage_sensor : public Sensor
 {
-private:
-    ADC_channel * ADC_ch;
+protected:
 
-    double resistor_R1 = 0;
-    double resistor_R2 = 0;
-
-    double ratio = 1;
+    /**
+     * @brief   ADC input channel for voltage readings
+     */
+    ADC_channel *ADC_ch;
 
 public:
-    Voltage_sensor(ADC_channel * ADC, double resistor_R1 = 0, double resistor_R2 = 0 );
 
-    double Voltage();
+    /**
+     * @brief   Construct a new Voltage_sensor object
+     *          Used by derivated sensors
+     *
+     * @param name      Name of sensor, used by derivated sensors otherwise is default
+     *                      pass name to Sensor constructor
+     * @param ADC_IN    ADC input channel for voltage readings
+     */
+    Voltage_sensor(ADC_channel *ADC_IN, string name = "Voltage_sensor");
+
+    /**
+     * @brief   Read voltage from input channel. Voltage is referenced to Supply_voltage()
+     *
+     * @return double Voltage on ADC input
+     */
+    virtual double Voltage();
 };
-

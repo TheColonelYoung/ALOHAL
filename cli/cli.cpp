@@ -3,7 +3,7 @@
 #include "globals.hpp"
 #include "filesystem/filesystem.hpp"
 
-void CLI::Connect(UART *connection){
+void CLI::Connect(Serial_line *connection){
     serial_connection = connection;
     serial_connection->IRQ->Register(this, &CLI::Char_load);
     serial_connection->Send("\r\n");
@@ -238,7 +238,7 @@ int CLI::Autocomplete(string to_complete){
     } else if (candidate_names.size() == 1){
         actual_line += candidate_names.front().substr(to_complete.length(),candidate_names.front().length());
     }
-    
+
     return 0;
 }
 

@@ -42,6 +42,12 @@ extern DAC_HandleTypeDef hdac;
 extern DA_C DAC_1;
 #endif
 
+class USB_CDC;
+#ifdef USB_CDC_EN
+# include "usb/cdc_vcp.hpp"
+extern USB_CDC USB_port;
+#endif
+
 class UART;
 #if defined(UART_1_EN) || defined(UART_2_EN) || defined(UART_1_EN) || defined(UART_3_EN)
 # include "uart/uart.hpp"

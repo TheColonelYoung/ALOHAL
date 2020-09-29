@@ -11,7 +11,7 @@ void Device::Init(){
     mcu->Init();
 }
 
-int Device::Enable_CLI(UART *connection){
+int Device::Enable_CLI(Serial_line *connection){
     cli = new CLI();
     if(connection != nullptr){
         cli->Connect(connection);

@@ -1,5 +1,7 @@
 #include "timer.hpp"
 
+#include "device/device.hpp"
+
 Timer::Timer(TIM_HandleTypeDef *handler){
     this->handler   = handler;
     this->frequency = HAL_RCC_GetHCLKFreq();
@@ -49,7 +51,7 @@ bool Timer::Optimize(bool flag){
 }
 
 void Timer::Optimize_for(int time_us){
-    handler->Instance->PSC = ((time_us * uticks) / (2 << (size - 1)) - 1) + 1;
+    handler->Instance->PSC =  ((unsigned long long)time_us * uticks) / ((unsigned long long)1 << size);
 }
 
 void Timer::Counter_set(uint32_t new_counter){
@@ -93,66 +95,70 @@ void Timer::Disable_IRQ(){
     HAL_TIM_Base_Stop_IT(handler);
 }
 
+#ifdef TIMER_USED_AS_TIMEBASE
+void ALOHAL_Timer_IRQ_Callback(TIM_HandleTypeDef *htim){
+#else
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+#endif
     #ifdef TIM_1_EN
     if (htim->Instance == TIM1) {
-    device()->mcu->TIM_1->IRQ->Notify();
+        device()->mcu->TIM_1->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_2_EN
     if (htim->Instance == TIM2) {
-    device()->mcu->TIM_2->IRQ->Notify();
+        device()->mcu->TIM_2->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_3_EN
     if (htim->Instance == TIM3) {
-    device()->mcu->TIM_3->IRQ->Notify();
+        device()->mcu->TIM_3->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_4_EN
     if (htim->Instance == TIM4) {
-    device()->mcu->TIM_4->IRQ->Notify();
+        device()->mcu->TIM_4->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_5_EN
     if (htim->Instance == TIM5) {
-    device()->mcu->TIM_5->IRQ->Notify();
+        device()->mcu->TIM_5->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_6_EN
     if (htim->Instance == TIM6) {
-    device()->mcu->TIM_6->IRQ->Notify();
+        device()->mcu->TIM_6->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_7_EN
     if (htim->Instance == TIM7) {
-    device()->mcu->TIM_7->IRQ->Notify();
+        device()->mcu->TIM_7->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_8_EN
     if (htim->Instance == TIM8) {
-    device()->mcu->TIM_8->IRQ->Notify();
+        device()->mcu->TIM_8->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_9_EN
     if (htim->Instance == TIM9) {
-    device()->mcu->TIM_9->IRQ->Notify();
+        device()->mcu->TIM_9->IRQ->Notify();
         return;
     }
     #endif

@@ -48,6 +48,11 @@ void MCU::Init_peripherals(){
     Flash = new Flash_mem();
     #endif
 
+    // USB_CDC
+    #ifdef USB_CDC_EN
+    USB_port = new USB_CDC();
+    #endif
+
     // UART
     #ifdef UART_1_EN
     UART_1 = new UART(&huart1);

@@ -22,6 +22,8 @@
 # include "stm32l1xx_hal_uart.h"
 #elif defined(MCU_FAMILY_STM32_L4)
 # include "stm32l4xx_hal_uart.h"
+#elif defined(MCU_FAMILY_STM32_G0)
+# include "stm32g0xx_hal_uart.h"
 #endif
 
 #include <vector>
@@ -31,6 +33,7 @@
 #include "globals.hpp"
 #include "gpio/pin.hpp"
 #include "irq/irq_handler.hpp"
+#include "uart/serial_line.hpp"
 
 using namespace std;
 
@@ -40,7 +43,7 @@ using namespace std;
  *          Supports IRQ via IRQ Handler which is invocated after receiving of a byte
  *          Received bytes are stored as string and can be read out by length or delimeter
  */
-class UART {
+class UART: public Serial_line {
 private:
     /**
      * @brief Pointer to HAL handler structure which is passed in constructor
@@ -50,17 +53,12 @@ private:
     /**
      * @brief Temporal buffer to which are saved data during receive
      */
-    unsigned char *UART_buffer_temp;
+    unsigned char UART_buffer_temp[2];
 
     /**
      * @brief Vector of messages which are wainting to be send over UART
      */
     vector<string> TX_buffer;
-
-    /**
-     * @brief String of characters, which was received by UART
-     */
-    string RX_buffer = "";
 
     /**
      * @brief Status flag of UART, if true is something is currently transmitted
@@ -91,29 +89,14 @@ public:
      * @param message   Message to send
      * @return int      Error code
      */
-    int Send(string message);
+    virtual int Send(string message) override final;
 
     /**
-     * @brief Send anything what can be casted to string over UART
+     * @brief   After IRQ occurs will copy received character from temporal buffer to internal RX buffer
      *
-     * @tparam send__type   Type of message which will be converted to string and sended over UART
-     * @param message       Value or text of message
-     * @return int          Error code
+     * @return int  Actual size of RX buffer
      */
-    template <typename send__type>
-    int Send(send__type message){
-        return Send(to_string(message));
-    }
-
-    /**
-     * @brief Transmitt array of strings over UART char by char
-     *
-     * @param message   Message to send
-     * @return int      Error code
-     */
-    int Send(const char* message){
-        return Send(string(message));
-    }
+    virtual int Receive() override final;
 
     /**
      * @brief   Routine which is called when transmittion is done, will check if buffer contains
@@ -124,38 +107,6 @@ public:
      * @return int  Actual size of transmitt buffer
      */
     int Resend();
-
-    /**
-     * @brief   After IRQ occurs will copy received character from temporal buffer to internal RX buffer
-     *
-     * @return int  Actual size of RX buffer
-     */
-    int Load();
-
-    /**
-     * @brief   Read selected number of characters from internal UART buffer
-     *          After this operation data which are returned are removed from buffer
-     *
-     * @param length    Number of characters to read
-     * @return string   Message from start of buffer with given length
-     */
-    string Read(int length);
-
-    /**
-     * @brief   Read part of buffer which is before delimiter in string
-     *          After this operation data which are returned are removed from buffer
-     *
-     * @param delimiter     Delimiter which borders which part of string is read
-     * @return string       Message from start of buffer to delimiter (delimiter is included)
-     */
-    string Read(string delimiter);
-
-    /**
-     * @brief   Clear input buffer of UART
-     *
-     * @return int  Original size of buffer
-     */
-    int Clear_buffer();
 };
 
 /**

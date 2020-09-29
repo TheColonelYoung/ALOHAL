@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "uart/uart.hpp"
+#include "uart/serial_line.hpp"
 #include "command.hpp"
 #include "history.hpp"
 
@@ -15,7 +15,7 @@ private:
     /**
      * @brief Communication interface used for all CLI interaction
      */
-    UART *serial_connection = nullptr;
+    Serial_line *serial_connection = nullptr;
 
     /**
      * @brief Content of line on screen including FS prefix and line opening
@@ -73,7 +73,7 @@ public:
      *
      * @param connection Serial communication interface (UART of USB CDC)
      */
-    void Connect(UART *connection);
+    void Connect(Serial_line *connection);
 
     /**
      * @brief Enable lading characters from user, register basic CLI commands
@@ -81,7 +81,7 @@ public:
     void Start();
 
     /**
-     * @brief   Load next available char from UART, eventually start processing of line
+     * @brief   Load next available char from Serial_line, eventually start processing of line
      *          Called from IRQ Handler
      *
      */
