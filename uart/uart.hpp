@@ -67,11 +67,6 @@ private:
 
 public:
     /**
-     * @brief IRQ handler which activates on Receive IRQ
-     */
-    IRQ_handler *IRQ = new IRQ_handler();
-
-    /**
      * @brief Construct a new UART object
      */
     UART() = default;
