@@ -1,20 +1,24 @@
 CC = g++
+CP = g++
 
 OPT = -O3
-DEFINES = -Dprivate=public $(HAL_DEFS)
+DEFINES =  $(HAL_DEFS)
 
 HAL_INCLUDES =  -I../Inc -I../Drivers \
 -I../Drivers/STM32L4xx_HAL_Driver/Inc \
 -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
 -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include \
--I../Drivers/CMSIS/Include
+-I../Drivers/CMSIS/Include \
+-I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/ \
+-I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/ \
+-I../ -I./
 
 HAL_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32L432xx
 
-INCLUDES = -I . $(HAL_INCLUDES)
-FLAGS = -std=c++17 -Wall -Wextra -pedantic $(DEFINES) $(INCLUDES)
+INCLUDES = -I. $(HAL_INCLUDES)
+FLAGS = -std=c++17 -Wall -Wextra -pedantic $(DEFINES) $(INCLUDES) -Wno-register -Wno-write-strings  -fdata-sections -ffunction-sections -fpermissive
 
 TARGET = alohal_test
 SOURCEDIR = .
@@ -29,6 +33,7 @@ OBJECTS = $(patsubst $(SOURCEDIR)/%.cpp,$(BUILDDIR)/%.o,$(SOURCES))
 
 # multi core compilation
 all:
+	@ echo $(SOURCES)
 	@ make -j --no-print-directory binaries
 
 binaries: $(TARGET)
@@ -45,20 +50,20 @@ $(BUILDDIR)/%/:
 # Linking of whole target
 $(TARGET): $(OBJECTS)
 	@ echo LDX $<
-	@ $(CC) $(FLAGS) $(OPT) $^ -o $@
+	@ $(CP) $(FLAGS) $(OPT) $^ -o $@
 
 # Object files compilations
 .SECONDEXPANSION:
 $(OBJECTS): $(BUILDDIR)/%.o: $(SOURCEDIR)/%.cpp | $$(@D)/ $(BUILDDIR)/
 	@ echo CXX $<
-	@ $(CC) $(FLAGS) $(OPT) -c $< -o $@
+	$(CP) $(FLAGS) $(OPT) -c $< -o $@
 
 depend: .depend
 
 # Create dependency
 .depend: $(SOURCES)
-	rm -rf $(BUILDDIR)/.depend
-	$(CXX) $(FLAGS) -MM $^ -MF $(BUILDDIR)/.depend
+	@ rm -rf $(BUILDDIR)/.depend
+	@ $(CXX) $(FLAGS) -MM $^ -MF $(BUILDDIR)/.depend
 	@ cat $(BUILDDIR)/.depend
 
 clean:
