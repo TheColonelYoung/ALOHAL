@@ -53,8 +53,16 @@ int WS2818B::Init_timer(){
     return 0;
 }
 
-int WS2818B::Color(uint8_t red, uint8_t green, uint8_t blue){
-    vector<uint32_t> protocol_timing = Protocol_generator(red, green, blue);
+int WS2818B::Color(Color::Colors color, float intensity){
+    Color::RGB LED = Color::RGB(color);
+    return Color(LED.red, LED.green, LED.blue, intensity);
+}
+
+int WS2818B::Color(uint8_t red, uint8_t green, uint8_t blue, float intensity){
+    // Restrict intensity from 0 to 1.0
+    intensity = min(max(intensity,0.0f),1.0f);
+    // Generate protocol timings
+    vector<uint32_t> protocol_timing = Protocol_generator(red * intensity, green * intensity, blue * intensity);
     Push_protocol(protocol_timing);
     return protocol_timing.size();
 }
