@@ -46,12 +46,12 @@ bool Device::Filesystem_available(){
 
 int Device::Register_application(Application *new_application){
     // Test if application with same name already exists
-    for( auto &app: applications){
+    for( auto &[name, app]: applications){
         if (app->Name() == new_application->Name()){
             return -1;
         }
     }
-    applications.emplace_back(new_application);
+    applications.insert(make_pair(new_application->Name() ,new_application));
     if(Filesystem_available()){
         fs->Make_executable("/apps/" + new_application->Name(), new_application, &Application::Run);
     }

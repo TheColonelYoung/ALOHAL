@@ -36,7 +36,7 @@ public:
 
     Filesystem *fs;
 
-    vector<Application *> applications;
+    map<string, Application *> applications;
 
     vector<Component *> components;
 
