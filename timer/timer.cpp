@@ -6,6 +6,7 @@ Timer::Timer(TIM_HandleTypeDef *handler){
     this->handler   = handler;
     this->frequency = HAL_RCC_GetHCLKFreq();
     this->uticks    = frequency / 1000000.0;
+    __HAL_TIM_CLEAR_FLAG(handler, TIM_SR_UIF);
 }
 
 Timer::Timer(TIM_HandleTypeDef *handler, int size, int channels)
@@ -38,7 +39,7 @@ void Timer::Time_set(float useconds){
         Optimize_for(useconds);
     }
     float tick = 1000000.0 / (frequency / (Prescaler() + 1) );
-    Counter_set(static_cast<int>((useconds / (tick))));
+    handler->Instance->ARR = static_cast<int>((useconds / (tick)));
 }
 
 void Timer::Frequency_set(float frequency){
@@ -55,11 +56,11 @@ void Timer::Optimize_for(int time_us){
 }
 
 void Timer::Counter_set(uint32_t new_counter){
-    handler->Instance->ARR = new_counter;
+    handler->Instance->CNT = new_counter;
 }
 
 uint32_t Timer::Counter_get(){
-    return handler->Instance->ARR;
+    return handler->Instance->CNT;
 }
 
 void Timer::Prescaler_set(uint16_t new_prescaler){
