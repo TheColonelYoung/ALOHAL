@@ -50,6 +50,7 @@ int WS2818B::Init_timer(){
         return 3;
     }
 
+    timer->IRQ->Register(this, &WS2818B::Timer_stop);
     return 0;
 }
 
@@ -68,7 +69,6 @@ int WS2818B::Color(uint8_t red, uint8_t green, uint8_t blue, float intensity){
 }
 
 void WS2818B::Push_protocol(vector<uint32_t> &protocol_timing){
-    timer->IRQ->Register(this, &WS2818B::Timer_stop);
     timer->Enable_IRQ();
     HAL_TIM_OC_Start_DMA(timer->Handler(), timer->channel[channel_index].Address(), (uint32_t *) protocol_timing.data(), protocol_timing.size());
 }
