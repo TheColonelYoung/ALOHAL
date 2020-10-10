@@ -118,7 +118,7 @@ public:
      * @return false    Object are different
      */
     bool operator==(const Invocation_wrapper_base<return_T, args_T> & compare) const override final{
-        auto compare_derivated = dynamic_cast<const Invocation_wrapper<class_T, return_T, args_T> &>(compare);
+        auto compare_derivated = reinterpret_cast<const Invocation_wrapper<class_T, return_T, args_T> &>(compare);
         return (*this)==compare_derivated;
     }
 
@@ -214,7 +214,7 @@ public:
      * @return false    Object are different
      */
     bool operator==(const Invocation_wrapper_base<return_T, void> & compare) const override final{
-        auto compare_derivated = dynamic_cast<const Invocation_wrapper<class_T, return_T, void> &>(compare);
+        auto compare_derivated = reinterpret_cast<const Invocation_wrapper<class_T, return_T, void> &>(compare);
         return (*this)==compare_derivated;
     }
 
