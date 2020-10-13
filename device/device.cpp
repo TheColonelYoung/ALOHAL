@@ -1,5 +1,9 @@
 #include "device.hpp"
 
+#include "device/component.hpp"
+#include "device/application.hpp"
+#include "device/tool.hpp"
+
 Device* Device::Instance(){
     if (instance == nullptr){
         instance = new Device();
@@ -36,6 +40,7 @@ int Device::Enable_Filesystem(){
     fs->Make_directory("/apps");
     fs->Make_directory("/components");
     fs->Make_directory("/mcu");
+    fs->Make_directory("/tools");
     mcu->Filesystem_interface_initialization();
     return 0;
 }
@@ -65,6 +70,20 @@ string Device::Register_component(Component* new_component){
         fs->Make_directory("/components/" + new_name);
     }
     return new_name;
+}
+
+int Device::Register_tool(Tool *new_tool){
+    // Test if tool with same name already exists
+    for( auto &[name, tool]: tools){
+        if (tool->Name() == new_tool->Name()){
+            return -1;
+        }
+    }
+    tools.insert(make_pair(new_tool->Name() ,new_tool));
+    if(Filesystem_available()){
+        fs->Make_directory("/tools/" + new_tool->Name());
+    }
+    return 0;
 }
 
 string Device::New_component_name(string original_name){

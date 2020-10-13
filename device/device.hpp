@@ -22,6 +22,7 @@
 
 class Component;
 class Application;
+class Tool;
 
 using namespace std;
 
@@ -37,6 +38,8 @@ public:
     Filesystem *fs;
 
     map<string, Application *> applications;
+
+    map<string, Tool *> tools;
 
     vector<Component *> components;
 
@@ -98,7 +101,7 @@ public:
     * *************************************************/
 
     /**
-     * @brief Add application to vector of known application
+     * @brief Add application to map of known application
      *
      * @param new_component Pointer to application to add
      * @return string       Return code, 0 if all is OK,
@@ -116,6 +119,18 @@ public:
      * @return string       New name of component
      */
     string Register_component(Component *new_component);
+
+    /***************************************************
+    *                TOOLS
+    * *************************************************/
+
+    /**
+     * @brief Add tool to map of known components
+     *
+     * @param new_component Pointer to tool to add
+     * @return string       New name of tool
+     */
+    int Register_tool(Tool *new_tool);
 
     /***************************************************
     *                 PLANNERS
@@ -155,6 +170,3 @@ private:
      */
     string New_component_name(string original_name);
 };
-
-#include "device/component.hpp"
-#include "device/application.hpp"
