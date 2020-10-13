@@ -75,6 +75,7 @@ void WS2818B::Push_protocol(vector<uint32_t> &protocol_timing){
 
 void WS2818B::Timer_stop(){
     device()->mcu->TIM_16->Disable_IRQ();
+    timer->Counter_set(0);
 }
 
 vector<uint32_t> WS2818B::Protocol_generator(uint8_t red, uint8_t green, uint8_t blue){
