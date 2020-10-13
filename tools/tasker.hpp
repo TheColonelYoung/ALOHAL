@@ -4,6 +4,7 @@
  * @version 0.1
  * @date 01.07.2017
  */
+#pragma once
 
 #include <string>
 #include <list>
@@ -13,13 +14,12 @@
 #include "timer/timer.hpp"
 #include "misc/invocation_wrapper.hpp"
 #include "tools/tasker_event.hpp"
-
-#include "globals.hpp"
 #include "device/device.hpp"
+#include "device/tool.hpp"
 
 using namespace std;
 
-class Tasker {
+class Tasker: public Tool {
     list<Tasker_event *> events; // vector of tasks
 
     Timer *timer = nullptr;
