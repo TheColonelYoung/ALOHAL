@@ -18,7 +18,11 @@ AD_C::AD_C(ADC_HandleTypeDef *handler, bool vrefint, bool inttemp, bool vbat) :
 }
 
 int AD_C::Calibration(){
-    HAL_ADCEx_Calibration_Start(handler);
+    #ifdef MCU_FAMILY_STM32_G0
+        HAL_ADCEx_Calibration_Start(handler);
+    #else
+        HAL_ADCEx_Calibration_Start(handler, 0);
+    #endif
 
     if (has_vref) {
         return Supply_voltage();
