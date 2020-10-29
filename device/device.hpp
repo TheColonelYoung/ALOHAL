@@ -35,7 +35,7 @@ public:
     MCU *mcu = new MCU();
     CLI *cli;
 
-    Filesystem *fs;
+    Filesystem *fs = nullptr;
 
     map<string, Application *> applications;
 
