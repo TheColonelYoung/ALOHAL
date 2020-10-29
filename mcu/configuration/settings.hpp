@@ -23,7 +23,7 @@
 
 // Default family selection, mainly used due to linter, because, selection of family is made during compilation
 #if !defined(MCU_FAMILY_STM32_F0) || !defined(MCU_FAMILY_STM32_F1) || !defined(MCU_FAMILY_STM32_F3) || !defined(MCU_FAMILY_STM32_F4) || !defined(MCU_FAMILY_STM32_F7) || !defined(MCU_FAMILY_STM32_L0) || !defined(MCU_FAMILY_STM32_L1) || !defined(MCU_FAMILY_STM32_L4) || !defined(MCU_FAMILY_STM32_G0)
-    #define MCU_FAMILY_STM32_G0
+    #define MCU_FAMILY_STM32_L4
 #endif
 
 #define INTERNAL_VOLTAGE_REFERENCE_ADDRESS ((uint16_t*)0x1fff75aa)
