@@ -9,7 +9,7 @@ int I2C_scanner::Init(){
 }
 
 int I2C_scanner::Run(vector<string> &args){
-    if (args.size() > 0) {
+    if (args.size() != 1) {
         device()->cli->Print("No args are allowed\r\n");
         return -1;
     }
@@ -19,7 +19,6 @@ int I2C_scanner::Run(vector<string> &args){
     for (size_t address = 0; address < 127; address++) {
         if (bus->Ping(static_cast<uint8_t>(address<<1))) {
             device()->cli->Print("Device found on address: 0x" + dec2hex(address) + "\r\n");
-            HAL_Delay(1);
             device_count++;
         }
     }
