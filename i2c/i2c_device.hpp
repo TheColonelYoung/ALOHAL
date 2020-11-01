@@ -45,18 +45,39 @@ public:
 
 protected:
     /**
-     * @brief Transmit data to device
+     * @brief           Transmit data to device
      *
-     * @param data Data to be send by bus
-     * @return uint Status code of transmittion
+     * @param data      Data to be send by bus
+     * @return uint     Status code of transmittion
      */
     uint Transmit(vector<uint8_t> data) override;
 
     /**
      * @brief Receive data from device on bus
      *
-     * @param length Number of bytes to be received
-     * @return vector<uint8_t> received data
+     * @param length            Number of bytes to be received
+     * @return vector<uint8_t>  Received data
      */
     vector<uint8_t> Receive(uint length)  override;
+
+    /**
+     * @brief   Write data to device using standart I2C method
+     *          Sending address of device register and then data to write
+     *          Address is not autoincremented
+     *
+     * @param mem_address   Address in device memory to write data
+     * @param data          Data to be written into device
+     * @return uint         Status code of transmittion
+     */
+    uint Write(vector<uint8_t> mem_address, vector<uint8_t> data);
+
+    /**
+     * @brief   Read data from device memory
+     *          Address is transmitted to device and then is received number of bytes from device
+     *
+     * @param mem_address       Address in device memory to read data
+     * @param length            Number of bytes to be received
+     * @return vector<uint8_t>  Received data
+     */
+    vector<uint8_t> Read(vector<uint8_t> mem_address, uint length);
 };
