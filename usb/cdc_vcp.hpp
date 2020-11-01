@@ -93,7 +93,7 @@ public:
  * @param Buf   Pointer to USB buffer in which are data stored
  * @param Len   Number of characters in buffer
  */
-void USB_VCP_RX_Callback(uint8_t *Buf, unsigned int Len);
+void USB_VCP_RX_Callback(uint8_t *Buf, uint32_t Len);
 
 /**
  * @brief       Callback function fot USB CDC transmit complete, must be called from

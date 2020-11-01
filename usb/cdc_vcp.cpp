@@ -23,7 +23,7 @@ int USB_CDC::Resend(){
     return TX_buffer.size();
 }
 
-void USB_VCP_RX_Callback(uint8_t* Buf, unsigned int Len){
+void USB_VCP_RX_Callback(uint8_t* Buf, uint32_t Len){
     device()->mcu->USB_port->Receive(Buf, Len);
 }
 
