@@ -51,6 +51,13 @@ public:
      */
     void Init_peripherals();
 
+    /**
+     * @brief           Returns timefrom start of mcu
+     *
+     * @return float    Time from start of mcu in seconds
+     */
+    float Uptime();
+
     // Peripherals
 
     IRQ_multi_handler<int> *EXT_IRQ = nullptr;

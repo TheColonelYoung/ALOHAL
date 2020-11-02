@@ -6,6 +6,10 @@ void MCU::Init(){
     Init_peripherals();
 }
 
+float MCU::Uptime(){
+    return HAL_GetTick()/1000.0;
+}
+
 void MCU::Filesystem_interface_initialization(){
     if (!device()->Filesystem_available()){
         return;
