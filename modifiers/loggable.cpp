@@ -4,10 +4,11 @@ int Loggable::Log_record(Log_levels level, string record, string method, string 
 
     string class_name = typeid(*this).name();
 
+    string time = "[" + to_string(device()->mcu->Uptime()) + "]";
     string position = "[" + file + "::" + to_string(line) + "]";
     string prefix = position + "[" + class_name + "::" + method + "] ";
 
-    record = prefix + record;
+    record = time + prefix + record;
 
     if (Logger().Instance()->Level() >= level){
         Logger().Instance()->Log_record(record);
