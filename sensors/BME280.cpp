@@ -45,7 +45,8 @@ std::uint32_t BME280::Load_ADC(Register ADC_register){
 }
 
 double BME280::Temperature(){
-    int32_t var1, var2, t_fine;
+    // Implementation of calculation is from BME280 datasheet
+    int32_t var1, var2;
 
     int32_t adc_T = Load_ADC(Register::Temperature_data);
 

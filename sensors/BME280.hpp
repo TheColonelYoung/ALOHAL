@@ -21,7 +21,7 @@ using namespace std;
  *
  *          In non-volatile memory contains read-only calibration data
  */
-class BME280 : public I2C_device, private Sensor, public Loggable
+class BME280 : public I2C_device, public Sensor, public Loggable
 {
 private:
     /**
@@ -67,6 +67,8 @@ private:
      * @brief   Defines if data in calibration vector are valid
      */
     bool calibration_data_loaded = false;
+
+    int32_t last_known_temperature = 0;
 
     /**
      * @brief   Temperature calibration data read from sensor
