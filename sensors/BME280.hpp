@@ -23,6 +23,30 @@ using namespace std;
  */
 class BME280 : public I2C_device, public Sensor, public Loggable
 {
+public:
+    enum class Sampling: uint8_t {
+        x0  = 0b000,
+        x1  = 0b001,
+        x2  = 0b010,
+        x4  = 0b011,
+        x8  = 0b100,
+        x16 = 0b101
+    };
+
+    enum class Filtering: uint8_t {
+        x0  = 0b000,
+        x2  = 0b001,
+        x4  = 0b010,
+        x8  = 0b011,
+        x16 = 0b100
+    };
+
+    enum class Quantity {
+        Temperature,
+        Pressure,
+        Humidity
+    };
+
 private:
     /**
      * @brief   Address of used registers from BME280
@@ -164,7 +188,23 @@ public:
      */
     void Force_measurement();
 
+    /**
+     * @brief   Set numbee of samples for filter, this is for all quantities
+     *
+     * @param filter_response
+     */
+    void Set_filtering(Filtering filter_samples);
+
+    /**
+     * @brief       Sampling rate is set for every quantity
+     *
+     * @param quantity          Quantity for which is new sampling rate
+     * @param sampling_rate     New sampling rate
+     */
+    void Set_sampling_rate(Quantity quantity, Sampling sampling_rate);
+
 private:
+
     /**
      * @brief       Loads calibration data from sensor to mcu
      *

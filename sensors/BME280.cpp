@@ -141,7 +141,22 @@ void BME280::Enter_mode(Modes mode){
     uint8_t reg_value = Read(static_cast<uint8_t>(Register::ControlMeas),1)[0];
     reg_value &= 0b11111100;
     reg_value |= static_cast<uint8_t>(mode);
-    Write({static_cast<uint8_t>(Register::ControlMeas)},{reg_value});
+    Write(static_cast<uint8_t>(Register::ControlMeas),{reg_value});
+}
+
+void BME280::Set_filtering(Filtering filter_samples){
+    uint8_t reg_value = Read(static_cast<uint8_t>(Register::Config),1)[0];
+    reg_value &= 0b11100011;
+    reg_value |= (static_cast<uint8_t>(filter_samples) << 2);
+    Write(static_cast<uint8_t>(Register::ControlMeas),{reg_value});
+}
+
+void BME280::Set_sampling_rate(Quantity quantity, Sampling sampling_rate){
+    uint8_t address = get<0>(Sampling_registers[quantity]);
+    uint8_t reg_value = Read(address,1)[0];
+    reg_value &= ~(0b111 << get<1>(Sampling_registers[quantity]));
+    reg_value |= (static_cast<uint8_t>(sampling_rate) << get<1>(Sampling_registers[quantity]));
+    Write(get<0>(Sampling_registers[quantity]),{reg_value});
 }
 
 bool BME280::Load_calibration_data(){
