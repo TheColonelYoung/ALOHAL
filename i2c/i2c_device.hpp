@@ -69,7 +69,7 @@ protected:
      * @param data          Data to be written into device
      * @return uint         Status code of transmittion
      */
-    uint Write(vector<uint8_t> mem_address, vector<uint8_t> data);
+    uint Write(uint8_t mem_address, vector<uint8_t> data);
 
     /**
      * @brief   Read data from device memory
@@ -79,5 +79,5 @@ protected:
      * @param length            Number of bytes to be received
      * @return vector<uint8_t>  Received data
      */
-    vector<uint8_t> Read(vector<uint8_t> mem_address, uint length);
+    vector<uint8_t> Read(uint8_t mem_address, uint length);
 };
