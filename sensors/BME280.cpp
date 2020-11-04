@@ -9,6 +9,10 @@ BME280::BME280(I2C_master master, unsigned char address):
     humidity_calibration.resize(6);
     pressure_calibration.resize(9);
 
+    Register_quantity("Temperature",this, &BME280::Temperature, true);
+    Register_quantity("Pressure",this, &BME280::Pressure, true);
+    Register_quantity("Humidity",this, &BME280::Humidity, true);
+
     Load_calibration_data();
 }
 

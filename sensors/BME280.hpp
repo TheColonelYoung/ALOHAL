@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <map>
+
 #include "i2c/i2c_device.hpp"
 #include "sensor.hpp"
 #include "modifiers/loggable.hpp"
