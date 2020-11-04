@@ -57,10 +57,72 @@ double BME280::Temperature(){
                 ((adc_T >> 4) - ((int32_t)temperature_calibration[0]))) >> 12) *
                 ((int32_t)temperature_calibration[2])) >> 14;
 
-    t_fine = var1 + var2;
+    last_known_temperature = var1 + var2;
 
-    float T = (t_fine * 5 + 128) >> 8;
-    return T / 100;
+    int32_t temperature = ((last_known_temperature * 5 + 128) >> 8) - 520;
+
+    return static_cast<double>(temperature) / 100.0f;
+}
+
+double BME280::Humidity(){
+    // Implementation of calculation is from BME280 datasheet
+
+    int32_t adc_H = Load_ADC(Register::Humidity_data);
+
+    int32_t v_x1_u32r;
+
+    v_x1_u32r = (last_known_temperature - ((int32_t)76800));
+
+    v_x1_u32r = (((((adc_H << 14) - (((int32_t)humidity_calibration[3]) << 20) -
+                    (((int32_t)humidity_calibration[4]) * v_x1_u32r)) +
+                    ((int32_t)16384)) >>
+                    15) *
+                (((((((v_x1_u32r * ((int32_t)humidity_calibration[5])) >> 10) *
+                        (((v_x1_u32r * ((int32_t)humidity_calibration[2])) >> 11) +
+                        ((int32_t)32768))) >>
+                    10) +
+                    ((int32_t)2097152)) *
+                        ((int32_t)humidity_calibration[1]) +
+                    8192) >>
+                    14));
+
+    v_x1_u32r = (v_x1_u32r - (((((v_x1_u32r >> 15) * (v_x1_u32r >> 15)) >> 7) *
+                                ((int32_t)humidity_calibration[0])) >>
+                                4));
+
+    v_x1_u32r = (v_x1_u32r < 0) ? 0 : v_x1_u32r;
+    v_x1_u32r = (v_x1_u32r > 419430400) ? 419430400 : v_x1_u32r;
+    float humidity = (v_x1_u32r >> 12);
+    return humidity / 1024.0;
+
+}
+
+double BME280::Pressure(){
+    // Implementation of calculation is from BME280 datasheet
+    int64_t var1, var2, pressure;
+
+    int32_t adc_P = Load_ADC(Register::Pressure_data);
+
+    var1 = ((int64_t)last_known_temperature) - 128000;
+    var2 = var1 * var1 * (int64_t)pressure_calibration[5];
+    var2 = var2 + ((var1 * (int64_t)pressure_calibration[4]) << 17);
+    var2 = var2 + (((int64_t)pressure_calibration[3]) << 35);
+    var1 = ((var1 * var1 * (int64_t)pressure_calibration[2]) >> 8) +
+            ((var1 * (int64_t)pressure_calibration[1]) << 12);
+    var1 =
+        (((((int64_t)1) << 47) + var1)) * ((int64_t)pressure_calibration[0]) >> 33;
+
+    if (var1 == 0) {
+        return 0; // avoid exception caused by division by zero
+    }
+
+    pressure = 1048576 - adc_P;
+    pressure = (((pressure << 31) - var2) * 3125) / var1;
+    var1 = (((int64_t)pressure_calibration[8]) * (pressure >> 13) * (pressure >> 13)) >> 25;
+    var2 = (((int64_t)pressure_calibration[7]) * pressure) >> 19;
+
+    pressure = ((pressure + var1 + var2) >> 8) + (((int64_t)pressure_calibration[6]) << 4) - 256*100;
+    return static_cast<double>(pressure) / 256;
 }
 
 void BME280::Enter_normal_mode(){

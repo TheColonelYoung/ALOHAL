@@ -64,6 +64,15 @@ private:
     };
 
     /**
+     * @brief Contains registers and offset for sensor quantities
+     */
+    map<Quantity, pair<uint8_t, unsigned short> > Sampling_registers {
+        { Quantity::Temperature, { 0xf4, 5 } },
+        { Quantity::Pressure, { 0xf4, 2 } },
+        { Quantity::Humidity, { 0xf2, 0 } },
+    };
+
+    /**
      * @brief   Defines if data in calibration vector are valid
      */
     bool calibration_data_loaded = false;
@@ -124,6 +133,20 @@ public:
      * @return double   Temperature in celsius
      */
     double Temperature();
+
+    /**
+     * @brief   Reads Humidity from sensor
+     *
+     * @return double
+     */
+    double Humidity();
+
+    /**
+     * @brief   Reads pressure from sensor
+     *
+     * @return double
+     */
+    double Pressure();
 
     /**
      * @brief   Set sensor to mode of continuous measurements
