@@ -31,13 +31,3 @@ bool Tasker_event::Run(){
     return true;
 
 }
-
-string Tasker_event::String(){
-    string text = "";
-    text += name + ": ";
-    text += to_string(remaning_time) + ", ";
-    text += to_string(period) + ", ";
-    text += to_string(repetition) + ", ";
-    text += to_string(priority);
-    return text;
-}
