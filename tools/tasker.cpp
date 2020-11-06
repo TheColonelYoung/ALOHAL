@@ -63,14 +63,6 @@ void Tasker::_Sort(){
     );
 }
 
-string Tasker::String(){
-    string text = "";
-    for (auto &event:events) {
-        text += event->String() + "\r\n";
-    }
-    return text;
-}
-
 void Tasker::_Set_timer(unsigned long time){
     timer->Time_set(time);
 }
