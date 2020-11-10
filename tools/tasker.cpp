@@ -7,6 +7,7 @@ Tasker::Tasker(Timer *timer) :
     timer->Prescaler_set(timer->Input_frequency() / 1000000);
     // Register IRQ Callback
     timer->IRQ->Register(this, &Tasker::IRQ);
+    timer->Optimize(true);
 }
 
 void Tasker::_Start(){
