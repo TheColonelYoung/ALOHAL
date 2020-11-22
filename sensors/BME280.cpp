@@ -57,9 +57,9 @@ double BME280::Temperature(){
                 ((adc_T >> 4) - ((int32_t)temperature_calibration[0]))) >> 12) *
                 ((int32_t)temperature_calibration[2])) >> 14;
 
-    last_known_temperature = var1 + var2;
+    last_known_temperature = var1 + var2 + 14000; // + 14000 Compensatin for Pressure
 
-    int32_t temperature = ((last_known_temperature * 5 + 128) >> 8) - 520;
+    int32_t temperature = (((var1 + var2) * 5 + 128) >> 8) - 490; // -490 compensation for Temperature
 
     return static_cast<double>(temperature) / 100.0f;
 }
@@ -94,7 +94,6 @@ double BME280::Humidity(){
     v_x1_u32r = (v_x1_u32r > 419430400) ? 419430400 : v_x1_u32r;
     float humidity = (v_x1_u32r >> 12);
     return humidity / 1024.0;
-
 }
 
 double BME280::Pressure(){
