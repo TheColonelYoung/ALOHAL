@@ -4,8 +4,9 @@ Tasker::Tasker(Timer *timer) :
     Tool("Tasker"),
     timer(timer){
     // Set prescaler to us
-    timer->Prescaler_set(timer->Input_frequency() / 1000000);
+    timer->Prescaler(timer->Input_frequency() / 1000000);
     // Register IRQ Callback
+    timer->Mode(Timer::Modes::Timer_IRQ);
     timer->IRQ->Register(this, &Tasker::IRQ);
     timer->Optimize(true);
 }
@@ -14,11 +15,11 @@ void Tasker::_Start(){
     running = true;
 
     _Set_timer(events.front()->Remaining_time());
-    timer->Enable_IRQ();
+    timer->Start();
 }
 
 void Tasker::_Stop(){
-    timer->Disable_IRQ();
+    timer->Stop();
     running = false;
 }
 

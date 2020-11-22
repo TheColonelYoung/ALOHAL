@@ -89,8 +89,8 @@ public:
             _Start();
         } else {
             // Tasker is running, remaning times needs to be updated and recalculated
-            unsigned long time = device()->mcu->TIM_2->Counter_get();
-            device()->mcu->TIM_2->Counter_set(0);
+            unsigned long time = device()->mcu->TIM_2->Counter();
+            device()->mcu->TIM_2->Counter(0);
             _Update(time);
         }
     }
