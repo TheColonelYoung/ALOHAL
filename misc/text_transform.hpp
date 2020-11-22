@@ -27,4 +27,19 @@ namespace Colored_text{
     extern map<Text_colors, string> Color_sequence;
 }
 
+/**
+ * @brief           Colorize text with escape symbols for console
+ *
+ * @param text      Text to colorize
+ * @param color     Selected color for text
+ * @return string   Colorized string
+ */
 string color(string text, Colored_text::Text_colors color);
+
+/**
+ * @brief           Transform decimal number to hexadecimal representation in string
+ *
+ * @param dec_number    Number to transform
+ * @return string       Hexadecimal representation of number
+ */
+string dec2hex(int dec_number);

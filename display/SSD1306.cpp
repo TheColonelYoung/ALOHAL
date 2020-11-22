@@ -1,7 +1,7 @@
 #include "SSD1306.hpp"
 
 SSD1306::SSD1306(uint res_x, uint res_y, I2C_master master, unsigned char address):
-    I2C_device(master, address), Graphical_display(res_x, res_y)
+    Graphical_display(res_x, res_y), I2C_device(master, address)
 {}
 
 void SSD1306::Init(){
@@ -67,7 +67,7 @@ int SSD1306::Put(uint x, uint y){
 }
 
 int SSD1306::Clear(uint x, uint y){
-
+    return 0;
 }
 
 void SSD1306::Send_command(uint8_t cmd){

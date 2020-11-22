@@ -12,9 +12,9 @@ long Motion_axis::Move(double shift){
         position += shift;
     }
     if (shift > 0){
-        motor->Move(Direction(), steps);
+        //motor->Move(Stepper_motor::Direction::Forward, steps);
     } else if (shift < 0){
-        motor->Move(Flip_direction(Direction()), steps*(-1));
+        //motor->Move(Flip_direction(Direction()), steps*(-1));
     } else {
         return 0;
     }
@@ -49,12 +49,11 @@ void Motion_axis::Sleep(){
     motor->Sleep();
 }
 
-
 Stepper_motor::Direction Motion_axis::Direction(){
-    if (reversed_direction){
-        return Stepper_motor::Direction::Reverse;
+    if (!reversed_direction){
+        return static_cast<Stepper_motor::Direction>(0);
     } else {
-        return Stepper_motor::Direction::Forward;
+        return static_cast<Stepper_motor::Direction>(1);
     }
 }
 

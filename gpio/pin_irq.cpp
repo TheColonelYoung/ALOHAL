@@ -2,7 +2,16 @@
 
 #include "device/device.hpp"
 
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+    device()->mcu->EXT_IRQ->Notify(GPIO_Pin);
+}
+
+void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin){
+    device()->mcu->EXT_IRQ->Notify(GPIO_Pin);
+}
+
+void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin){
     device()->mcu->EXT_IRQ->Notify(GPIO_Pin);
 }
 

@@ -22,6 +22,8 @@
 #include "cmsis_os.h"
 
 class Component;
+class Application;
+class Tool;
 
 using namespace std;
 
@@ -34,7 +36,11 @@ public:
     MCU *mcu = new MCU();
     CLI *cli;
 
-    Filesystem *fs;
+    Filesystem *fs = nullptr;
+
+    map<string, Application *> applications;
+
+    map<string, Tool *> tools;
 
     vector<Component *> components;
 
@@ -58,10 +64,10 @@ public:
     /**
      * @brief Creates and initialize CLI for device
      *
-     * @param connection Uart connection which will be used for CLI
+     * @param connection Serial line connection which will be used for CLI
      * @return int
      */
-    int Enable_CLI(UART *connection);
+    int Enable_CLI(Serial_line *connection);
 
     /**
      * @brief Check if CLI for device exists
@@ -92,6 +98,18 @@ public:
     bool Filesystem_available();
 
     /***************************************************
+    *                APPLICATIONS
+    * *************************************************/
+
+    /**
+     * @brief Add application to map of known application
+     *
+     * @param new_component Pointer to application to add
+     * @return string       Return code, 0 if all is OK,
+     */
+    int Register_application(Application *new_application);
+
+    /***************************************************
     *                COMPONENTS
     * *************************************************/
 
@@ -102,6 +120,18 @@ public:
      * @return string       New name of component
      */
     string Register_component(Component *new_component);
+
+    /***************************************************
+    *                TOOLS
+    * *************************************************/
+
+    /**
+     * @brief Add tool to map of known components
+     *
+     * @param new_component Pointer to tool to add
+     * @return string       New name of tool
+     */
+    int Register_tool(Tool *new_tool);
 
     /***************************************************
     *                 PLANNERS
@@ -141,5 +171,3 @@ private:
      */
     string New_component_name(string original_name);
 };
-
-#include "device/component.hpp"

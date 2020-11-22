@@ -1,8 +1,9 @@
 #include "cli.hpp"
 
 #include "globals.hpp"
+#include "filesystem/filesystem.hpp"
 
-void CLI::Connect(UART *connection){
+void CLI::Connect(Serial_line *connection){
     serial_connection = connection;
     serial_connection->IRQ->Register(this, &CLI::Char_load);
     serial_connection->Send("\r\n");
@@ -11,22 +12,60 @@ void CLI::Connect(UART *connection){
 void CLI::Start(){
     Register_command("help", "Print available commands or help for given command, example: help, help build", this, &CLI::Help);
     Register_command("build_info", "Print information about compilation as compiler version and date of compilation", this, &CLI::Build_info);
-    New_line();
+    Clear_line();
 }
 
 void CLI::Char_load(){
-    string received_char = serial_connection->Read(1);
-    if (static_cast<int>(received_char[0]) == 13){ // newline (screen - \r)
-        Process_line();
-        New_line();
+    char received_char = serial_connection->Read(1)[0];
+
+    if (escape_sequency_remaining > 1){
+        escape_sequency_remaining--;
         return;
-    } else if (static_cast<int>(received_char[0]) == 127){ // backspace (screen - DEL)
-        if (actual_line.length() > (line_opening.length() + filesystem_prefix.length())){
-            serial_connection->Send("\r" + string(actual_line.length() + filesystem_prefix.length(),' '));
-            actual_line.assign(actual_line.substr(0, actual_line.length() - 1));
+    }
+
+    // Newline (picocom - \r)
+    if (received_char == 13){
+        Process_line();
+        Clear_line();
+        return;
+    }
+    // Escape sequence -> skip next character [, after that use arrow sign
+    else if(received_char == 27){
+        escape_sequency_remaining = 2;
+        return;
+    }
+    // Backspace (screen - DEL)
+    else if (received_char == 127){ // backspace (screen - DEL)
+        if (actual_line.length() > (line_opening.length() + filesystem_prefix.length()))
+        {
+            actual_line = actual_line.substr(0, actual_line.length() - 1);
         }
-    } else if(isprint(static_cast<int>(received_char[0]))) {
-        actual_line += received_char;
+    }
+    // Handle escape sequence for arrows
+    else if(escape_sequency_remaining == 1){
+        if (History()){
+            // History arrow up
+            if(received_char == 65){
+                Set_line(command_history->Up());
+            }
+            // History arrow down
+            else if(received_char == 66){
+                Set_line(command_history->Down());
+            }
+        }
+        escape_sequency_remaining = 0;
+    }
+    // Autocomplete
+    else if(received_char == 9){
+        // If nothing on line skip autocomplete
+        if ((actual_line.back() != ' ') or (actual_line != filesystem_prefix + line_opening)){
+            // Autocomplete for string between last space and and of line
+            Autocomplete(actual_line.substr(actual_line.find_last_of(" ")+1, actual_line.length()));
+        }
+    }
+    // Any other printable character
+    else if(isprint(received_char)) {
+        actual_line += string(1,received_char);
     }
     Redraw_line();
 }
@@ -38,8 +77,16 @@ int CLI::Process_line(){
     // only Enter is pressed
     if(cmd_line == ""){
         Print("\r\n");
-        New_line();
+        Clear_line();
+        if (History()){
+            command_history->Reset_pointer();
+        }
         return 0;
+    }
+
+    // Add new record to history if is enabled
+    if (History()){
+        command_history->Update(cmd_line);
     }
 
     // parse command line into vector of strings (first is command, next are arguments)
@@ -62,9 +109,8 @@ int CLI::Process_line(){
     for(auto &command:commands){
         if(args[0] == command->Get_command()){
             int ret = command->Invoke(args);
-
-            actual_line.assign(line_opening);
-            New_line();
+            actual_line = line_opening;
+            Clear_line();
             return ret;
         }
     }
@@ -93,8 +139,20 @@ int CLI::Enable_filesystem_executable(Filesystem* fs){
 }
 
 int CLI::Redraw_line(){
-    serial_connection->Send("\r" + actual_line);
+    // Actual_line is text which will be now printed
+    int missing_spaces = last_printed_line.length() - actual_line.length();
+    if (missing_spaces > 0){
+        Print("\r" + string(last_printed_line.length(),' ') + "\r" + actual_line);
+    } else {
+        Print("\r" + actual_line);
+    }
+    last_printed_line = actual_line;
     return actual_line.length();
+}
+
+int CLI::Set_line(string text){
+    actual_line = filesystem_prefix + line_opening + text;
+    return actual_line.size();
 }
 
 void CLI::Set_filesystem_prefix(const string prefix){
@@ -103,17 +161,25 @@ void CLI::Set_filesystem_prefix(const string prefix){
         filesystem_prefix.erase(filesystem_prefix.length()-1);
     }
     filesystem_prefix = "\u001b[34;1m" + filesystem_prefix + "\u001b[0m";
-    New_line();
+    Clear_line();
 }
 
-void CLI::New_line(){
-    actual_line.assign(filesystem_prefix + line_opening);
+void CLI::Clear_line(){
+    actual_line = filesystem_prefix + line_opening;
     Redraw_line();
 }
 
 int CLI::Print(const string text){
     serial_connection->Send(text);
     return text.length();
+}
+
+int CLI::Enable_history(uint size_of_history){
+    if (command_history != nullptr){
+        return -1;
+    }
+    command_history = new CLI_history(size_of_history);
+    return 0;
 }
 
 int CLI::Help(vector<string> args){
@@ -141,6 +207,38 @@ int CLI::Build_info(vector<string> args){
     output += "Compiler version: "  + string(__VERSION__) + "\r\n";
     output += "C++ standard: "  + to_string(__cplusplus) + "\r\n";
     Print( output );
+    return 0;
+}
+
+int CLI::Autocomplete(string to_complete){
+    //Print("To complete: " + to_complete + "\r\n");
+
+    if (!fs){
+        // Cannot perform autocomplete, FS is not available
+        return -1;
+    }
+
+    // Get names of entries in actual location
+    vector<string> all_names = fs->Current_location_content();
+
+    vector<string> candidate_names;
+
+    for(auto &entry:all_names){
+        if (entry.find(to_complete) == 0){
+            candidate_names.push_back(entry);
+        }
+    }
+
+    if (candidate_names.size() > 1)
+    {
+        Print("\r\n");
+        for(auto &candidate:candidate_names){
+            Print(candidate + "\r\n");
+        }
+    } else if (candidate_names.size() == 1){
+        actual_line += candidate_names.front().substr(to_complete.length(),candidate_names.front().length());
+    }
+
     return 0;
 }
 

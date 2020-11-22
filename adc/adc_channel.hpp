@@ -12,13 +12,13 @@
 class ADC_channel
 {
 private:
-    AD_C *ADC;
+    AD_C *ADC_IN;
 
     int channel;
 
 public:
     ADC_channel() =default;
-    ADC_channel(AD_C *ADC, int channel);
+    ADC_channel(AD_C *ADC_IN, int channel);
 
     /**
      * @brief Perform measurement on given channel

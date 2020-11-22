@@ -51,6 +51,13 @@ public:
      */
     void Init_peripherals();
 
+    /**
+     * @brief           Returns timefrom start of mcu
+     *
+     * @return float    Time from start of mcu in seconds
+     */
+    float Uptime();
+
     // Peripherals
 
     IRQ_multi_handler<int> *EXT_IRQ = nullptr;
@@ -64,6 +71,10 @@ public:
     #endif
     #ifdef ADC_3_EN
     AD_C *ADC_3 = nullptr;
+    #endif
+
+    #ifdef USB_CDC_EN
+    USB_CDC *USB_port = nullptr;
     #endif
 
     // UART

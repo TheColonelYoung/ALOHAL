@@ -25,16 +25,17 @@ template <typename class_T>
 class Executable : public FS_entry
 {
 private:
+
     /**
      * @brief Wrapper which hold object and method
      */
-    Invocation_wrapper<class_T, int, vector<string> > *executable;
+    Invocation_wrapper<class_T, int, vector<string> &> *executable;
 
 public:
     Executable(){ this->type = Type::Executable; };
 
     ~Executable(){
-        if (executable){
+        if (executable) {
             delete executable;
         }
     }
@@ -46,9 +47,8 @@ public:
      * @param object    Pointer to object which will be stored
      * @param method    pointer to method which will be Invocated at execution time
      */
-    Executable(string name, class_T *object, int(class_T::*method)(vector<string>)) :
-        executable(new Invocation_wrapper<class_T, int, vector<string>>(object, method))
-    {
+    Executable(string name, class_T *object, int (class_T::*method) (vector<string> &)) :
+        executable(new Invocation_wrapper<class_T, int, vector<string> &>(object, method)){
         this->type = Type::Executable;
         this->name = name;
     }
@@ -59,7 +59,7 @@ public:
      * @param args  Arguments for encapsulated method
      * @return int  Return value of encapsulated method
      */
-    int Run(vector<string> args) const override{
+    int Run(vector<string> &args) const override {
         return executable->Invoke(args);
     }
 };

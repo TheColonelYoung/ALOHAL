@@ -42,6 +42,12 @@ extern DAC_HandleTypeDef hdac;
 extern DA_C DAC_1;
 #endif
 
+class USB_CDC;
+#ifdef USB_CDC_EN
+# include "usb/cdc_vcp.hpp"
+extern USB_CDC USB_port;
+#endif
+
 class UART;
 #if defined(UART_1_EN) || defined(UART_2_EN) || defined(UART_3_EN) || defined(UART_4_EN)
 # include "uart/uart.hpp"
@@ -170,7 +176,7 @@ extern Timer TIM_16;
 
 
 class I2C_master;
-#if defined(I2C_1_EN) || defined(I2C_2_EN) || defined(I2C_1_EN) || defined(I2C_3_EN)
+#if defined(I2C_1_EN) || defined(I2C_2_EN) || defined(I2C_3_EN) || defined(I2C_4_EN)
 # include "i2c/i2c_master.hpp"
 #endif
 
@@ -188,7 +194,7 @@ extern I2C_HandleTypeDef hi2c4;
 #endif
 
 class SPI_master;
-#if defined(SPI_1_EN) || defined(SPI_2_EN) || defined(SPI_1_EN) || defined(SPI_3_EN)
+#if defined(SPI_1_EN) || defined(SPI_2_EN) || defined(SPI_3_EN) || defined(SPI_4_EN)
 # include "spi/spi_master.hpp"
 #endif
 

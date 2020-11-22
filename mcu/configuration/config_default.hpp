@@ -21,6 +21,8 @@
 
 // #define DAC_1_EN
 
+#define USB_CDC_EN
+
 #define UART_1_EN
 //#define UART_2_EN
 // #define UART_3_EN

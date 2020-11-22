@@ -1,26 +1,14 @@
 #include "timer.hpp"
 
-int TIM_set_time(TIM_HandleTypeDef *htim, float useconds){
-    int prescaler = htim->Instance->PSC + 1;
-    float tick    = 1000000.0 / (TIM_FREQ / prescaler );
-
-    htim->Instance->ARR = useconds / (tick);
-
-    return htim->Instance->ARR;
-}
-
-int TIM_get_prescaler(TIM_HandleTypeDef *htim){
-    return htim->Instance->PSC;
-}
-
-int TIM_get_time(TIM_HandleTypeDef *htim){
-    return __HAL_TIM_GET_COUNTER(htim);
-}
+#include "device/device.hpp"
 
 Timer::Timer(TIM_HandleTypeDef *handler){
     this->handler   = handler;
     this->frequency = HAL_RCC_GetHCLKFreq();
     this->uticks    = frequency / 1000000.0;
+
+    // Clear timer IRQ flag after init
+    __HAL_TIM_CLEAR_FLAG(handler, TIM_SR_UIF);
 }
 
 Timer::Timer(TIM_HandleTypeDef *handler, int size, int channels)
@@ -47,175 +35,152 @@ Timer::Timer(TIM_HandleTypeDef *handler, int size, int channels)
         channel.emplace_back(TIM_channel(this, address));
     }
 }
-/*
-Timer& Timer::operator=(Timer rhs){
-    return
-}*/
 
-void Timer::Time_set(float useconds){
-    if (optimize) {
+void Timer::Time_set(float useconds, bool optimize){
+    if (optimize or this->optimize) {
         Optimize_for(useconds);
     }
     float tick = 1000000.0 / (frequency / (Prescaler() + 1) );
-    Counter_set(static_cast<int>((useconds / (tick))));
+    handler->Instance->ARR = static_cast<int>((useconds / (tick)));
 }
 
 void Timer::Frequency_set(float frequency){
     Time_set(1000000.0 / frequency);
 }
 
-bool Timer::Optimize(bool flag){
-    optimize = flag;
-    return optimize;
-}
-
 void Timer::Optimize_for(int time_us){
-    handler->Instance->PSC = ((time_us * uticks) / (2 << (size - 1)) - 1) + 1;
+    handler->Instance->PSC =  ((unsigned long long)time_us * uticks) / ((unsigned long long)1 << size);
 }
-
-void Timer::Counter_set(uint32_t new_counter){
-    handler->Instance->ARR = new_counter;
-}
-
-uint32_t Timer::Counter_get(){
-    return handler->Instance->ARR;
-}
-
-void Timer::Prescaler_set(uint16_t new_prescaler){
-    handler->Instance->PSC = new_prescaler;
-}
-
-uint16_t Timer::Prescaler(){
-    return handler->Instance->PSC;
-}
-
-uint Timer::Input_frequency(){
-    return frequency;
-}
-
-TIM_HandleTypeDef* Timer::Handler(){
-    return handler;
-}
-
 
 void Timer::Start(){
-    HAL_TIM_Base_Start(handler);
+    if(mode == Modes::Timer){
+        HAL_TIM_Base_Start(handler);
+    } else if (mode == Modes::Timer_IRQ){
+        HAL_TIM_Base_Start_IT(handler);
+    }
 }
 
 void Timer::Stop(){
-    HAL_TIM_Base_Stop(handler);
+    if(mode == Modes::Timer){
+        HAL_TIM_Base_Stop(handler);
+    } else if (mode == Modes::Timer_IRQ){
+        HAL_TIM_Base_Stop_IT(handler);
+    }
 }
 
-void Timer::Enable_IRQ(){
-    HAL_TIM_Base_Start_IT(handler);
-}
-
-void Timer::Disable_IRQ(){
-    HAL_TIM_Base_Stop_IT(handler);
-}
-
+#ifdef TIMER_USED_AS_TIMEBASE
+void ALOHAL_Timer_IRQ_Callback(TIM_HandleTypeDef *htim){
+#else
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+#endif
     #ifdef TIM_1_EN
     if (htim->Instance == TIM1) {
-        TIM_1.IRQ.Notify();
+        device()->mcu->TIM_1->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_2_EN
     if (htim->Instance == TIM2) {
-        TIM_2.IRQ.Notify();
+        device()->mcu->TIM_2->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_3_EN
     if (htim->Instance == TIM3) {
-        TIM_3.IRQ.Notify();
+        device()->mcu->TIM_3->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_4_EN
     if (htim->Instance == TIM4) {
-        TIM_4.IRQ.Notify();
+        device()->mcu->TIM_4->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_5_EN
     if (htim->Instance == TIM5) {
-        TIM_5.IRQ.Notify();
+        device()->mcu->TIM_5->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_6_EN
     if (htim->Instance == TIM6) {
-        TIM_6.IRQ.Notify();
+        device()->mcu->TIM_6->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_7_EN
     if (htim->Instance == TIM7) {
-        TIM_7.IRQ.Notify();
+        device()->mcu->TIM_7->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_8_EN
     if (htim->Instance == TIM8) {
-        TIM_8.IRQ.Notify();
+        device()->mcu->TIM_8->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_9_EN
     if (htim->Instance == TIM9) {
-        TIM_9.IRQ.Notify();
+        device()->mcu->TIM_9->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_10_EN
     if (htim->Instance == TIM10) {
-        TIM_10.IRQ.Notify();
+        device()->mcu->TIM_10->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_11_EN
     if (htim->Instance == TIM11) {
-        TIM_11.IRQ.Notify();
+        device()->mcu->TIM_11->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_12_EN
     if (htim->Instance == TIM12) {
-        TIM_12.IRQ.Notify();
+        device()->mcu->TIM_12->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_13_EN
     if (htim->Instance == TIM13) {
-        TIM_13.IRQ.Notify();
+        device()->mcu->TIM_13->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_14_EN
     if (htim->Instance == TIM14) {
-        TIM_14.IRQ.Notify();
+        device()->mcu->TIM_14->IRQ->Notify();
         return;
     }
     #endif
 
     #ifdef TIM_15_EN
     if (htim->Instance == TIM15) {
-        TIM_15.IRQ.Notify();
+        device()->mcu->TIM_15->IRQ->Notify();
+        return;
+    }
+    #endif
+
+    #ifdef TIM_16_EN
+    if (htim->Instance == TIM16) {
+        device()->mcu->TIM_16->IRQ->Notify();
         return;
     }
     #endif

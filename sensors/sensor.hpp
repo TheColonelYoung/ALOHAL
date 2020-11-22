@@ -103,6 +103,8 @@ public:
      */
     optional<string> Measure_text(string quantity);
 
+protected:
+
     /**
      * @brief   Created new record for quantity with method how to obtain it, used for numberical quantities
      *          Can create virtual file in component folder if filesystem is available in device

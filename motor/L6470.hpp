@@ -15,13 +15,14 @@
 
 #include "stepper_motor.hpp"
 #include "spi/spi_device.hpp"
+#include "device/component.hpp"
 
 using namespace std;
 
 /**
  * @brief Datasheet https://www.st.com/resource/en/datasheet/l6470.pdf
  */
-class L6470: public Stepper_motor, public SPI_device{
+class L6470: public Stepper_motor, public SPI_device, public Component{
 private:
 
 public:
@@ -96,7 +97,7 @@ public:
         GetStatus   = 0b11010000
     };
 
-    map<int, uint> microstepping_config {
+    const map<int, uint> microstepping_config {
         std::make_pair (1,   0b000),
         std::make_pair (2,   0b001),
         std::make_pair (4,   0b010),
@@ -107,21 +108,20 @@ public:
         std::make_pair (128, 0b111),
     };
 
-    L6470() = default;
-
-    using SPI_device::SPI_device;
+    
+    L6470(SPI_master master, Pin *chip_select, bool cs_active = false);
 
     /**
      * @brief Stop stepper motor immediately
      */
-    void Hard_stop() override;
+    void Hard_stop() final override;
 
     /**
      * @brief Stop motor with a deceleration phase
      *
      * @return int 0 if is it possible, -1 if not
      */
-    int Soft_stop() override;
+    int Soft_stop() final override;
 
     /**
      * @brief       Motor will makes number of steps in defined direction
@@ -132,7 +132,7 @@ public:
      *              Does not revrite class variable, respects max and min speed
      * @return int  0 if is it possible, -1 if not (due to max or min speed)
      */
-    int Move(Direction dir, uint steps, uint speed = 0) override;
+    virtual int Move(Direction dir, uint steps, uint speed = 0) final override;
 
     /**
      * @brief       Motor will make unlimited number of steps in defined direction
@@ -254,7 +254,7 @@ public:
      * @param size  Size of target register in bits, value will be cropped to that size
      * @return int  Validity of action
      */
-    int Set_param(register_map param, uint32_t value, uint size);
+    int Set_param(register_map param, const uint32_t value, uint size);
 
     /**
      * @brief   Return value of parametr from L6470

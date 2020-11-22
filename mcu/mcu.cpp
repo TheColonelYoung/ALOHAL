@@ -6,6 +6,10 @@ void MCU::Init(){
     Init_peripherals();
 }
 
+float MCU::Uptime(){
+    return HAL_GetTick()/1000.0;
+}
+
 void MCU::Filesystem_interface_initialization(){
     if (!device()->Filesystem_available()){
         return;
@@ -46,6 +50,11 @@ void MCU::Init_peripherals(){
     // FLASH
     #ifdef FLASH_EN
     Flash = new Flash_mem();
+    #endif
+
+    // USB_CDC
+    #ifdef USB_CDC_EN
+    USB_port = new USB_CDC();
     #endif
 
     // UART
@@ -113,7 +122,7 @@ void MCU::Init_peripherals(){
     ALOHAL_CREATE_TIMER(TIM_15, htim15, 16, 4)
     #endif
     #ifdef TIM_16_EN
-    ALOHAL_CREATE_TIMER(TIM_15, htim15, 16, 1)
+    ALOHAL_CREATE_TIMER(TIM_16, htim16, 16, 1)
     #endif
 
     // I2C

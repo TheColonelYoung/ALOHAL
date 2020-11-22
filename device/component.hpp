@@ -21,7 +21,7 @@ using namespace std;
  * @brief   Represents parts on PCB which is connected with mcu someway
  *          Used for any parts of device, for example some I2C memory or stepper motor drivers
  */
-class Component{
+class Component {
 private:
     /**
      * @brief Shared counter, from which anew components load their id
@@ -50,13 +50,32 @@ public:
      *
      * @return string Name of component
      */
-    string Name() const;
+    string Name() const { return name; };
+
+    /**
+     * @brief Variable ID gettor
+     *
+     * @return uint ID of component
+     */
+    uint Id() const { return id; };
 
 protected:
-    template<typename class_T>
-    bool Create_virtual_file(string name, class_T* object, double(class_T::*method)(void)){
-        if (device()->Filesystem_available()){
-            File<class_T>* component_file = new File<class_T>(name, object, method);
+
+    /**
+     * @brief           Create virtual file in component folder
+     *
+     * @tparam class_T  Class of object which provide data for file
+     * @tparam return_type_T    Return type of provider method
+     * @param name      Filename in Filesystem
+     * @param object    Pointer to object which provides data
+     * @param method    Method of object to execute, must return double or string
+     * @return true     File is created in component folder
+     * @return false    Device filesystem is not available
+     */
+    template <typename class_T, typename return_type_T>
+    bool Create_virtual_file(string name, class_T *object, return_type_T (class_T::*method)(void)){
+        if (device()->Filesystem_available()) {
+            File<class_T> *component_file = new File<class_T>(name, object, method);
             device()->fs->Add_entry("/components/" + Name() + "/" + name, component_file);
         } else {
             return false;

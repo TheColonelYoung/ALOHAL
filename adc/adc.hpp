@@ -9,6 +9,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 #include "globals.hpp"
 #include "global_includes.hpp"
@@ -32,6 +33,8 @@ typedef unsigned int uint;
 # include "stm32l1xx_hal_adc.h"
 #elif defined(MCU_FAMILY_STM32_L4)
 # include "stm32l4xx_hal_adc.h"
+#elif defined(MCU_FAMILY_STM32_G0)
+# include "stm32g0xx_hal_adc.h"
 #endif // if   defined(MCU_FAMILY_STM32_F0)
 
 typedef unsigned int uint;
@@ -54,23 +57,16 @@ using namespace std;
  *          For single ADC channel exists class which encapsulated it: ADC_channel
  */
 class AD_C {
+
+public:
+    #include "sampling_rate_values.hpp"
+
 public:
     enum class Resolution {
         _6_bit = 6,
         _8_bit = 8,
         _10_bit = 10,
         _12_bit = 12
-    };
-
-    enum class Sampling_rate {
-        _2C5,
-        _6C5,
-        _12C5,
-        _24C5,
-        _47C5,
-        _92C5,
-        _247C5,
-        _640C5
     };
 
     enum class Internal_channel {
@@ -105,16 +101,7 @@ public:
     Resolution resolution = Resolution::_12_bit;
 
 private:
-    map<Sampling_rate, uint32_t> sample_rate_map{
-        make_pair(Sampling_rate::_2C5, ADC_SAMPLETIME_2CYCLES_5),
-        make_pair(Sampling_rate::_6C5, ADC_SAMPLETIME_6CYCLES_5),
-        make_pair(Sampling_rate::_12C5, ADC_SAMPLETIME_12CYCLES_5),
-        make_pair(Sampling_rate::_24C5, ADC_SAMPLETIME_24CYCLES_5),
-        make_pair(Sampling_rate::_47C5, ADC_SAMPLETIME_47CYCLES_5),
-        make_pair(Sampling_rate::_92C5, ADC_SAMPLETIME_92CYCLES_5),
-        make_pair(Sampling_rate::_247C5, ADC_SAMPLETIME_247CYCLES_5),
-        make_pair(Sampling_rate::_640C5, ADC_SAMPLETIME_640CYCLES_5)
-    };
+    #include "sampling_rate_map.hpp"
 
     map<Resolution, uint32_t> resolution_map{
         make_pair(Resolution::_6_bit, ADC_RESOLUTION_6B),
@@ -123,7 +110,20 @@ private:
         make_pair(Resolution::_12_bit, ADC_RESOLUTION_12B)
     };
 
-    map<Internal_channel, uint32_t> channel_map{
+    vector<uint32_t> channel_map_common = {
+        ADC_CHANNEL_0,
+        ADC_CHANNEL_1,
+        ADC_CHANNEL_2,
+        ADC_CHANNEL_3,
+        ADC_CHANNEL_4,
+        ADC_CHANNEL_5,
+        ADC_CHANNEL_6,
+        ADC_CHANNEL_7,
+        ADC_CHANNEL_8,
+        ADC_CHANNEL_9,
+    };
+
+    map<Internal_channel, uint32_t> channel_map_internal{
         #ifdef ADC_CHANNEL_VREFINT
         make_pair(Internal_channel::VREF, ADC_CHANNEL_VREFINT),
         #endif
@@ -147,14 +147,22 @@ private:
      *          This configuration should alway be same as which was used
      *              for channel configuration
      */
+
+    #ifdef MCU_FAMILY_STM32_G0
     ADC_ChannelConfTypeDef channel_config = {
-        .Channel      = 0,
-        .Rank         = 1,
+        .Channel      = ADC_CHANNEL_0,
+        .Rank         = ADC_REGULAR_RANK_1,
+        .SamplingTime = ADC_SAMPLINGTIME_COMMON_1,
+    };
+    #else
+    ADC_ChannelConfTypeDef channel_config = {
+        .Channel      = ADC_CHANNEL_0,
+        .Rank         = ADC_REGULAR_RANK_1,
         .SamplingTime = ADC_SAMPLETIME_2CYCLES_5,
         .SingleDiff   = ADC_SINGLE_ENDED,
         .OffsetNumber = ADC_OFFSET_NONE,
-        .Offset       = 0
     };
+    #endif
 
 public:
 
