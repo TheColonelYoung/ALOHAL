@@ -24,6 +24,15 @@ int UART::Send(string message){
     return message.length();
 }
 
+int UART::Send_poll(string message){
+    sem->Wait();
+    //int32_t state = osKernelLock();
+    HAL_UART_Transmit(UART_Handler, (unsigned char *) message.c_str(), message.length(),10);
+    //osKernelRestoreLock(state);
+    sem->Fire();
+    return message.length();
+}
+
 int UART::Receive(){
     RX_buffer.push_back(UART_buffer_temp[0]);
     HAL_UART_Receive_IT(UART_Handler, UART_buffer_temp, 1);

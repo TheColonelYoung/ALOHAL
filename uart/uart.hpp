@@ -34,6 +34,9 @@
 #include "gpio/pin.hpp"
 #include "irq/irq_handler.hpp"
 #include "uart/serial_line.hpp"
+#include "rtos/thread.hpp"
+
+#include "cmsis_os.h"
 
 using namespace std;
 
@@ -65,6 +68,8 @@ private:
      */
     bool busy = false;
 
+    RTOS::RTOS_semaphore *sem = new RTOS::RTOS_semaphore();
+
 public:
     /**
      * @brief Construct a new UART object
@@ -85,6 +90,8 @@ public:
      * @return int      Error code
      */
     virtual int Send(string message) override final;
+
+    int Send_poll(string message);
 
     /**
      * @brief   After IRQ occurs will copy received character from temporal buffer to internal RX buffer
