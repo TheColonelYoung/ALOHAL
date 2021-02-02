@@ -24,31 +24,12 @@ WS2818B::WS2818B(Timer *timer, uint8_t channel_index, uint16_t chain_count) :
 }
 
 int WS2818B::Init_timer(){
-    timer->Handler()->Init.Prescaler = 0;
-    timer->Handler()->Init.CounterMode = TIM_COUNTERMODE_UP;
-    timer->Handler()->Init.Period = timer_max_count - 1;
-    timer->Handler()->Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    timer->Handler()->Init.RepetitionCounter = 0;
-    timer->Handler()->Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-    if (HAL_TIM_Base_Init(timer->Handler()) != HAL_OK) {
-        return 1;
-    }
+    timer->Mode(Timer::Modes::Timer_IRQ);
+    timer->Prescaler(0);
+    timer->Counter(timer_max_count - 1);
 
-    if (HAL_TIM_OC_Init(timer->Handler()) != HAL_OK) {
-        return 2;
-    }
-
-    TIM_OC_InitTypeDef sConfigOC;
-    sConfigOC.OCMode       = TIM_OCMODE_TOGGLE;
-    sConfigOC.Pulse        = timer_max_count;
-    sConfigOC.OCPolarity   = TIM_OCPOLARITY_HIGH;
-    sConfigOC.OCNPolarity  = TIM_OCNPOLARITY_HIGH;
-    sConfigOC.OCFastMode   = TIM_OCFAST_DISABLE;
-    sConfigOC.OCIdleState  = TIM_OCIDLESTATE_RESET;
-    sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-    if (HAL_TIM_OC_ConfigChannel(timer->Handler(), &sConfigOC, timer->channel[channel_index].Address()) != HAL_OK) {
-        return 3;
-    }
+    timer->channel[channel_index].Mode(TIM_channel::Modes::Toggle);
+    timer->channel[channel_index].Pulse(timer_max_count);
 
     timer->IRQ->Register(this, &WS2818B::Timer_stop);
     return 0;
@@ -69,13 +50,13 @@ int WS2818B::Color(uint8_t red, uint8_t green, uint8_t blue, float intensity){
 }
 
 void WS2818B::Push_protocol(vector<uint32_t> &protocol_timing){
-    timer->Enable_IRQ();
-    HAL_TIM_OC_Start_DMA(timer->Handler(), timer->channel[channel_index].Address(), (uint32_t *) protocol_timing.data(), protocol_timing.size());
+    timer->Start();
+    timer->channel[channel_index].Start_DMA((uint32_t *) protocol_timing.data(), protocol_timing.size());
 }
 
 void WS2818B::Timer_stop(){
-    device()->mcu->TIM_16->Disable_IRQ();
-    timer->Counter_set(0);
+    device()->mcu->TIM_16->Stop();
+    timer->Counter(0);
 }
 
 vector<uint32_t> WS2818B::Protocol_generator(uint8_t red, uint8_t green, uint8_t blue){
