@@ -15,3 +15,7 @@ void operator delete( void * ptr ){
 void operator delete[]( void * ptr ){
     vPortFree ( ptr );
 }
+/*
+namespace RTOS{
+    Thread_seed_base *seed = new Thread_seed<string>;
+}*/
