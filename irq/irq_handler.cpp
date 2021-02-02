@@ -3,6 +3,7 @@
 int IRQ_handler::Notify(){
     for (unsigned int i = 0; i < observers.size(); i++) {
         observers[i]->Run();
+        //RTOS::Create_thread("IRQ_notify", observers[i], &IRQ_observer_base::Run);
     }
 
     return 0;
