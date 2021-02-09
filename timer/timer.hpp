@@ -111,6 +111,10 @@ public:
         Function have effect only if are used in their mode, otherwise do nothing
     */
 
+    const TIM_channel &operator[](int i) const{
+        return channel[i-1];
+    }
+
     /*  ALL MODES */
 
     /**
