@@ -232,7 +232,7 @@ public:
      * @return  return_T     Value returned from encapsulated function
      */
     inline return_T Invoke(args_T args) const override final {
-        return function(args);
+        return (*function)(args);
     }
 
     /**
