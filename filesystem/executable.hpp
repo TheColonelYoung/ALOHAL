@@ -21,7 +21,7 @@ using namespace std;
  *
  * @tparam class_T   Class of object on which will be method called
  */
-template <typename class_T>
+//template <typename class_T>
 class Executable : public FS_entry
 {
 private:
@@ -29,7 +29,7 @@ private:
     /**
      * @brief Wrapper which hold object and method
      */
-    Invocation_wrapper<class_T, int, vector<string> &> *executable;
+    Invocation_wrapper_base<int, vector<string> &> *executable;
 
 public:
     Executable(){ this->type = Type::Executable; };
@@ -47,8 +47,22 @@ public:
      * @param object    Pointer to object which will be stored
      * @param method    pointer to method which will be Invocated at execution time
      */
+    /*
     Executable(string name, class_T *object, int (class_T::*method) (vector<string> &)) :
         executable(new Invocation_wrapper<class_T, int, vector<string> &>(object, method)){
+        this->type = Type::Executable;
+        this->name = name;
+    }*/
+
+    /**
+     * @brief Construct a new Executable object which holds invocation wrapper
+     *
+     * @param name
+     * @param executable    Invocation wrapper to execute, must be allocated
+     *                      Deallocated when executable is deleted
+     */
+    Executable(string name, Invocation_wrapper_base<int, vector<string> &> *executable) :
+        executable(executable){
         this->type = Type::Executable;
         this->name = name;
     }

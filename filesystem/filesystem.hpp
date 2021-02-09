@@ -81,11 +81,42 @@ public:
      */
     template<typename class_T>
     int Make_executable(string path, class_T *object, int(class_T::*method)(vector<string>&)){
+        auto iw = new Invocation_wrapper<class_T, int, vector<string> &>(object, method);
+        return Make_executable(path, iw);
+    }
+
+    /**
+     * @brief   Create executable inside filesystem
+     *
+     * @tparam class_T  Class of object which is pass to method
+     * @param path      Location at which will be executable saved
+     * @param object    Pointer to object which will be providing executable method
+     * @param method    Method which will invocated on saved object, must return int and receive vector<string> as argument
+     * @return int      Error number
+     */
+
+    template<typename class_T>
+    int Make_executable(string path, Invocation_wrapper<class_T, int, vector<string> &> *iw){
         string filename = path.substr(path.find_last_of("/") + 1);
-        Executable<class_T> *new_exec = new Executable<class_T>(filename, object, method);
+        Executable *new_exec = new Executable(filename, iw);
         return Add_entry(path, new_exec);
     }
 
+    /**
+     * @brief   Create executable inside filesystem
+     *
+     * @tparam class_T  Class of object which is pass to method
+     * @param path      Location at which will be executable saved
+     * @param object    Pointer to object which will be providing executable method
+     * @param method    Method which will invocated on saved object, must return int and receive vector<string> as argument
+     * @return int      Error number
+     */
+/*
+    int Make_executable(string path, Invocation_wrapper_base<int, vector<string> &> *iw){
+        string filename = path.substr(path.find_last_of("/") + 1);
+        Executable *new_exec = new Executable(filename, iw);
+        return Add_entry(path, new_exec);
+    }*/
 
     /**
      * @brief return FS_entry defined by relative or absolute path
