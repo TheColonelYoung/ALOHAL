@@ -62,7 +62,10 @@ void TIM_channel::Start_DMA(uint32_t *address_from, uint32_t data_size){
 
 void TIM_channel::Pulse(uint32_t pulse_length){
     TIM_OC_InitTypeDef sConfigOC;
-    sConfigOC.OCMode     = pulse_length;
+    sConfigOC.Pulse     = pulse_length;
+    sConfigOC.OCMode     = TIM_OCMODE_PWM1;
+    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
     if (mode == Modes::PWM) {
         HAL_TIM_PWM_ConfigChannel(_parent_timer->Handler(), &sConfigOC, _address);
     } else if (mode == Modes::Toggle) {
