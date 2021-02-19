@@ -1,5 +1,7 @@
 #include "loggable.hpp"
 
+#include "device/device.hpp"
+
 int Loggable::Log_record(Log_levels level, string record, string method, string file, unsigned int line){
 
     string class_name = typeid(*this).name();
