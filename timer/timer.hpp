@@ -17,7 +17,7 @@
  *
  *          Counter for IRQ count from zero (or any other value in CNT-Counter register to value of
  *               ARR-Auto reload register)
- *          When ARRpreload is enabled, new value to ARR is written after IRq happens
+ *          When ARRpreload is enabled, new value to ARR is written after IRQ happens
  *          Frequency of timer input is initialized only once at mcu start-up
  *
  *                CHANNELS
@@ -56,6 +56,12 @@ public:
     };
 
 private:
+
+    /**
+     * @brief   Index of timer, for TIM_1 is 1
+     */
+    unsigned short index;
+
     /**
      * @brief   Actual mode of timer
      */
@@ -89,13 +95,6 @@ private:
     TIM_HandleTypeDef *handler;
 
 public:
-    /**
-     * @brief   Construct a new Timer object
-     *          Initialize value of frequency and uticks from clock source frequency
-     *
-     * @param handler   Handle to HAl timer structure of timer
-     */
-    Timer(TIM_HandleTypeDef *handler);
 
     /**
      * @brief   Construct a new Timer object
@@ -105,7 +104,7 @@ public:
      * @param size          Size if counter register
      * @param channels      Number of timer channels
      */
-    Timer(TIM_HandleTypeDef *handler, int size, int channels);
+    Timer(unsigned short index, TIM_HandleTypeDef *handler, int size, int channels);
 
     /*  Function below are separated into section based on usability in different modes
         Function have effect only if are used in their mode, otherwise do nothing
@@ -238,6 +237,13 @@ public:
      * @return uint Frequency in Hz
      */
     inline uint Input_frequency() const { return frequency; };
+
+    /**
+     * @brief Returns index of timer
+     *
+     * @return unsigned short Index of timer
+     */
+    unsigned short Index() {return index;};
 
 private:
 

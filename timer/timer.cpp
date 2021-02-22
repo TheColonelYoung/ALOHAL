@@ -2,18 +2,14 @@
 
 #include "device/device.hpp"
 
-Timer::Timer(TIM_HandleTypeDef *handler){
-    this->handler   = handler;
+Timer::Timer(unsigned short index, TIM_HandleTypeDef *handler, int size, int channels)
+    : index(index), size(size), handler(handler){
+
     this->frequency = HAL_RCC_GetHCLKFreq();
     this->uticks    = frequency / 1000000.0;
 
     // Clear timer IRQ flag after init
     __HAL_TIM_CLEAR_FLAG(handler, TIM_SR_UIF);
-}
-
-Timer::Timer(TIM_HandleTypeDef *handler, int size, int channels)
-    : Timer(handler){
-    this->size = size;
 
     for (int i = 1; i <= channels; i++) {
         uint32_t address = 0;
