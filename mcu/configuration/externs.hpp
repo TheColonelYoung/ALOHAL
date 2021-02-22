@@ -69,13 +69,13 @@ extern UART_HandleTypeDef huart4;
 // TIMERS
 class Timer;
 
-#define ALOHAL_CREATE_TIMER(name, handler, size, channels) \
-    name = new Timer(&handler, size, channels); \
+#define ALOHAL_CREATE_TIMER(index, name, handler, size, channels) \
+    name = new Timer(index, &handler, size, channels); \
     ALOHAL_TIM_CHAN_BACKPOINTER(name)
 
 #define ALOHAL_TIM_CHAN_BACKPOINTER(timer) \
     for (uint i = 0; i < timer->channel.size(); i++) { \
-        timer->channel[i]._parent_timer = timer; }
+        timer->channel[i].parent_timer = timer; }
 
 #ifdef TIM_1_EN
 # include "timer/timer.hpp"
