@@ -87,7 +87,7 @@ private:
      * @brief   Timer of ticks (timer input) per usecond
      *          Initialized only at startup as frequency
      */
-    float uticks;
+    double uticks;
 
     /**
      * @brief Handle to HAl timer structure of timer
@@ -198,14 +198,15 @@ public:
      * @param useconds  Time to next IRQ
      * @param optimize  Local flag for prescaler optimization
      */
-    void Time_set(float useconds, bool optimize = false);
+    void Time_set(double useconds, bool optimize = false);
 
     /**
      * @brief   Set frequency in which timer will execute IRQ
      *
      * @param frequency Frequency in Hz
+     * @param optimize  Local flag for prescaler optimization
      */
-    void Frequency_set(float frequency);
+    void Frequency_set(double frequency, bool optimize = false);
 
     /**
      * @brief   Enable input for counter, clock input or external input
@@ -261,7 +262,7 @@ private:
      *
      * @param time_us   Time to optimize in usecond
      */
-    void Optimize_for(int time_us); // opzimize prescaler for given time
+    void Optimize_for(double time_us); // optimize prescaler for given time
 };
 
 #ifdef TIMER_USED_AS_TIMEBASE

@@ -32,23 +32,26 @@ Timer::Timer(unsigned short index, TIM_HandleTypeDef *handler, int size, int cha
     }
 }
 
-void Timer::Time_set(float useconds, bool optimize){
+void Timer::Time_set(double useconds, bool optimize){
     if (optimize or this->optimize) {
         Optimize_for(useconds);
     }
-    float tick = 1000000.0 / (frequency / (Prescaler() + 1) );
-    handler->Instance->ARR = static_cast<int>((useconds / (tick)));
+    double tick = 1000000.0 / (static_cast<double>(frequency) / (Prescaler() + 1));
+
+    Counter(0);
+    Autoreload(static_cast<uint32_t>((useconds / (tick))));
 }
 
-void Timer::Frequency_set(float frequency){
-    Time_set(1000000.0 / frequency);
+void Timer::Frequency_set(double frequency, bool optimize){
+    Time_set(1000000.0 / frequency, optimize);
 }
 
-void Timer::Optimize_for(int time_us){
-    handler->Instance->PSC =  ((unsigned long long)time_us * uticks) / ((unsigned long long)1 << size);
+void Timer::Optimize_for(double time_us){
+    Prescaler(static_cast<int16_t>((time_us * uticks) / (((unsigned long) 1 << size)-1)));
 }
 
 void Timer::Start(){
+    Counter(0);
     if(mode == Modes::Timer){
         HAL_TIM_Base_Start(handler);
     } else if (mode == Modes::Timer_IRQ){
