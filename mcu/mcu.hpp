@@ -46,17 +46,26 @@ public:
     void Filesystem_interface_initialization();
 
     /**
+     * @brief Enable to configure timer frequency throught CLI
+     *
+     * @param timer Timer for CLI configuration
+     */
+    void Enable_CLI_control(Timer *timer);
+
+    /**
+     * @brief Enable to configure timer channel pulse throught CLI
+     *
+     * @param timer_channel Timer channel for CLI configuration
+     */
+    void Enable_CLI_control(TIM_channel *timer_channel);
+
+    /**
      * @brief Initialize peripherals with their parameters
      * Should be called during device initialization
      */
     void Init_peripherals();
 
-    /**
-     * @brief           Returns timefrom start of mcu
-     *
-     * @return float    Time from start of mcu in seconds
-     */
-    float Uptime();
+
 
     // Peripherals
 
