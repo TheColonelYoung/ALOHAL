@@ -118,52 +118,52 @@ void MCU::Init_peripherals(){
     #endif
 
     #ifdef TIM_1_EN
-    ALOHAL_CREATE_TIMER(TIM_1, htim1, 16, 4)
+    ALOHAL_CREATE_TIMER(1, TIM_1, htim1, 16, 4)
     #endif
     #ifdef TIM_2_EN
-    ALOHAL_CREATE_TIMER(TIM_2, htim2, 32, 4)
+    ALOHAL_CREATE_TIMER(2, TIM_2, htim2, 32, 4)
     #endif
     #ifdef TIM_3_EN
-    ALOHAL_CREATE_TIMER(TIM_3, htim3, 16, 4)
+    ALOHAL_CREATE_TIMER(3, TIM_3, htim3, 16, 4)
     #endif
     #ifdef TIM_4_EN
-    ALOHAL_CREATE_TIMER(TIM_4, htim4, 16, 4)
+    ALOHAL_CREATE_TIMER(4, TIM_4, htim4, 16, 4)
     #endif
     #ifdef TIM_5_EN
-    ALOHAL_CREATE_TIMER(TIM_5, htim5, 32, 4)
+    ALOHAL_CREATE_TIMER(5, TIM_5, htim5, 32, 4)
     #endif
     #ifdef TIM_6_EN
-    ALOHAL_CREATE_TIMER(TIM_6, htim6, 16, 0)
+    ALOHAL_CREATE_TIMER(6, TIM_6, htim6, 16, 0)
     #endif
     #ifdef TIM_7_EN
-    ALOHAL_CREATE_TIMER(TIM_7, htim7, 16, 0)
+    ALOHAL_CREATE_TIMER(7, TIM_7, htim7, 16, 0)
     #endif
     #ifdef TIM_8_EN
-    ALOHAL_CREATE_TIMER(TIM_8, htim8, 16, 4)
+    ALOHAL_CREATE_TIMER(8, TIM_8, htim8, 16, 4)
     #endif
     #ifdef TIM_9_EN
-    ALOHAL_CREATE_TIMER(TIM_9, htim9, 16, 2)
+    ALOHAL_CREATE_TIMER(9, TIM_9, htim9, 16, 2)
     #endif
     #ifdef TIM_10_EN
-    ALOHAL_CREATE_TIMER(TIM_10, htim10, 16, 1)
+    ALOHAL_CREATE_TIMER(10, TIM_10, htim10, 16, 1)
     #endif
     #ifdef TIM_11_EN
-    ALOHAL_CREATE_TIMER(TIM_11, htim11, 16, 1)
+    ALOHAL_CREATE_TIMER(11, TIM_11, htim11, 16, 1)
     #endif
     #ifdef TIM_12_EN
-    ALOHAL_CREATE_TIMER(TIM_12, htim12, 16, 2)
+    ALOHAL_CREATE_TIMER(12, TIM_12, htim12, 16, 2)
     #endif
     #ifdef TIM_13_EN
-    ALOHAL_CREATE_TIMER(TIM_13, htim13, 16, 1)
+    ALOHAL_CREATE_TIMER(13, TIM_13, htim13, 16, 1)
     #endif
     #ifdef TIM_14_EN
-    ALOHAL_CREATE_TIMER(TIM_14, htim14, 16, 1)
+    ALOHAL_CREATE_TIMER(14, TIM_14, htim14, 16, 1)
     #endif
     #ifdef TIM_15_EN
-    ALOHAL_CREATE_TIMER(TIM_15, htim15, 16, 4)
+    ALOHAL_CREATE_TIMER(15, TIM_15, htim15, 16, 4)
     #endif
     #ifdef TIM_16_EN
-    ALOHAL_CREATE_TIMER(TIM_16, htim16, 16, 1)
+    ALOHAL_CREATE_TIMER(16, TIM_16, htim16, 16, 1)
     #endif
 
     // I2C

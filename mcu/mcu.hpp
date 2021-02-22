@@ -11,6 +11,7 @@
 #include "configuration/config.cpp"
 #include "mcu/configuration/settings.hpp"
 #include "gpio/pin.hpp"
+#include "timer/timer.hpp"
 
 #include <string>
 
