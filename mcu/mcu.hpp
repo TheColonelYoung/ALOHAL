@@ -40,6 +40,13 @@ public:
     void Init();
 
     /**
+     * @brief           Returns timefrom start of mcu
+     *
+     * @return float    Time from start of mcu in seconds
+     */
+    float Uptime();
+
+    /**
      * @brief   Create files and folders inside filesystem
      *          Interface is depending on available peripherals
      *          This method is called during setting up of filesystem of device
