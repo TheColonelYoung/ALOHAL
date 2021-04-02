@@ -31,5 +31,5 @@ public:
      *
      * @param current   Output current in uA
      */
-    virtual uint Current(uint current) final override;
+    virtual uint Set_output_current(uint current) final override;
 };
