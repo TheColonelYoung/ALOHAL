@@ -16,6 +16,7 @@ int Eyrina::Run(vector<string> &args){
 int Eyrina::Init(){
     Log(Log_levels::Debug, "Eyrina Init");
     Init_motors();
+    Init_light();
     return 0;
 }
 
@@ -233,17 +234,25 @@ int Eyrina::G_code_M10(map<char, double> &params, vector<char> &flags){
 }
 
 int Eyrina::G_code_E1(map<char, double> &params, vector<char> &flags){
-    if ((params.at('C') > 3) | (params.at('C') < 0)) {
+
+    double intensity = params.at('I');
+    double index_d = params.at('C');
+    int index = static_cast<int>(params.at('C'));
+    index = static_cast<int>(index_d);
+
+    if ((index > 3) | (index < 1)) {
         return -1;
     }
 
-    if ((params.at('I') > 100) | (params.at('I') < 0)) {
+    if ((intensity > 100) | (intensity < 0)) {
         return -1;
     }
 
-    Log(Log_levels::Notice, "Setting LED channel " + to_string(params.at('C')) + " to intensity " + to_string(params.at('I')) );
+    intensity = led_channels[index-1]->Power(intensity);
 
-    led_channels[static_cast<int>(params.at('C')) - 1]->Power(params.at('I'));
+    unsigned int current = led_channels[index-1]->Current() / 1000;
+
+    Log(Log_levels::Debug, "Setting LED channel " + to_string(index) + " to intensity of " + to_string(static_cast<int>(intensity)) + "% (" + to_string(current) + " mA)" );
     return 0;
 }
 
@@ -297,9 +306,17 @@ int Eyrina::G_code_R10(map<char, double> &params, vector<char> &flags){
 }
 
 void Eyrina::Init_light(){
-    led_channels[0] = new NCL30160(&(device()->mcu->TIM_2->channel[0]), 50000, 50000);
-    led_channels[1] = new NCL30160(&(device()->mcu->TIM_2->channel[2]), 50000, 50000);
-    led_channels[2] = new NCL30160(&(device()->mcu->TIM_2->channel[1]), 50000, 50000);
+    Log(Log_levels::Debug, "Eyrina light initialization");
+    Timer *light_timer = device()->mcu->TIM_2;
+
+    light_timer->Mode(Timer::Modes::Timer);
+    light_timer->Frequency_set(1000, true);
+    light_timer->Start();
+
+    // First channel is used for debug heartbeat
+    led_channels[0] = new NCL30160(&(device()->mcu->TIM_2->channel[0]), 50000, 20000);
+    led_channels[1] = new NCL30160(&(device()->mcu->TIM_2->channel[2]), 50000, 20000);
+    led_channels[2] = new NCL30160(&(device()->mcu->TIM_2->channel[1]), 20000, 0);
 
     SSD1306 *oled = new SSD1306(128, 64, *(device()->mcu->I2C_1), static_cast<unsigned char>(0b01111000));
 
