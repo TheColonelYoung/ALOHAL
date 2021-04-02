@@ -311,211 +311,185 @@ void Eyrina::Init_light(){
 }
 
 void Eyrina::Init_motors(){
-    MCP23017 mcp_A = MCP23017(*(device()->mcu->I2C_1), 0b01000000);
-    MCP23017 mcp_B = MCP23017(*(device()->mcu->I2C_1), 0b01001000);
+    Log(Log_levels::Debug, "Eyrina motor initialization");
 
-    mcp_A.Init();
-    mcp_B.Init();
+    // Define I2C GPIO expanders
+    MCP23017 *mcp_A = new MCP23017(*(device()->mcu->I2C_1), 0b01000000);
+    MCP23017 *mcp_B = new MCP23017(*(device()->mcu->I2C_1), 0b01001000);
 
-    mcp_A.Direction(12, 0);
-    mcp_A.Direction(8, 0);
-    mcp_A.Direction(4, 0);
-    mcp_A.Direction(0, 0);
+    // Init GPIO expanders
+    mcp_A->Init();
+    mcp_B->Init();
 
-    mcp_B.Direction(12, 0);
-    mcp_B.Direction(8, 0);
-    mcp_B.Direction(4, 0);
-    mcp_B.Direction(0, 0);
+    // Configure pins determinated as Chip select as output
+    mcp_A->Direction(12, 0);
+    mcp_A->Direction(8, 0);
+    mcp_A->Direction(4, 0);
+    mcp_A->Direction(0, 0);
 
-    mcp_A.Set(12, 1);
-    mcp_A.Set(8, 1);
-    mcp_A.Set(4, 1);
-    mcp_A.Set(0, 1);
+    mcp_B->Direction(12, 0);
+    mcp_B->Direction(8, 0);
+    mcp_B->Direction(4, 0);
+    mcp_B->Direction(0, 0);
 
-    mcp_B.Set(12, 1);
-    mcp_B.Set(8, 1);
-    mcp_B.Set(4, 1);
-    mcp_B.Set(0, 1);
+    // Set Chip select pins to High logic state
+    mcp_A->Set(12, 1);
+    mcp_A->Set(8, 1);
+    mcp_A->Set(4, 1);
+    mcp_A->Set(0, 1);
 
-    Pin_MCP23017 mpc_A1 = Pin_MCP23017(mcp_A, 12);
-    Pin_MCP23017 mpc_A2 = Pin_MCP23017(mcp_A, 8);
-    Pin_MCP23017 mpc_A3 = Pin_MCP23017(mcp_A, 4);
-    Pin_MCP23017 mpc_A4 = Pin_MCP23017(mcp_A, 0);
+    mcp_B->Set(12, 1);
+    mcp_B->Set(8, 1);
+    mcp_B->Set(4, 1);
+    mcp_B->Set(0, 1);
 
-    Pin_MCP23017 mpc_B1 = Pin_MCP23017(mcp_B, 12);
-    Pin_MCP23017 mpc_B2 = Pin_MCP23017(mcp_B, 8);
-    Pin_MCP23017 mpc_B3 = Pin_MCP23017(mcp_B, 4);
-    Pin_MCP23017 mpc_B4 = Pin_MCP23017(mcp_B, 0);
+    // Configuration of pins on GPIO expander to fit SPI chip select definition
+    Pin_MCP23017 *mpc_A1 = new Pin_MCP23017(*mcp_A, 12);
+    Pin_MCP23017 *mpc_A2 = new Pin_MCP23017(*mcp_A, 8);
+    Pin_MCP23017 *mpc_A3 = new Pin_MCP23017(*mcp_A, 4);
+    Pin_MCP23017 *mpc_A4 = new Pin_MCP23017(*mcp_A, 0);
 
+    Pin_MCP23017 *mpc_B1 = new Pin_MCP23017(*mcp_B, 12);
+    Pin_MCP23017 *mpc_B2 = new Pin_MCP23017(*mcp_B, 8);
+    Pin_MCP23017 *mpc_B3 = new Pin_MCP23017(*mcp_B, 4);
+    Pin_MCP23017 *mpc_B4 = new Pin_MCP23017(*mcp_B, 0);
 
-    L6470 motor_1 = L6470(*(device()->mcu->SPI_2), &mpc_A1);
-    L6470 motor_2 = L6470(*(device()->mcu->SPI_2), &mpc_A2);
-    L6470 motor_3 = L6470(*(device()->mcu->SPI_2), &mpc_A3);
-    L6470 motor_4 = L6470(*(device()->mcu->SPI_2), &mpc_A4);
+    // Define stepper motor drivers, SPI and Chip select pin from GPIO expander
+    stepper_drivers.emplace_back(new L6470(*(device()->mcu->SPI_2), mpc_A1));
+    stepper_drivers.emplace_back(new L6470(*(device()->mcu->SPI_2), mpc_A2));
+    stepper_drivers.emplace_back(new L6470(*(device()->mcu->SPI_2), mpc_A3));
+    stepper_drivers.emplace_back(new L6470(*(device()->mcu->SPI_2), mpc_A4));
 
-    L6470 motor_5 = L6470(*(device()->mcu->SPI_2), &mpc_B1);
-    L6470 motor_6 = L6470(*(device()->mcu->SPI_2), &mpc_B2);
-    L6470 motor_7 = L6470(*(device()->mcu->SPI_2), &mpc_B3);
-    L6470 motor_8 = L6470(*(device()->mcu->SPI_2), &mpc_B4);
+    stepper_drivers.emplace_back(new L6470(*(device()->mcu->SPI_2), mpc_B1));
+    stepper_drivers.emplace_back(new L6470(*(device()->mcu->SPI_2), mpc_B2));
+    stepper_drivers.emplace_back(new L6470(*(device()->mcu->SPI_2), mpc_B3));
+    stepper_drivers.emplace_back(new L6470(*(device()->mcu->SPI_2), mpc_B4));
 
-    motor_1.Status();
-    motor_2.Status();
-    motor_3.Status();
-    motor_4.Status();
+    for(auto &motor:stepper_drivers){
+        motor->Status();
+        motor->Reset();
+    }
+    for(auto &motor:stepper_drivers){
+        HAL_Delay(10);
+        motor->Status();
+    }
+    for(auto &motor:stepper_drivers){
+        motor->Init();
+    }
 
-    motor_5.Status();
-    motor_6.Status();
-    motor_7.Status();
-    motor_8.Status();
-
-    motor_1.Reset();
-    motor_2.Reset();
-    motor_3.Reset();
-    motor_4.Reset();
-
-    motor_5.Reset();
-    motor_6.Reset();
-    motor_7.Reset();
-    motor_8.Reset();
-
-    HAL_Delay(50);
-    motor_1.Status();
-    HAL_Delay(50);
-    motor_2.Status();
-    HAL_Delay(50);
-    motor_3.Status();
-    HAL_Delay(50);
-    motor_4.Status();
-    HAL_Delay(50);
-    motor_5.Status();
-    HAL_Delay(50);
-    motor_6.Status();
-    HAL_Delay(50);
-    motor_7.Status();
-    HAL_Delay(50);
-    motor_8.Status();
-
-    HAL_Delay(100);
-
-    motor_1.Init();
-    motor_2.Init();
-    motor_3.Init();
-    motor_4.Init();
-    motor_5.Init();
-    motor_6.Init();
-    motor_7.Init();
-    motor_8.Init();
 
     // MOTOR Z - 1
 
     int M1_uSteps = 32;
-    motor_1.Set_microsteps(M1_uSteps);
-    motor_1.Set_acceleration(1000);
-    motor_1.Set_deceleration(1200);
-    motor_1.Set_max_speed(2400);
-    motor_1.Set_min_speed(200);
+    stepper_drivers[0]->Set_microsteps(M1_uSteps);
+    stepper_drivers[0]->Set_acceleration(1000);
+    stepper_drivers[0]->Set_deceleration(1200);
+    stepper_drivers[0]->Set_max_speed(2400);
+    stepper_drivers[0]->Set_min_speed(200);
 
     uint8_t M1_KVAL_VALUE = 0x4;
-    motor_1.Set_param(L6470::register_map::KVAL_RUN, M1_KVAL_VALUE, 8);
-    motor_1.Set_param(L6470::register_map::KVAL_ACC, M1_KVAL_VALUE, 8);
-    motor_1.Set_param(L6470::register_map::KVAL_DEC, M1_KVAL_VALUE, 8);
-    motor_1.Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
+    stepper_drivers[0]->Set_param(L6470::register_map::KVAL_RUN, M1_KVAL_VALUE, 8);
+    stepper_drivers[0]->Set_param(L6470::register_map::KVAL_ACC, M1_KVAL_VALUE, 8);
+    stepper_drivers[0]->Set_param(L6470::register_map::KVAL_DEC, M1_KVAL_VALUE, 8);
+    stepper_drivers[0]->Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
 
-    Motion_axis Z = Motion_axis(&motor_1, 0.00125 / M1_uSteps);
+    Motion_axis Z = Motion_axis(stepper_drivers[0], 0.00125 / M1_uSteps);
     Z.Reverse(true);
 
     Add_axis('Z', &Z);
 
+
     // MOTOR T - 2
 
     int M2_uSteps = 32;
-    motor_2.Set_microsteps(M2_uSteps);
-    motor_2.Set_acceleration(800);
-    motor_2.Set_deceleration(1000);
-    motor_2.Set_max_speed(2200);
-    motor_2.Set_min_speed(400);
+    stepper_drivers[1]->Set_microsteps(M2_uSteps);
+    stepper_drivers[1]->Set_acceleration(800);
+    stepper_drivers[1]->Set_deceleration(1000);
+    stepper_drivers[1]->Set_max_speed(2200);
+    stepper_drivers[1]->Set_min_speed(400);
 
     uint8_t M2_KVAL_VALUE = 0x37;
-    motor_2.Set_param(L6470::register_map::KVAL_RUN, M2_KVAL_VALUE, 8);
-    motor_2.Set_param(L6470::register_map::KVAL_ACC, M2_KVAL_VALUE, 8);
-    motor_2.Set_param(L6470::register_map::KVAL_DEC, M2_KVAL_VALUE, 8);
-    motor_2.Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
+    stepper_drivers[1]->Set_param(L6470::register_map::KVAL_RUN, M2_KVAL_VALUE, 8);
+    stepper_drivers[1]->Set_param(L6470::register_map::KVAL_ACC, M2_KVAL_VALUE, 8);
+    stepper_drivers[1]->Set_param(L6470::register_map::KVAL_DEC, M2_KVAL_VALUE, 8);
+    stepper_drivers[1]->Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
 
-    Motion_axis T = Motion_axis(&motor_2, 0.003 / M2_uSteps);
+    Motion_axis T = Motion_axis(stepper_drivers[1], 0.003 / M2_uSteps);
     T.Reverse(true);
 
     Add_axis('T', &T);
 
+
     // MOTOR X - 3
+
     int M3_uSteps = 32;
-    motor_3.Set_microsteps(M3_uSteps);
-    motor_3.Set_acceleration(1200);
-    motor_3.Set_deceleration(1500);
-    motor_3.Set_max_speed(2400);
-    motor_3.Set_min_speed(400);
+    stepper_drivers[2]->Set_microsteps(M3_uSteps);
+    stepper_drivers[2]->Set_acceleration(1200);
+    stepper_drivers[2]->Set_deceleration(1500);
+    stepper_drivers[2]->Set_max_speed(2400);
+    stepper_drivers[2]->Set_min_speed(400);
 
     uint8_t M3_KVAL_VALUE = 0x40;
-    motor_3.Set_param(L6470::register_map::KVAL_RUN, M3_KVAL_VALUE, 8);
-    motor_3.Set_param(L6470::register_map::KVAL_ACC, M3_KVAL_VALUE, 8);
-    motor_3.Set_param(L6470::register_map::KVAL_DEC, M3_KVAL_VALUE, 8);
-    motor_3.Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
+    stepper_drivers[2]->Set_param(L6470::register_map::KVAL_RUN, M3_KVAL_VALUE, 8);
+    stepper_drivers[2]->Set_param(L6470::register_map::KVAL_ACC, M3_KVAL_VALUE, 8);
+    stepper_drivers[2]->Set_param(L6470::register_map::KVAL_DEC, M3_KVAL_VALUE, 8);
+    stepper_drivers[2]->Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
 
-    motor_3.Set_param(L6470::register_map::FS_SPD, 0x3ff, 10);
-    motor_3.Set_param(L6470::register_map::ST_SLP, 0x00, 8);
-    motor_3.Set_param(L6470::register_map::FN_SLP_ACC, 0x00, 8);
-    motor_3.Set_param(L6470::register_map::FN_SLP_DEC, 0x00, 8);
+    stepper_drivers[2]->Set_param(L6470::register_map::FS_SPD, 0x3ff, 10);
+    stepper_drivers[2]->Set_param(L6470::register_map::ST_SLP, 0x00, 8);
+    stepper_drivers[2]->Set_param(L6470::register_map::FN_SLP_ACC, 0x00, 8);
+    stepper_drivers[2]->Set_param(L6470::register_map::FN_SLP_DEC, 0x00, 8);
 
-    Motion_axis *X = new Motion_axis(&motor_3, 0.0025 / M3_uSteps);
+    Motion_axis *X = new Motion_axis(stepper_drivers[2], 0.0025 / M3_uSteps);
     X->Reverse(true);
 
     Add_axis('X', X);
 
     // MOTOR Y
 
-
     int M4_uSteps = 32;
-    motor_4.Set_microsteps(M4_uSteps);
-    motor_4.Set_acceleration(1200);
-    motor_4.Set_deceleration(1500);
-    motor_4.Set_max_speed(2600);
-    motor_4.Set_min_speed(400);
+    stepper_drivers[3]->Set_microsteps(M4_uSteps);
+    stepper_drivers[3]->Set_acceleration(1200);
+    stepper_drivers[3]->Set_deceleration(1500);
+    stepper_drivers[3]->Set_max_speed(2600);
+    stepper_drivers[3]->Set_min_speed(400);
 
     uint8_t M4_KVAL_VALUE = 0x40;
-    motor_4.Set_param(L6470::register_map::KVAL_RUN, M4_KVAL_VALUE, 8);
-    motor_4.Set_param(L6470::register_map::KVAL_ACC, M4_KVAL_VALUE, 8);
-    motor_4.Set_param(L6470::register_map::KVAL_DEC, M4_KVAL_VALUE, 8);
-    motor_4.Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
+    stepper_drivers[3]->Set_param(L6470::register_map::KVAL_RUN, M4_KVAL_VALUE, 8);
+    stepper_drivers[3]->Set_param(L6470::register_map::KVAL_ACC, M4_KVAL_VALUE, 8);
+    stepper_drivers[3]->Set_param(L6470::register_map::KVAL_DEC, M4_KVAL_VALUE, 8);
+    stepper_drivers[3]->Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
 
-    motor_4.Set_param(L6470::register_map::FS_SPD, 0x3ff, 10);
-    motor_4.Set_param(L6470::register_map::ST_SLP, 0x00, 8);
-    motor_4.Set_param(L6470::register_map::FN_SLP_ACC, 0x00, 8);
-    motor_4.Set_param(L6470::register_map::FN_SLP_DEC, 0x00, 8);
+    stepper_drivers[3]->Set_param(L6470::register_map::FS_SPD, 0x3ff, 10);
+    stepper_drivers[3]->Set_param(L6470::register_map::ST_SLP, 0x00, 8);
+    stepper_drivers[3]->Set_param(L6470::register_map::FN_SLP_ACC, 0x00, 8);
+    stepper_drivers[3]->Set_param(L6470::register_map::FN_SLP_DEC, 0x00, 8);
 
-    Motion_axis Y = Motion_axis(&motor_4, 0.0025 / M4_uSteps);
+    Motion_axis Y = Motion_axis(stepper_drivers[3], 0.0025 / M4_uSteps);
 
     Add_axis('Y', &Y);
 
     // MOTOR R - 5
 
     int M5_uSteps = 32;
-    motor_5.Set_microsteps(M5_uSteps);
-    motor_5.Set_acceleration(1200);
-    motor_5.Set_deceleration(2000);
-    motor_5.Set_max_speed(2500);
-    motor_5.Set_min_speed(800);
+    stepper_drivers[4]->Set_microsteps(M5_uSteps);
+    stepper_drivers[4]->Set_acceleration(1200);
+    stepper_drivers[4]->Set_deceleration(2000);
+    stepper_drivers[4]->Set_max_speed(2500);
+    stepper_drivers[4]->Set_min_speed(800);
 
     uint8_t M5_KVAL_VALUE = 0x39;
-    motor_5.Set_param(L6470::register_map::KVAL_RUN, M5_KVAL_VALUE, 8);
-    motor_5.Set_param(L6470::register_map::KVAL_ACC, M5_KVAL_VALUE, 8);
-    motor_5.Set_param(L6470::register_map::KVAL_DEC, M5_KVAL_VALUE, 8);
-    motor_5.Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
+    stepper_drivers[4]->Set_param(L6470::register_map::KVAL_RUN, M5_KVAL_VALUE, 8);
+    stepper_drivers[4]->Set_param(L6470::register_map::KVAL_ACC, M5_KVAL_VALUE, 8);
+    stepper_drivers[4]->Set_param(L6470::register_map::KVAL_DEC, M5_KVAL_VALUE, 8);
+    stepper_drivers[4]->Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
 
-    motor_5.Set_param(L6470::register_map::FS_SPD, 0x3ff, 10);
-    motor_5.Set_param(L6470::register_map::ST_SLP, 0x00, 8);
-    motor_5.Set_param(L6470::register_map::FN_SLP_ACC, 0x00, 8);
-    motor_5.Set_param(L6470::register_map::FN_SLP_DEC, 0x00, 8);
+    stepper_drivers[4]->Set_param(L6470::register_map::FS_SPD, 0x3ff, 10);
+    stepper_drivers[4]->Set_param(L6470::register_map::ST_SLP, 0x00, 8);
+    stepper_drivers[4]->Set_param(L6470::register_map::FN_SLP_ACC, 0x00, 8);
+    stepper_drivers[4]->Set_param(L6470::register_map::FN_SLP_DEC, 0x00, 8);
 
-    Motion_axis R = Motion_axis(&motor_5, 0.01 / M5_uSteps);
+    Motion_axis R = Motion_axis(stepper_drivers[4], 0.01 / M5_uSteps);
 
     Add_axis('R', &R);
 
@@ -523,19 +497,19 @@ void Eyrina::Init_motors(){
     // MOTOR F - 6
 
     int M6_uSteps = 32;
-    motor_6.Set_microsteps(M6_uSteps);
-    motor_6.Set_acceleration(1000);
-    motor_6.Set_deceleration(2000);
-    motor_6.Set_max_speed(800);
-    motor_6.Set_min_speed(20);
+    stepper_drivers[5]->Set_microsteps(M6_uSteps);
+    stepper_drivers[5]->Set_acceleration(1000);
+    stepper_drivers[5]->Set_deceleration(2000);
+    stepper_drivers[5]->Set_max_speed(800);
+    stepper_drivers[5]->Set_min_speed(20);
 
     uint8_t M6_KVAL_VALUE = 0x70;
-    motor_6.Set_param(L6470::register_map::KVAL_RUN, M6_KVAL_VALUE, 8);
-    motor_6.Set_param(L6470::register_map::KVAL_ACC, M6_KVAL_VALUE, 8);
-    motor_6.Set_param(L6470::register_map::KVAL_DEC, M6_KVAL_VALUE, 8);
-    motor_6.Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
+    stepper_drivers[5]->Set_param(L6470::register_map::KVAL_RUN, M6_KVAL_VALUE, 8);
+    stepper_drivers[5]->Set_param(L6470::register_map::KVAL_ACC, M6_KVAL_VALUE, 8);
+    stepper_drivers[5]->Set_param(L6470::register_map::KVAL_DEC, M6_KVAL_VALUE, 8);
+    stepper_drivers[5]->Set_param(L6470::register_map::KVAL_HOLD, 0x01, 8);
 
-    Motion_axis F = Motion_axis(&motor_6, 0.01 / M6_uSteps);
+    Motion_axis F = Motion_axis(stepper_drivers[5], 0.01 / M6_uSteps);
 
     Add_axis('F', &F);
 } // Eyrina::Init_motors

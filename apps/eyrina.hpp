@@ -65,36 +65,41 @@ private:
         { "R0",  { &Eyrina::G_code_R0,  {   }, { 'M' } } },
         { "R10",  { &Eyrina::G_code_R10,  {   }, {   } } },
     };
-    
+
+    /**
+     * @brief Pointers to all stepper drivers on board
+     */
+    vector<L6470 *> stepper_drivers;
+
     /**
      * @brief  Axis which can b controlled from application
      */
     map<char, Motion_axis*> axis;
-    
+
     /**
      * @brief Queue for g-code commands
      */
     queue<string> command_buffer;
-    
+
     /**
      * @brief Block queue after invalid command, unblock with R10
      */
     bool blocked_queue = false;
-    
+
     /**
      * @brief OLED display from which target pointer is projected
      */
     SSD1306 *display = nullptr;
-    
+
     /**
      * @brief Reflect status of OLED display, false means OFF
      */
     bool display_status = false;
-    
+
     /**
      * @brief LED channels for retina illumination
      */
-    vector<NCL30160 *> led_channels;
+    vector<NCL30160 *> led_channels {nullptr, nullptr, nullptr};
 
 public:
     /**
@@ -117,15 +122,15 @@ public:
      * @return int  0 is all is OK, otherwise errno
      */
     virtual int Run(vector<string> &args) final override;
-    
+
     /**
      * @brief Add given command to buffer
-     * 
+     *
      * @param input     New command from user
      * @return int      Number of commands in buffer
      */
     virtual int Input_load(string input) final override;
-    
+
     /**
      * @brief Add new axis to list of available axis
      *
@@ -153,22 +158,22 @@ private:
      * @brief Initialize lights, current sources for LEDs and target point
      */
     void Init_light();
-    
+
     /**
      * @brief   Parse input command into g-code command, check if parameters are valid and pass them to command method
      *          Controls syntax of command
-     * 
+     *
      * @param gcode Separated ordered string which are parts of command: [Name] [Params + Value]* [Flags]
      * @return int  Same as Validation, is only passing return value or add own
      *                  -4 if format of gcode command tag in invalid
      *                  -5 if format of parameter or flag is invalid
      */
     int Parse(vector<string> &gcode);
-    
+
     /**
      * @brief   Check if given command is valid, so if correspods to table g_code_commands
      *          Controls semantic of code
-     * 
+     *
      * @param params        Parameters of command
      * @param flags         Flags of command
      * @param g_code_method Pointer to which is saved corrent g code setting struct containing g code method, returned to Parser
