@@ -46,7 +46,7 @@ public:
     vector<Planner *> planners;
 
 private:
-    Device() = default;
+    Device();
 
 public:
     static Device* Instance();
