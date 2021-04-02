@@ -5,8 +5,6 @@ WS2818B::WS2818B(Timer *timer, uint8_t channel_index, uint16_t chain_count) :
     timer(timer),
     channel_index(channel_index),
     chain_count(chain_count){
-    // Create Component folder in FS
-    Create_virtual_file("LED_count", this, &WS2818B::LED_count);
 
     // Setup init values of timer
     if (timer->Size() == 32) {
@@ -16,7 +14,7 @@ WS2818B::WS2818B(Timer *timer, uint8_t channel_index, uint16_t chain_count) :
     }
 
     // Calculate length of logic levels
-    float nanosecond_per_tick = 1000000000 / timer->Input_frequency();
+    float nanosecond_per_tick = 1000000000.0 / timer->Input_frequency();
     tick_LOW  = logic_LOW / nanosecond_per_tick;
     tick_HIGH = logic_HIGH / nanosecond_per_tick;
 
@@ -27,9 +25,6 @@ int WS2818B::Init_timer(){
     timer->Mode(Timer::Modes::Timer_IRQ);
     timer->Prescaler(0);
     timer->Counter(timer_max_count - 1);
-
-    timer->channel[channel_index].Mode(TIM_channel::Modes::Toggle);
-    timer->channel[channel_index].Pulse(timer_max_count);
 
     timer->IRQ->Register(this, &WS2818B::Timer_stop);
     return 0;
