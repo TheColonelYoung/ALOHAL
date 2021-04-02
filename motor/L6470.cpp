@@ -3,7 +3,11 @@
 L6470::L6470(SPI_master master, Pin *chip_select, bool cs_active) :
     SPI_device(master, chip_select, cs_active),
     Component("L6470")
-{ }
+{
+    if(device()->Filesystem_available()){
+        Create_virtual_file("status", this, &L6470::Status_formated);
+    }
+}
 
 void L6470::Init(){
     // Config
@@ -56,9 +60,9 @@ int L6470::Move(Direction dir, uint steps, uint speed){
 
     vector<uint8_t> data(4);
     data[0]  = static_cast<uint8_t>(command::Move);
-    
+
     data[0] |= dir;
-    
+
     data[1]  = 0x3f & (steps >> 16);
     data[2]  = 0xff & (steps >> 8);
     data[3]  = 0xff & (steps);
