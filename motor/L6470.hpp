@@ -148,15 +148,24 @@ private:
     Pin * busy_pin = nullptr;
 
     /**
+     * @brief   Low speed optimization enable flag (datasheet LSPD_OPT)
+     */
+    bool low_speed_optimization = false;
+
+public:
+    L6470(SPI_master &master, Pin *chip_select, bool cs_active = false, Pin *flag_pin = nullptr, Pin *busy_pin = nullptr);
+
+/***** Motor Control *****/
+
+    /**
      * @brief       Motor will makes number of steps in defined direction
      *
      * @param dir   Direction for move
      * @param steps Number of steps to do
-     * @param speed Speed of steps, if is set to 0 is used default speed of motor, parameter is used only for this command
-     *              Does not revrite class variable, respects max and min speed
+     * @param speed Ignored
      * @return int  0 if is it possible, -1 if not (due to max or min speed)
      */
-    virtual int Move(Direction dir, uint steps, uint speed = 0) final override;
+    virtual int Move(Direction dir, unsigned int steps, unsigned int speed = 0) final override;
 
     /**
      * @brief       Motor will make unlimited number of steps in defined direction
@@ -167,21 +176,58 @@ private:
      *              Does not revrite class variable, respects max and min speed
      * @return int  0 is is it possible, -1 if not (due to max or min speed)
      */
-    int Run(Direction dir, uint speed = 0) override;
+    int Run(Direction dir, unsigned int speed = 0) override;
+
+        /**
+     * @brief   Run motor in given direction until hits switch
+     *
+     * @param dir   Direction where enstop is located
+     */
+    void GoHome(Direction dir);
+
+    /**
+     * @brief   Run motor with minimal speed in given direction until switch is released
+     *
+     *
+     * @param dir Direction to move
+     */
+    void ReleaseSW(Direction dir);
+
+        /**
+     * @brief Stop stepper motor immediately
+     */
+    void Hard_stop() final override;
+
+    /**
+     * @brief   Stop motor with a deceleration phase
+     *          Leave motor engaged
+     *
+     * @return int 0 if is it possible, -1 if not
+     */
+    int Soft_stop() final override;
+
+    /**
+     * @brief   Decelerate motor from current speed, then set bridges to high impedance
+     *          Similar to Sleep()
+     */
+    void Soft_HiZ();
 
     /**
      * @brief       Set motor into sleep state, High impedance state of MOSFETs
+     *              Similar to Soft_HiZ()
      *
      * @return int  0 if is it possible, -1 if not (disabled sleep state)
      */
     int Sleep() override;
 
     /**
-     * @brief       Reset target stepper motor driver
+     * @brief       Reset target stepper motor driver via SPI command
      *
      * @return int  0 if is it possible, -1 if not (target did not supports reset)
      */
     int Reset() override;
+
+/***** Diagnostic *****/
 
     /**
      * @brief           Read status register from L6470
@@ -216,39 +262,80 @@ public:
      * - Hard stop at switch hit
      * - Stop at overcurrent detection
      */
+
     void Init();
-
-public:
-
     /**
      * @brief   Set parametr MAX_SPEED in driver
      *          The register value is calculated according to the formula in datasheet page 43.
      *
-     * @param max_speed     New maximal speed of motor
+     * @param max_speed     New maximal speed of motor in steps/microsteps per second
      */
-    void Set_max_speed(uint max_speed);
+    void Max_speed(unsigned int max_speed = 0);
 
     /**
      * @brief   Set parametr MIN_SPEED in driver
      *          The register value is calculated according to the formula in datasheet page 43.
      *
-     * @param min_speed New minimal speed of motor
+     * @param min_speed New minimal speed of motor in steps/microsteps per second
      */
-    void Set_min_speed(uint min_speed);
+    void Min_speed(unsigned int min_speed);
+
+    /**
+     * @brief               Set parametr MIN_SPEED in driver and also change low speed optimization status
+     *                      Low speed optimization is immediately applied with this speed change command
+     *
+     * @param min_speed         New minimal speed of motor in steps/microsteps per second
+     * @param low_speed_optimization_status New status of optimization (enabled/ disabled)
+     */
+    void Min_speed(unsigned int min_speed, bool low_speed_optimization_status);
+
+    /**
+     * @brief           Set or clear low speed optimization flag, optimization will apply after
+     *                       next change of minimal speed
+     *                  When set MIN_SPEED value serves as motor speed threshold under which
+     *                       low speed optimization is applied
+     *
+     * @param status    New status of optimization (enabled/ disabled)
+     */
+    void Low_speed_optimization(bool optimization_status) {low_speed_optimization = optimization_status;};
+
+    /**
+     * @brief   Sets speed at which microstepping is disabled, after it motor use full step
+     *          Full step driving increase torque but increase noise and amount of vibrations
+     *
+     * @param speed     Speed at which microstepping is disabled in steps per second
+     *                  If this parameter is set to zero full step optimization ius disabled and
+     *                      driver always use microstepping
+     *                      minimal value is 8 steps/s, maximal 15625, resolution 15.25
+     */
+    void Full_step_optimization(unsigned int speed);
 
     /**
      * @brief   Set parametr ACC in driver
      *          The register value is calculated according to the formula in datasheet page 42.
      *
-     * @param acceleration  New acceleration of motor
+     * @param acceleration  New acceleration of motor in steps per second^2
      */
-    void Set_acceleration(uint acceleration);
+    void Acceleration(unsigned int acceleration = 0);
 
     /**
      * @brief   Set parametr DEC in driver
      *          The register value is calculated according to the formula in datasheet page 43.
      *
-     * @param acceleration  New acceleration of motor
+     * @param acceleration  New acceleration of motor in steps/microsteps per second^2
+     */
+    void Deceleration(unsigned int deceleration = 0);
+
+    /**
+     * @brief Set microsteping of driver
+     *
+     * @param microsteps    Number of microsteps, allowed values are:
+     *                      1(full-step), 2(half-step), 4, 8, 16, 32, 64, 128
+     *
+     * @return int  validity of action, -1 if given microstepps cannot be set
+     */
+    int Microsteps(unsigned int microsteps = 0);
+
     /**
      * @brief   Sets overcurrent protection, read status of this protection
      *
@@ -336,31 +423,6 @@ public:
      * @return vector<uint8_t>  Value of parameter
      */
     vector<uint8_t> Get_param(register_map param, uint size);
-
-    /**
-     * @brief Set microsteping of driver
-     *
-     * @param microsteps    Number of microsteps, allowed values are:
-     *                      1(full-step), 2(half-step), 4, 8, 16, 32, 64, 128
-     *
-     * @return int  validity of action, -1 if given microstepps cannot be set
-     */
-    int Set_microsteps(uint microsteps);
-
-    /**
-     * @brief   Run motor in given direction until hits switch
-     *
-     * @param dir   Direction where enstop is located
-     */
-    void GoHome(Direction dir);
-
-    /**
-     * @brief   Run motor with minimal speed in given directon until switch is released
-     *
-     *
-     * @param dir Direction to move
-     */
-    void ReleaseSW(Direction dir);
 
 };
 

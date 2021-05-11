@@ -51,31 +51,39 @@ void L6470::Init(){
     Log_line(Log_levels::Debug, name + ": Initialized")
 }
 
-void L6470::Set_max_speed(uint max_speed){
-    uint value = round((max_speed * (250 * pow(10, -9))) / pow(2, -18));
+void L6470::Max_speed(unsigned int max_speed){
+    uint32_t value = round((max_speed * (250 * pow(10, -9))) / pow(2, -18));
     Set_param(register_map::MAX_SPD, value, 10);
 }
 
-void L6470::Set_min_speed(uint min_speed){
-    uint value = round((min_speed * (250 * pow(10, -9))) / pow(2, -24));
-    Set_param(register_map::MIN_SPD, value, 12);
+void L6470::Min_speed(unsigned int min_speed){
+    uint32_t value = round((min_speed * (250 * pow(10, -9))) / pow(2, -24));
+
+    if(low_speed_optimization){
+        value |= 1UL<<12;
+    } else {
+        value &= ~(1UL << 12);
+    }
+
+    Set_param(register_map::MIN_SPD, value, 13);
 }
 
-void L6470::Set_acceleration(uint acceleration){
-    uint value = round((acceleration * pow(250 * pow(10, -9), 2)) / pow(2, -40));
+void L6470::Min_speed(unsigned int min_speed, bool low_speed_optimization_status){
+    Low_speed_optimization(low_speed_optimization_status);
+    Min_speed(min_speed);
+}
+
+void L6470::Acceleration(unsigned int acceleration){
+    uint32_t value = round((acceleration * pow(250 * pow(10, -9), 2)) / pow(2, -40));
     Set_param(register_map::ACC, value, 12);
 }
 
-void L6470::Set_deceleration(uint deceleration){
-    uint value = round((deceleration * pow(250 * pow(10, -9), 2)) / pow(2, -40));
+void L6470::Deceleration(unsigned int deceleration){
+    uint32_t value = round((deceleration * pow(250 * pow(10, -9), 2)) / pow(2, -40));
     Set_param(register_map::DEC, value, 12);
 }
 
-uint L6470::Calculate_speed(uint speed){
-    return round((speed * (250 * pow(10, -9))) / pow(2, -28));
-}
-
-int L6470::Set_microsteps(uint microsteps){
+int L6470::Microsteps(unsigned int microsteps){
     if (microstepping_config.find(microsteps) == microstepping_config.end() ) {
         return -1;
     } else {
@@ -84,25 +92,35 @@ int L6470::Set_microsteps(uint microsteps){
     return microstepping_config.at(microsteps);
 }
 
-int L6470::Move(Direction dir, uint steps, uint speed){
+void L6470::Full_step_optimization(unsigned int optimization_speed){
+    uint32_t value;
+    if(optimization_speed == 0){
+        value = 0x3ff;
+    } else {
+        value =  round(((optimization_speed * (250 * pow(10, -9))) / pow(2, -18)) - 0.5);
+    }
+    Set_param(register_map::FS_SPD, value, 10);
+}
+
+int L6470::Move(Direction dir, unsigned int steps, unsigned int speed){
     if (speed != 0) {
-        Set_max_speed(speed);
+        Max_speed(speed);
     }
 
     vector<uint8_t> data(4);
-    data[0]  = static_cast<uint8_t>(command::Move);
+    data[0] = static_cast<uint8_t>(command::Move);
 
     data[0] |= dir;
 
-    data[1]  = 0x3f & (steps >> 16);
-    data[2]  = 0xff & (steps >> 8);
-    data[3]  = 0xff & (steps);
+    data[1] = 0x3f & (steps >> 16);
+    data[2] = 0xff & (steps >> 8);
+    data[3] = 0xff & (steps);
     Send(data);
     return 0;
 }
 
-int L6470::Run(Direction dir, uint speed){
-    speed = Calculate_speed(speed);
+int L6470::Run(Direction dir, unsigned int speed){
+    speed = round((speed * (250 * pow(10, -9))) / pow(2, -28));
     vector<uint8_t> data(4);
     data[0]  = static_cast<uint8_t>(command::Run);
     data[0] |= dir;
