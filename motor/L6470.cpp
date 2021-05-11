@@ -269,21 +269,41 @@ bool L6470::Autotune(double motor_voltage, double target_current, double phase_r
         "Final slope = " + to_string(final_slope) + " (0x" + dec2hex(final_slope) + ")");
     return true;
 }  // L6470::Autotune
+
+L6470::status L6470::Status(){
     Transmit(vector<uint8_t> { 0b11010000 });
     vector<uint8_t> receive1 = Receive(1);
     vector<uint8_t> receive2 = Receive(1);
-    return receive2[0] << 8 | receive1[0];
+    uint16_t status_register = receive2[0] << 8 | receive1[0];
+    L6470::status status;
+    // write status register values to packed structure
+    *(uint16_t *) (&status) = status_register;
+    return status;
+}
+
+bool L6470::Busy(){
+    if(busy_pin){
+        return !busy_pin->Read();
+    } else {
+        return !Status().BUSY;
+    }
+}
+
+void L6470::Flag_IRQ(){
+    Log_line(Log_levels::Debug, name + "Flag IRQ activated");
+}
+
+void L6470::Busy_IRQ(){
+    Log_line(Log_levels::Debug, name + "Busy IRQ activated");
 }
 
 string L6470::Status_formated(){
-    string message  = "L6470 Status registr:\r\n";
-    string new_line = "\r\n";
-    uint16_t s      = Status();
-    status *stat;
-    stat = (status *) &s;
+    string message     = "L6470 Status registr:\r\n";
+    string new_line    = "\r\n";
+    L6470::status stat = Status();
 
-    bitset<8> b1 = ((uint8_t *) &s)[0];
-    bitset<8> b2 = ((uint8_t *) &s)[1];
+    bitset<8> b1 = ((uint8_t *) &stat)[0];
+    bitset<8> b2 = ((uint8_t *) &stat)[1];
 
     message += "Values: ";
     message += b1.to_string();
@@ -292,44 +312,44 @@ string L6470::Status_formated(){
     message += new_line;
 
     message += "StepClock mode: ";
-    stat->SCK_MOD ? message += "ENABLED" : message += "DISABLED";
+    stat.SCK_MOD ? message += "ENABLED" : message += "DISABLED";
     message += new_line;
 
     message += "Step loss B: ";
-    stat->STEP_LOSS_B ? message += "OK" : message += "LOST STEP";
+    stat.STEP_LOSS_B ? message += "OK" : message += "LOST STEP";
     message += new_line;
 
     message += "Step loss A: ";
-    stat->STEP_LOSS_A ? message += "OK" : message += "LOST STEP";
+    stat.STEP_LOSS_A ? message += "OK" : message += "LOST STEP";
     message += new_line;
 
     message += "Overcurrent detection: ";
-    stat->OCD ? message += "INACTIVE" : message += "ACTIVE";
+    stat.OCD ? message += "INACTIVE" : message += "ACTIVE";
     message += new_line;
 
     message += "Thermal shutdown: ";
-    stat->TH_SD ? message += "INACTIVE" : message += "ACTIVE";
+    stat.TH_SD ? message += "INACTIVE" : message += "ACTIVE";
     message += new_line;
 
     message += "Thermal warning: ";
-    stat->TH_WRN ? message += "INACTIVE" : message += "ACTIVE";
+    stat.TH_WRN ? message += "INACTIVE" : message += "ACTIVE";
     message += new_line;
 
     message += "Under voltage lockout: ";
-    stat->UVLO ? message += "INACTIVE" : message += "ACTIVE";
+    stat.UVLO ? message += "INACTIVE" : message += "ACTIVE";
     message += new_line;
 
     message += "Wrong command: ";
-    stat->WRONG_CMD ? message += "WRONG" : message += "OK";
+    stat.WRONG_CMD ? message += "WRONG" : message += "OK";
     message += new_line;
     message += new_line;
 
     message += "Cannot perform cmd: ";
-    stat->NOTPERF_CMD ? message += "CANNOT PERF" : message += "OK";
+    stat.NOTPERF_CMD ? message += "CANNOT PERF" : message += "OK";
     message += new_line;
 
     message += "Motor status: ";
-    switch (stat->MOT_STATUS) {
+    switch (stat.MOT_STATUS) {
         case 0: message += "Stopped";
             break;
         case 1: message += "Acceleration";
@@ -342,25 +362,25 @@ string L6470::Status_formated(){
     message += new_line;
 
     message += "Motor direction: ";
-    stat->DIR ? message += "Forward" : message += "Reverse";
+    stat.DIR ? message += "Forward" : message += "Reverse";
     message += new_line;
 
     message += "Switch event: ";
-    stat->SW_EVN ? message += "ACTIVE" : message += "INACTIVE";
+    stat.SW_EVN ? message += "ACTIVE" : message += "INACTIVE";
     message += new_line;
 
     message += "Switch flag: ";
-    stat->SW_F ? message += "CLOSE" : message += "OPEN";
+    stat.SW_F ? message += "CLOSE" : message += "OPEN";
     message += new_line;
 
     message += "Busy flag: ";
-    stat->BUSY ? message += "IDLE" : message += "BUSY";
+    stat.BUSY ? message += "IDLE" : message += "BUSY";
     message += new_line;
 
     message += "HiZ bridge state: ";
-    stat->HIZ ? message += "ACTIVE" : message += "INACTIVE";
+    stat.HIZ ? message += "ACTIVE" : message += "INACTIVE";
     message += new_line;
 
     message += "===========================" + new_line;
     return message;
-} // L6470::Status_formated
+}  // L6470::Status_formated

@@ -234,7 +234,7 @@ public:
      *
      * @return uint16_t Constent of register, format of L6470::status
      */
-    uint16_t Status();
+    L6470::status Status();
 
     /**
      * @brief           Read status from L6470 and format it into string
@@ -244,7 +244,11 @@ public:
     string Status_formated();
 
     /**
-     * @brief Decelerate motor from current speed, then set bridges to high impedance
+     * @brief   Determinate status of driver
+     *          Reads value from register if busy pin is not available
+     *
+     * @return true     Driver is in busy state
+     * @return false    Driver is available
      */
     bool Busy();
 
@@ -388,6 +392,10 @@ public:
      * @return false    With input parameters valid settings cannot be reached
      */
     bool Autotune(double motor_voltage, double target_current, double phase_resistance, double phase_inductance, double motor_electric_constant);
+
+/***** Communication *****/
+
+private:
     /**
      * @brief   L6470 need to have every byte in transmittion divided by re-enabling
      *          chip select signal, this method will make transmition for every byte of data
