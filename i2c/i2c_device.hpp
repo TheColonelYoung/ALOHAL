@@ -41,7 +41,7 @@ public:
      * @param master Object of master I2C bus on which is device connected
      * @param address Address of device on I2C bus
      */
-    I2C_device(I2C_master master, unsigned char address);
+    I2C_device(I2C_master &master, unsigned char address);
 
 protected:
     /**
@@ -50,7 +50,7 @@ protected:
      * @param data      Data to be send by bus
      * @return uint     Status code of transmittion
      */
-    uint Transmit(vector<uint8_t> data) override;
+    uint Transmit(const vector<uint8_t> &data) override;
 
     /**
      * @brief Receive data from device on bus
@@ -69,7 +69,7 @@ protected:
      * @param data          Data to be written into device
      * @return uint         Status code of transmittion
      */
-    uint Write(uint8_t mem_address, vector<uint8_t> data);
+    uint Write(uint8_t mem_address, vector<uint8_t> &data);
 
     /**
      * @brief   Read data from device memory

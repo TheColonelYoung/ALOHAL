@@ -5,7 +5,7 @@ I2C_master::I2C_master(I2C_HandleTypeDef *handler, uint speed)
 {
 }
 
-uint I2C_master::Transmit_poll(uint8_t addr, vector<uint8_t> data)
+uint I2C_master::Transmit_poll(uint8_t addr, vector<uint8_t> &data)
 {
     return HAL_I2C_Master_Transmit(handler, addr, (uint8_t *)data.data(), data.size(), 10);
 }

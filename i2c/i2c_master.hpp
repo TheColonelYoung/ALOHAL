@@ -45,7 +45,7 @@ public:
      * @param data Data to be send
      * @return uint Success = 0, Error - 1, Busy - 2, Timeout - 3
      */
-    uint Transmit_poll(uint8_t addr, vector<uint8_t> data);
+    uint Transmit_poll(uint8_t addr, vector<uint8_t> &data);
 
     /**
      * @brief Receive data from device on bus in polling mode
