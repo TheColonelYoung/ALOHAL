@@ -24,7 +24,8 @@ WS2818B::WS2818B(Timer *timer, uint8_t channel_index, uint16_t chain_count) :
 int WS2818B::Init_timer(){
     timer->Mode(Timer::Modes::Timer_IRQ);
     timer->Prescaler(0);
-    timer->Counter(timer_max_count - 1);
+    timer->Counter(0);
+    timer->Autoreload(timer_max_count - 1);
 
     timer->IRQ->Register(this, &WS2818B::Timer_stop);
     return 0;
@@ -45,13 +46,14 @@ int WS2818B::Color(uint8_t red, uint8_t green, uint8_t blue, float intensity){
 }
 
 void WS2818B::Push_protocol(vector<uint32_t> &protocol_timing){
-    timer->Start();
+    timer->Counter(0);
+    timer->Autoreload(timer_max_count - 1);
     timer->channel[channel_index].Start_DMA((uint32_t *) protocol_timing.data(), protocol_timing.size());
+    timer->Start();
 }
 
 void WS2818B::Timer_stop(){
-    device()->mcu->TIM_16->Stop();
-    timer->Counter(0);
+    timer->Stop();
 }
 
 vector<uint32_t> WS2818B::Protocol_generator(uint8_t red, uint8_t green, uint8_t blue){
