@@ -249,16 +249,29 @@ public:
      *          The register value is calculated according to the formula in datasheet page 43.
      *
      * @param acceleration  New acceleration of motor
+    /**
+     * @brief   Sets overcurrent protection, read status of this protection
+     *
+     * @param overcurrent_threshold Amount of current in mA which will trip overcurrent protection
+     *                              From 375 mA to 6 A, with steps of 375 mA
+     *                              If passed value is not in steps then is rounded to nearest lower value
+     *                              Without parameter or with parametr zero returns status of overcurrent protection
+     * @return true     Overcurrent protections is active
+     * @return false    Overcurrent protections is inactive
      */
-    void Set_deceleration(uint deceleration);
+    bool Overcurrent(double overcurrent_threshold = 0);
 
     /**
-     * @brief Calculate value for register SPEED
+     * @brief   Sets overcurrent protection, read status of this protection
      *
-     * @param speed Speed of motor in steps/s
-     * @return uint Value for register
+     * @param overcurrent_threshold Amount of current in mA which will trigger lost step detection
+     *                              From 31.25 mA to 4 A, with steps of 31.25 mA
+     *                              If passed value is not in steps then is rounded to nearest lower value
+     *                              Without parameter or with parametr zero returns status of overcurrent protection
+     * @return true     Step loss on bridge A or B
+     * @return false    No step loss
      */
-    uint Calculate_speed(uint speed);
+    bool Stall(double stall_threshold = 0);
 
     /**
      * @brief   Calculates preliminary set of parameters for motor control

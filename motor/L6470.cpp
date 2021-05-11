@@ -184,7 +184,31 @@ vector<uint8_t> L6470::Get_param(register_map param, uint size){
     return received_bytes;
 }
 
-uint16_t L6470::Status(){
+bool L6470::Overcurrent(double overcurrent_threshold){
+    if (overcurrent_threshold != 0) {
+        overcurrent_threshold = min(max(overcurrent_threshold, 375.0), 6000.0);
+        uint8_t oc_th_steps = floor(overcurrent_threshold / 375) - 1;
+        if (oc_th_steps >= 0 && oc_th_steps <= 15) {
+            Set_param(register_map::OCD_TH, oc_th_steps, 4);
+        }
+    }
+
+    return Status().OCD;
+}
+
+bool L6470::Stall(double stall_threshold){
+    if (stall_threshold != 0) {
+        stall_threshold = min(max(stall_threshold, 31.25), 4000.0);
+        uint8_t st_th_steps = floor(stall_threshold / 31.25) - 1;
+        if (st_th_steps >= 0 && st_th_steps <= 15) {
+            Set_param(register_map::STALL_TH, st_th_steps, 7);
+        }
+    }
+
+    L6470::status status_register = Status();
+    return (status_register.STEP_LOSS_A | status_register.STEP_LOSS_B);
+}
+
 bool L6470::Autotune(double motor_voltage, double target_current, double phase_resistance, double phase_inductance, double motor_electric_constant){
     unsigned int K_VAL = phase_resistance * target_current / motor_voltage * pow(2, 8);
     if ((K_VAL > 255) or (K_VAL == 0)) {
