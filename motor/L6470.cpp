@@ -1,23 +1,54 @@
 #include "L6470.hpp"
 
-L6470::L6470(SPI_master master, Pin *chip_select, bool cs_active) :
+L6470::L6470(SPI_master &master, Pin *chip_select, bool cs_active, Pin *flag_pin, Pin *busy_pin) :
     SPI_device(master, chip_select, cs_active),
-    Component("L6470")
-{
-    if(device()->Filesystem_available()){
+    Component("L6470"),
+    flag_pin(flag_pin),
+    busy_pin(busy_pin)
+    {
+    if (device()->Filesystem_available()) {
         Create_virtual_file("status", this, &L6470::Status_formated);
     }
 }
 
 void L6470::Init(){
-    // Config
-    Set_param(register_map::CONFIG, 0b0001111010000000, 16);
+    vector<uint8_t> config_register = Get_param(register_map::CONFIG, 16);
+    uint16_t config_value = (config_register[0] << 8) | config_register[1];
+    // Checks if configuration if default or last used during initialization
+    if ((config_value != power_up_configuration) and (config_value != standard_configuration)) {
+        Log_line(Log_levels::Debug, name + ": Non-standard default value in configuration register (0x" + dec2hex(config_value) + ")");
+    }
 
-    // Overcurrent
-    Set_param(register_map::OCD_TH, 0b00001010, 4);
+    // Check if config can be read, if zero communication line is not working
+    // Possibly due to under-voltage lockout of L6470
+    if (config_value == 0x0000) {
+        Log_line(Log_levels::Error, name + ": Issue with comunication via SPI, empty config (0x000)");
+        Log_line(Log_levels::Fatal, name + ": Initialization aborted");
+        return;
+    }
 
-    // Stall TH
-    Set_param(register_map::STALL_TH, 0x7f, 7);
+    // Check status register, compare with default value
+    // This also clears default raised flag for under-voltage lockout
+    status status_register = Status();
+    uint16_t status_value  = *((uint16_t *) &status_register);
+    if ((status_value != 0x037e) and (status_value != 0x037c)) {
+        Log_line(Log_levels::Warning, name + ": Potential issue with status register (0x" + dec2hex(status_value) + ")");
+    }
+
+    // Write initial config
+    Set_param(register_map::CONFIG, standard_configuration, 16);
+
+    // Registers pin IRQ which is changed by driver flag pin
+    if(flag_pin){
+        flag_pin->IRQ->Register(this, &L6470::Flag_IRQ);
+    }
+
+    // Registers pin IRQ which is changed by driver flag pin
+    if(flag_pin){
+        busy_pin->IRQ->Register(this, &L6470::Busy_IRQ);
+    }
+
+    Log_line(Log_levels::Debug, name + ": Initialized")
 }
 
 void L6470::Set_max_speed(uint max_speed){

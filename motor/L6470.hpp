@@ -16,13 +16,19 @@
 #include "stepper_motor.hpp"
 #include "spi/spi_device.hpp"
 #include "device/component.hpp"
+#include "modifiers/loggable.hpp"
+
+# define M_PI   3.14159265358979323846
 
 using namespace std;
 
 /**
  * @brief Datasheet https://www.st.com/resource/en/datasheet/l6470.pdf
+ *
+ * SPI settings: Format Motorola, DataSize 8 bit,  FirstBit MSB, CPOL HIGH, CPHA 2edge
+ * Input Pin MISO should have pull-up resistor activated
  */
-class L6470: public Stepper_motor, public SPI_device, public Component{
+class L6470: public Stepper_motor, public SPI_device, public Component, public Loggable{
 private:
 
 public:
@@ -97,6 +103,17 @@ public:
         GetStatus   = 0b11010000
     };
 
+    enum class error{
+        Communication,
+        Lost_step,
+        Overcurrent,
+        Thermal_shutdown,
+        Thermal_warning,
+        Undervoltage_lockout,
+        Wrong_command,
+        Cannot_perform_command
+    };
+
     const map<int, uint> microstepping_config {
         std::make_pair (1,   0b000),
         std::make_pair (2,   0b001),
@@ -108,20 +125,27 @@ public:
         std::make_pair (128, 0b111),
     };
 
-    
-    L6470(SPI_master master, Pin *chip_select, bool cs_active = false);
+private:
+    /**
+     * @brief   Initial configuration loaded to driver during initialization
+     */
+    const uint16_t standard_configuration = 0b0001111010000000;
 
     /**
-     * @brief Stop stepper motor immediately
+     * @brief   Start up configuration of driver
+     *          This value has different byte order then value in datasheet 2e88 -> 882e
      */
-    void Hard_stop() final override;
+    const uint16_t power_up_configuration = 0x2e88;
 
     /**
-     * @brief Stop motor with a deceleration phase
-     *
-     * @return int 0 if is it possible, -1 if not
+     * @brief   Pin of MCU to which is connected FLAG output of driver
      */
-    int Soft_stop() final override;
+    Pin * flag_pin = nullptr;
+
+    /**
+     * @brief   Pin of MCU to which is connected BUSY output of driver
+     */
+    Pin * busy_pin = nullptr;
 
     /**
      * @brief       Motor will makes number of steps in defined direction
@@ -176,8 +200,15 @@ public:
     /**
      * @brief Decelerate motor from current speed, then set bridges to high impedance
      */
-    void Soft_HiZ();
+    bool Busy();
 
+    void Flag_IRQ();
+
+    void Busy_IRQ();
+
+/***** Configuration *****/
+
+public:
     /**
      * @brief initialize driver CONFIG register, configuration
      * 00011110
