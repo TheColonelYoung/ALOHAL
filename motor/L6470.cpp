@@ -185,6 +185,48 @@ vector<uint8_t> L6470::Get_param(register_map param, uint size){
 }
 
 uint16_t L6470::Status(){
+bool L6470::Autotune(double motor_voltage, double target_current, double phase_resistance, double phase_inductance, double motor_electric_constant){
+    unsigned int K_VAL = phase_resistance * target_current / motor_voltage * pow(2, 8);
+    if ((K_VAL > 255) or (K_VAL == 0)) {
+        Log_line(Log_levels::Error, name + ": Autotune failed KVAL out of range (" + to_string(K_VAL) + ")");
+        return false;
+    }
+    Set_param(register_map::KVAL_HOLD, static_cast<uint32_t>(K_VAL), 8);
+    Set_param(register_map::KVAL_RUN, static_cast<uint32_t>(K_VAL), 8);
+    Set_param(register_map::KVAL_ACC, static_cast<uint32_t>(K_VAL), 8);
+    Set_param(register_map::KVAL_DEC, static_cast<uint32_t>(K_VAL), 8);
+
+    //NOTE: Calculation of intersect speed are little bit confusing in AN4144 (example not corelates with formulas), needs to be verified
+    unsigned int intersect_speed = (4 * phase_resistance / (2 * M_PI * (phase_inductance / 1000))) * pow(2, 26) * 250 * pow(10, -9);
+    if ((intersect_speed > ((1 << 14) - 1)) or (intersect_speed == 0)) {
+        Log_line(Log_levels::Error, name + ": Autotune failed Intersect speed out of range (" + to_string(intersect_speed) + ")");
+        return false;
+    }
+    Set_param(register_map::INT_SPD, static_cast<uint32_t>(intersect_speed), 14);
+
+    unsigned int starting_slope = ((motor_electric_constant / 4.0) / motor_voltage) * pow(2, 16);
+    if ((starting_slope > 255) or (starting_slope == 0)) {
+        Log_line(Log_levels::Error, name + ": Autotune failed Starting slope out of range (" + to_string(starting_slope) + ")");
+        return false;
+    }
+    Set_param(register_map::ST_SLP, static_cast<uint32_t>(starting_slope), 8);
+
+    unsigned int final_slope = (((2 * M_PI * (phase_inductance / 1000) * target_current + motor_electric_constant) / 4.0) / motor_voltage) * pow(2, 16);
+    if ((final_slope > 255) or (final_slope == 0)) {
+        Log_line(Log_levels::Error, name + ": Autotune failed Final slope out of range (" + to_string(final_slope) + ")");
+        return false;
+    }
+    Set_param(register_map::FN_SLP_ACC, static_cast<uint32_t>(final_slope), 8);
+    Set_param(register_map::FN_SLP_DEC, static_cast<uint32_t>(final_slope), 8);
+
+    Log_line(Log_levels::Notice, name + ": Autotune successfully done")
+    Log_line(Log_levels::Debug, name + ": Autotune values: " +
+        "KVAL = " + to_string(K_VAL) + " (0x" + dec2hex(K_VAL) + "), " +
+        "Intersect speed = " + to_string(intersect_speed) + " (0x" + dec2hex(intersect_speed) + "), " +
+        "Starting slope = " + to_string(starting_slope) + " (0x" + dec2hex(starting_slope) + "), " +
+        "Final slope = " + to_string(final_slope) + " (0x" + dec2hex(final_slope) + ")");
+    return true;
+}  // L6470::Autotune
     Transmit(vector<uint8_t> { 0b11010000 });
     vector<uint8_t> receive1 = Receive(1);
     vector<uint8_t> receive2 = Receive(1);

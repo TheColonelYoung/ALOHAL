@@ -261,6 +261,34 @@ public:
     uint Calculate_speed(uint speed);
 
     /**
+     * @brief   Calculates preliminary set of parameters for motor control
+     *          If calculations are correct loads them into registers
+     *          Values are only preliminary and require fine tunning for best performance
+     *          Detailed process of this calculation is described in application note: AN4144
+     *
+     *          Computes voltage which will be applied to motor coils and BEMF compensation parameters
+     *          If correct will write values to registers:
+     *              KVAL_HOLD, KVAL_RUN, KVAL_ACC, KVAL_DEC, INT_SPD, ST_SLP, FN_SLP_ACC, FN_SLP_DEC
+     *
+     *          How to determinate Motor electric constant (detailed description is in AN4144)
+     *              - Connect motor phase to oscilloscope or logic analyzer with analog input (Saleae)
+     *              - Slowly turn motor shaft by hand in constatnt speed (start at 90° per second)
+     *              - Observe if amplitude on oscilloscope is stable (speed of rotation needs to be constant)
+     *              - Measure peek to peek voltage and frequency of several stable periods (avarage them)
+     *              - Constant is ration between voltage and frequency [V/Hz]
+     *          For example for motor SX17-1003LQCEF this constant is 0.068 V/Hz
+     *          If shaft is rotated too fast generated voltage can damage measuring device (start slow)
+     *
+     * @param motor_voltage             Nominal voltage, which will be used for motor driving in Volts (VSA, VSB voltage)
+     * @param target_current            Maximal current through motor coil in Ampers(from motor datasheet)
+     * @param phase_resistance          Resistance of phase in motor in Ohms
+     * @param phase_inductance          Resistance of phase in motor in mH
+     * @param motor_electric_constant   Coefficient describing how relates motor speed and BEMF amplitude
+     * @return true     Tunning is possible and values are written to correspoding registers
+     * @return false    With input parameters valid settings cannot be reached
+     */
+    bool Autotune(double motor_voltage, double target_current, double phase_resistance, double phase_inductance, double motor_electric_constant);
+    /**
      * @brief   L6470 need to have every byte in transmittion divided by re-enabling
      *          chip select signal, this method will make transmition for every byte of data
      *
