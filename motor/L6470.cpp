@@ -30,7 +30,8 @@ void L6470::Init(){
     // Check status register, compare with default value
     // This also clears default raised flag for under-voltage lockout
     status status_register = Status();
-    uint16_t status_value  = *((uint16_t *) &status_register);
+    // casting to char* is due to aliasing warning (char* is able to be aliased anything)
+    uint16_t status_value  = *((char *) &status_register);
     if ((status_value != 0x037e) and (status_value != 0x037c)) {
         Log_line(Log_levels::Warning, name + ": Potential issue with status register (0x" + dec2hex(status_value) + ")");
     }
@@ -136,7 +137,11 @@ void L6470::GoHome(Direction dir){
 }
 
 void L6470::ReleaseSW(Direction dir){
-    Send(static_cast<uint8_t>(command::ReleaseSW));
+    uint8_t command = static_cast<uint8_t>(command::ReleaseSW);
+    if (dir == Direction::Forward){
+        command |= 1;
+    }
+    Send(command);
 }
 
 void L6470::Hard_stop(){
@@ -148,7 +153,7 @@ int L6470::Soft_stop(){
     return 0;
 }
 
-int L6470::Sleep(){
+int L6470::Release(){
     Soft_HiZ();
     return 0;
 }
@@ -277,7 +282,8 @@ L6470::status L6470::Status(){
     uint16_t status_register = receive2[0] << 8 | receive1[0];
     L6470::status status;
     // write status register values to packed structure
-    *(uint16_t *) (&status) = status_register;
+    status = *((L6470::status *) &status_register);
+
     return status;
 }
 
@@ -289,6 +295,14 @@ bool L6470::Busy(){
     }
 }
 
+bool L6470::Switch_status(){
+    return Status().SW_F;
+}
+
+bool L6470::Switch_event(){
+    return Status().SW_EVN;
+}
+
 void L6470::Flag_IRQ(){
     Log_line(Log_levels::Debug, name + "Flag IRQ activated");
 }
@@ -296,6 +310,8 @@ void L6470::Flag_IRQ(){
 void L6470::Busy_IRQ(){
     Log_line(Log_levels::Debug, name + "Busy IRQ activated");
 }
+
+
 
 string L6470::Status_formated(){
     string message     = "L6470 Status registr:\r\n";

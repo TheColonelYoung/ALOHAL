@@ -32,7 +32,7 @@ class L6470: public Stepper_motor, public SPI_device, public Component, public L
 private:
 
 public:
-    struct __attribute__((packed)) status{
+    struct __attribute__((packed)) __attribute__((__may_alias__)) status{
         //Order is reversed against datasheet because of structure packaging
         // MS byte, bits 8 -> 15
         uint8_t WRONG_CMD   : 1; // Wrong command  (active - HIGH)
@@ -208,17 +208,17 @@ public:
 
     /**
      * @brief   Decelerate motor from current speed, then set bridges to high impedance
-     *          Similar to Sleep()
+     *          Similar to Release()
      */
     void Soft_HiZ();
 
     /**
-     * @brief       Set motor into sleep state, High impedance state of MOSFETs
+     * @brief       Set motor into disengaged state, High impedance state of MOSFETs
      *              Similar to Soft_HiZ()
      *
      * @return int  0 if is it possible, -1 if not (disabled sleep state)
      */
-    int Sleep() override;
+    int Release() override;
 
     /**
      * @brief       Reset target stepper motor driver via SPI command
@@ -255,6 +255,24 @@ public:
     void Flag_IRQ();
 
     void Busy_IRQ();
+
+    /**
+     * @brief   Determinates if endstop switch is active or inactive
+     *
+     * @return true     Endstop switch is triggered
+     * @return false    Endstop switch is open
+     */
+    bool Switch_status();
+
+    /**
+     * @brief   Determinates if endstop event is active
+     *          Event flag is activated when switch is closed (falling edge of signal)
+     *          After status readout event flag is cleared
+     *
+     * @return true     Switch event flag is active
+     * @return false    Switch event flag is inactive
+     */
+    bool Switch_event();
 
 /***** Configuration *****/
 
@@ -433,6 +451,3 @@ private:
     vector<uint8_t> Get_param(register_map param, uint size);
 
 };
-
-
-
