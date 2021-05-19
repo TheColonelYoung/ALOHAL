@@ -2,105 +2,110 @@
  * @file motion_axis.hpp
  * @author Petr Malaník (TheColonelYoung(at)gmail(dot)com)
  * @version 0.1
- * @date 20.08.2019 B!
+ * @date 11.05.2021
  */
 
 #pragma once
 
-#include <cmath>
-
-#include "motor/stepper_motor.hpp"
-#include "globals.hpp"
 #include "modifiers/loggable.hpp"
+#include "motor/stepper_motor.hpp"
 
 /**
- * @brief   This class describes any linear or rotary axis, which can be
- *          powered by stepper motor.
- *
+ * @brief   This class describes any linear or rotary axis, which can be powered by any type of motor.
+ *          Axis works in dimensionless measuring units, but for moving mm and for rotation degrees are assumed
+ *              But selection of unit does not effect class
  */
-class Motion_axis: public Loggable
+class Motion_axis : public Loggable
 {
-private:
-    Stepper_motor *motor;
+protected:
+
+    typedef Stepper_motor::Direction Direction;
 
     /**
      * @brief Actual position of motor, invalid until homing
      */
-    double position = -1;
-
-    bool valid_position = false;
+    double position = 0;
 
     /**
-     * @brief   Direction of movement, where is installed endstop
-     *          To this direction will be motor homing
+     * @brief   Determinates if position is valid
      */
-    Stepper_motor::Direction home_direction;
+    bool valid_position = false;
 
     /**
      * @brief  Movement or rotation, which will be produce when motor make 1 step
      */
     double ratio;
 
-    bool reversed_direction = false;
+    /**
+     * @brief   Direction of movement, where is installed endstop
+     *          To this direction will be motor homing
+     *          Direction to other side then homing is considered to be default direction (positive)
+     */
+    Motion_axis::Direction home_direction;
 
 public:
-    Motion_axis(Stepper_motor *motor, double ration, Stepper_motor::Direction home = Stepper_motor::Direction::Reverse);
+    Motion_axis(double ratio, Motion_axis::Direction home_direction = Motion_axis::Direction::Reverse);
 
     /**
-     * @brief Produce motion in given direction, relative position
+     * @brief   Produce motion in given direction, works with relative position
+     *          example: position = 2, move = 3, final position = 5
      *
      * @param shift         Length or degree to make
      *                      Positive value if Forward, negative Reverse direction
      * @return long         Number of steps produced by motor
      */
-    long Move(double shift);
+    virtual bool Move(double shift) = 0;
 
     /**
-     * @brief Produce motion to target position, absolute motion
+     * @brief   Produce motion to target position, works with absolute position
+     *          example: position = 2, move = 3, final position = 3
      *
      * @param target_position   Distance from home position
-     * @return long             Number of steps produced by motor
+     * @return true             Position is reachable
+     * @return false            Position is unreachable
      */
-    long GoTo(double target_position);
+    virtual bool GoTo(double target_position) = 0;
 
     /**
-     * @brief Move motor to home position (until switch is closed)
+     * @brief   Produce motion at given speed
+     *          This motion is not restricted by any position limit of axis!
+     *          Positive value is movement in default direction, negative in opposite direction
      *
-     * NOTE: Possible bug when is direction reversed
-     * @return long
+     * @param speed     Speed in units per second
      */
-    void GoHome();
+    virtual void Run(double speed) = 0;
 
     /**
-     * @brief Reverse motor direction
-     *
-     * @param reverse
+     * @brief   Move motor to home position
+     *          This operation will set position to 0
      */
-    void Reverse(bool reverse){reversed_direction = reverse;}
+    virtual void Home() = 0;
 
     /**
-     * @brief Perform hard stop at actual position
+     * @brief   Perform hard stop at actual position
      */
-    void Hard_stop();
+    virtual void Hard_stop() = 0;
 
     /**
      * @brief   Perform soft stop at actual position
      *          Decelerate motor from actual speed
      */
-    void Soft_stop();
+    virtual void Soft_stop() = 0;
 
     /**
-     * @brief Perform sleep on axis
+     * @brief   Disengage motor, In this state axis can freefly move
+     *          This can lead to position loss,
      */
-    void Sleep();
+    virtual void Release() = 0;
 
-private:
+protected:
+
     /**
      * @brief Return default direction of movement
      *
      * @return Stepper_motor::Direction
      */
-    Stepper_motor::Direction Direction();
+    Motion_axis::Direction Default_direction(){ return Flip_direction(home_direction); };
 
     /**
      * @brief Exchange Forward to Reverse and vice versa
@@ -108,8 +113,5 @@ private:
      * @param direction                 Original direction
      * @return Stepper_motor::Direction New direction
      */
-    Stepper_motor::Direction Flip_direction(Stepper_motor::Direction direction);
-
-
+    Motion_axis::Direction Flip_direction(Motion_axis::Direction direction);
 };
-
