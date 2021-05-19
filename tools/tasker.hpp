@@ -27,7 +27,15 @@ using namespace std;
  *          The is no mechanism for paralel safety between events and normal program
  */
 class Tasker: public Tool {
-    list<Tasker_event *> events; // vector of tasks
+    /**
+     * @brief Singleton instance
+     */
+    inline static Tasker* instance = nullptr;
+
+    /**
+     * @brief Sorted event which will be executed
+     */
+    list<Tasker_event *> events;
 
     /**
      * @brief Timer used by Tasker for event timing
@@ -44,13 +52,27 @@ class Tasker: public Tool {
      */
     unsigned long max_time = 0;
 
-public:
+private:
     /**
      * @brief       Construct a new Tasker object
      *
      * @param timer Timer used by Tasker for event timing
      */
     Tasker(Timer *timer);
+
+public:
+    /**
+     * @brief   Singleton instance with class initialization
+     *          Must be callled before version of Instance without initialization
+     *
+     * @return Tasker* One and only instance of Tasker
+     */
+    static Tasker* Instance(Timer *timer);
+
+    /**
+     * @brief   Singleton instance without initialization
+     */
+    static Tasker* Instance();
 
     /**
      * @brief   Adds new Event to tasker queue, creates new Invocation wrapper inside
