@@ -9,6 +9,7 @@
 #include <string>
 #include <list>
 #include <algorithm>
+#include <functional>
 
 #include "globals.hpp"
 #include "timer/timer.hpp"
@@ -86,9 +87,9 @@ public:
      * @param name      Name of event
      */
     template <typename registrator_class>
-    void New_event(unsigned long period, int repeats, registrator_class *object, void (registrator_class::*method)(), short priority = 0, string name = ""){
+    Tasker_event * New_event(unsigned long period, int repeats, registrator_class *object, void (registrator_class::*method)(), short priority = 0, string name = ""){
         Invocation_wrapper<registrator_class, void, void> *iw = new Invocation_wrapper<registrator_class, void, void>(object, method);
-        New_event(period, repeats, iw, priority, name);
+        return New_event(period, repeats, iw, priority, name);
     }
 
     /**
@@ -102,8 +103,9 @@ public:
      * @param name      Name of event
      */
     template <typename registrator_class>
-    void New_event(unsigned long period, int repeats, Invocation_wrapper<registrator_class, void, void> *iw, short priority = 0, string name = ""){
-        events.emplace_back(new Tasker_event(name, repeats, period, iw, priority));
+    Tasker_event * New_event(unsigned long period, int repeats, Invocation_wrapper<registrator_class, void, void> *iw, short priority = 0, string name = ""){
+        auto new_event = new Tasker_event(name, repeats, period, iw, priority);
+        events.emplace_back(new_event);
         _Sort();
 
         // If is tasker not running, Start it
@@ -115,6 +117,46 @@ public:
             device()->mcu->TIM_2->Counter(0);
             _Update(time);
         }
+        return new_event;
+    }
+
+    /**
+     * @brief   Poll defined function (Invocation wrapper) until condition is fulfilled after that executes callback
+     *          Polled function must return boolean or boolean castable value
+     *
+     * @tparam condition_result     Boolean to which is return value of polled function compared
+     * @tparam polled_class         Class with which can be polled invocation wrapper templated
+     * @tparam callback_class       Class with which can be callback invocation wrapper templated
+     * @param polled_object     Invocation wrapper which will be polled
+     * @param period            Period in us in which will be function polled
+     * @param callback          Callback (Invocation wrapper) which will be executed after fulfilling the condition
+     */
+    template <bool condition_result, typename polled_class, typename callback_class>
+    void Poll_until(Invocation_wrapper<polled_class, bool, void> *polled_object, unsigned long period, Invocation_wrapper<callback_class, void, void> *callback){
+        // Pointer to pointer in which will be pointing to new event
+        Tasker_event ** event_pointer = new Tasker_event *;
+        // Create lambda function which will be polling, comparing and executing callback
+        // Lambda captures pointer to pointer to Tasker event in which will be this lambda saved
+        function<void()> *event_function = new function<void()>(
+            [polled_object, callback, event_pointer]() -> void{
+                // Pooling target
+                if(polled_object->Invoke() == condition_result){
+                    // Executing callback
+                    callback->Invoke();
+                    if(*event_pointer){
+                        // Erasing tasker event which is executing this lambda, event is created below
+                        (*event_pointer)->Erase();
+                        // Delete pointer to pointer to event of this lambda
+                        delete (event_pointer);
+                    }
+                }
+            }
+        );
+        // Create wrapper containing lambda
+        Invocation_wrapper<void, void, void> *iw  = new Invocation_wrapper<void, void, void>(event_function);
+        // Create new event and list it into Tasker
+        // Also pointer to this event is saved into space where lambda has pointer
+        *event_pointer = New_event(period, -1, iw, 0, "Poller");
     }
 
     /**
