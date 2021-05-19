@@ -205,16 +205,15 @@ private:
     /**
      * @brief   Encapsulated function
      */
-    std::function<return_T(args_T)> *function;
+    const std::function<return_T(args_T)> *function;
 
 public:
-
-    /**
+        /**
      * @brief Construct a new Invocation_wrapper object which holds function with no arguments
      *
-     * @param function    Function wrapped in std:function
+     * @param function    Pointer to function wrapped in std:function
      */
-    Invocation_wrapper(std::function<return_T(args_T)> *function) :
+    Invocation_wrapper(std::function<return_T(args_T)> const *function) :
         function(function)
     { }
 
@@ -279,16 +278,16 @@ private:
     /**
      * @brief   Encapsulated function
      */
-    std::function<return_T()> *function;
+    const std::function<return_T()> *function;
 
 public:
 
     /**
      * @brief Construct a new Invocation_wrapper object which holds function with no arguments
      *
-     * @param function    Function wrapped in std:function
+     * @param function    Pointer to function wrapped in std:function
      */
-    Invocation_wrapper(std::function<return_T()> *function) :
+    Invocation_wrapper(std::function<return_T()> const *function) :
         function(function)
     { }
 
