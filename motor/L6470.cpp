@@ -4,8 +4,7 @@ L6470::L6470(SPI_master &master, Pin *chip_select, bool cs_active, Pin *flag_pin
     SPI_device(master, chip_select, cs_active),
     Component("L6470"),
     flag_pin(flag_pin),
-    busy_pin(busy_pin)
-    {
+    busy_pin(busy_pin){
     if (device()->Filesystem_available()) {
         Create_virtual_file("status", this, &L6470::Status_formated);
     }
@@ -31,7 +30,7 @@ void L6470::Init(){
     // This also clears default raised flag for under-voltage lockout
     status status_register = Status();
     // casting to char* is due to aliasing warning (char* is able to be aliased anything)
-    uint16_t status_value  = *((char *) &status_register);
+    uint16_t status_value = *((uint16_t *) &status_register);
     if ((status_value != 0x037e) and (status_value != 0x037c)) {
         Log_line(Log_levels::Warning, name + ": Potential issue with status register (0x" + dec2hex(status_value) + ")");
     }
@@ -40,28 +39,37 @@ void L6470::Init(){
     Set_param(register_map::CONFIG, standard_configuration, 16);
 
     // Registers pin IRQ which is changed by driver flag pin
-    if(flag_pin){
+    if (flag_pin) {
         flag_pin->IRQ->Register(this, &L6470::Flag_IRQ);
     }
 
     // Registers pin IRQ which is changed by driver flag pin
-    if(flag_pin){
+    if (flag_pin) {
         busy_pin->IRQ->Register(this, &L6470::Busy_IRQ);
     }
 
     Log_line(Log_levels::Debug, name + ": Initialized")
+} // L6470::Init
+
+unsigned int L6470::Speed(){
+    auto read_value = Get_param(register_map::SPEED, 20);
+    uint32_t register_speed = read_value[0] << 16 |read_value[1] << 8 | read_value[2];
+    float speed = register_speed * pow(2, -28) / (250 * pow(10, -9));
+    return speed;
 }
 
 void L6470::Max_speed(unsigned int max_speed){
+    this->max_speed = max_speed;
     uint32_t value = round((max_speed * (250 * pow(10, -9))) / pow(2, -18));
     Set_param(register_map::MAX_SPD, value, 10);
 }
 
 void L6470::Min_speed(unsigned int min_speed){
+    this->min_speed = min_speed;
     uint32_t value = round((min_speed * (250 * pow(10, -9))) / pow(2, -24));
 
-    if(low_speed_optimization){
-        value |= 1UL<<12;
+    if (low_speed_optimization) {
+        value |= 1UL << 12;
     } else {
         value &= ~(1UL << 12);
     }
@@ -75,11 +83,13 @@ void L6470::Min_speed(unsigned int min_speed, bool low_speed_optimization_status
 }
 
 void L6470::Acceleration(unsigned int acceleration){
+    this->acceleration = acceleration;
     uint32_t value = round((acceleration * pow(250 * pow(10, -9), 2)) / pow(2, -40));
     Set_param(register_map::ACC, value, 12);
 }
 
 void L6470::Deceleration(unsigned int deceleration){
+    this->deceleration = deceleration;
     uint32_t value = round((deceleration * pow(250 * pow(10, -9), 2)) / pow(2, -40));
     Set_param(register_map::DEC, value, 12);
 }
@@ -88,6 +98,7 @@ int L6470::Microsteps(unsigned int microsteps){
     if (microstepping_config.find(microsteps) == microstepping_config.end() ) {
         return -1;
     } else {
+        this->microsteps = microsteps;
         Set_param(register_map::STEP_MODE, microstepping_config.at(microsteps), 8);
     }
     return microstepping_config.at(microsteps);
@@ -95,10 +106,10 @@ int L6470::Microsteps(unsigned int microsteps){
 
 void L6470::Full_step_optimization(unsigned int optimization_speed){
     uint32_t value;
-    if(optimization_speed == 0){
+    if (optimization_speed == 0) {
         value = 0x3ff;
     } else {
-        value =  round(((optimization_speed * (250 * pow(10, -9))) / pow(2, -18)) - 0.5);
+        value = round(((optimization_speed * (250 * pow(10, -9))) / pow(2, -18)) - 0.5);
     }
     Set_param(register_map::FS_SPD, value, 10);
 }
@@ -110,9 +121,7 @@ int L6470::Move(Direction dir, unsigned int steps, unsigned int speed){
 
     vector<uint8_t> data(4);
     data[0] = static_cast<uint8_t>(command::Move);
-
     data[0] |= dir;
-
     data[1] = 0x3f & (steps >> 16);
     data[2] = 0xff & (steps >> 8);
     data[3] = 0xff & (steps);
@@ -121,10 +130,13 @@ int L6470::Move(Direction dir, unsigned int steps, unsigned int speed){
 }
 
 int L6470::Run(Direction dir, unsigned int speed){
+    Log_line(Log_levels::Notice, name + ": Speed: " + to_string(Speed()));
     speed = round((speed * (250 * pow(10, -9))) / pow(2, -28));
     vector<uint8_t> data(4);
     data[0]  = static_cast<uint8_t>(command::Run);
-    data[0] |= dir;
+    if(dir == Stepper_motor::Direction::Forward){
+        data[0] |= 1UL;
+    }
     data[1]  = 0x0f & (speed >> 16);
     data[2]  = 0xff & (speed >> 8);
     data[3]  = 0xff & (speed);
@@ -138,7 +150,7 @@ void L6470::GoHome(Direction dir){
 
 void L6470::ReleaseSW(Direction dir){
     uint8_t command = static_cast<uint8_t>(command::ReleaseSW);
-    if (dir == Direction::Forward){
+    if (dir == Direction::Forward) {
         command |= 1;
     }
     Send(command);
@@ -243,7 +255,7 @@ bool L6470::Autotune(double motor_voltage, double target_current, double phase_r
     Set_param(register_map::KVAL_ACC, static_cast<uint32_t>(K_VAL), 8);
     Set_param(register_map::KVAL_DEC, static_cast<uint32_t>(K_VAL), 8);
 
-    //NOTE: Calculation of intersect speed are little bit confusing in AN4144 (example not corelates with formulas), needs to be verified
+    // NOTE: Calculation of intersect speed are little bit confusing in AN4144 (example not corelates with formulas), needs to be verified
     unsigned int intersect_speed = (4 * phase_resistance / (2 * M_PI * (phase_inductance / 1000))) * pow(2, 26) * 250 * pow(10, -9);
     if ((intersect_speed > ((1 << 14) - 1)) or (intersect_speed == 0)) {
         Log_line(Log_levels::Error, name + ": Autotune failed Intersect speed out of range (" + to_string(intersect_speed) + ")");
@@ -267,11 +279,11 @@ bool L6470::Autotune(double motor_voltage, double target_current, double phase_r
     Set_param(register_map::FN_SLP_DEC, static_cast<uint32_t>(final_slope), 8);
 
     Log_line(Log_levels::Notice, name + ": Autotune successfully done")
-    Log_line(Log_levels::Debug, name + ": Autotune values: " +
-        "KVAL = " + to_string(K_VAL) + " (0x" + dec2hex(K_VAL) + "), " +
-        "Intersect speed = " + to_string(intersect_speed) + " (0x" + dec2hex(intersect_speed) + "), " +
-        "Starting slope = " + to_string(starting_slope) + " (0x" + dec2hex(starting_slope) + "), " +
-        "Final slope = " + to_string(final_slope) + " (0x" + dec2hex(final_slope) + ")");
+    Log_line(Log_levels::Debug, name + ": Autotune values: "
+      + "KVAL = " + to_string(K_VAL) + " (0x" + dec2hex(K_VAL) + "), "
+      + "Intersect speed = " + to_string(intersect_speed) + " (0x" + dec2hex(intersect_speed) + "), "
+      + "Starting slope = " + to_string(starting_slope) + " (0x" + dec2hex(starting_slope) + "), "
+      + "Final slope = " + to_string(final_slope) + " (0x" + dec2hex(final_slope) + ")");
     return true;
 }  // L6470::Autotune
 
@@ -288,7 +300,7 @@ L6470::status L6470::Status(){
 }
 
 bool L6470::Busy(){
-    if(busy_pin){
+    if (busy_pin) {
         return !busy_pin->Read();
     } else {
         return !Status().BUSY;
@@ -310,8 +322,6 @@ void L6470::Flag_IRQ(){
 void L6470::Busy_IRQ(){
     Log_line(Log_levels::Debug, name + "Busy IRQ activated");
 }
-
-
 
 string L6470::Status_formated(){
     string message     = "L6470 Status registr:\r\n";

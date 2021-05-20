@@ -152,6 +152,11 @@ private:
      */
     bool low_speed_optimization = false;
 
+    /**
+     * @brief Number of microsteps per fullstep
+     */
+    uint microsteps = 1;
+
 public:
     L6470(SPI_master &master, Pin *chip_select, bool cs_active = false, Pin *flag_pin = nullptr, Pin *busy_pin = nullptr);
 
@@ -173,7 +178,7 @@ public:
      *
      * @param dir   Direction for move
      * @param speed Speed of steps, if is set to 0 is used default speed of motor, parameter is used only for this command
-     *              Does not revrite class variable, respects max and min speed
+     *              Does not rewrite class variable, respects max and min speed
      * @return int  0 is is it possible, -1 if not (due to max or min speed)
      */
     int Run(Direction dir, unsigned int speed = 0) override;
@@ -286,6 +291,9 @@ public:
      */
 
     void Init();
+
+    unsigned int Speed();
+
     /**
      * @brief   Set parametr MAX_SPEED in driver
      *          The register value is calculated according to the formula in datasheet page 43.
@@ -356,7 +364,14 @@ public:
      *
      * @return int  validity of action, -1 if given microstepps cannot be set
      */
-    int Microsteps(unsigned int microsteps = 0);
+    int Microsteps(unsigned int microsteps);
+
+    /**
+     * @brief Return current number of microsteps per full step
+     *
+     * @return uint Current number of microsteps per full step
+     */
+    uint Microsteps() {return microsteps;};
 
     /**
      * @brief   Sets overcurrent protection, read status of this protection
