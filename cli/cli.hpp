@@ -161,6 +161,13 @@ private:
     int Set_line(string text);
 
     /**
+     * @brief Process one input character of command line
+     *
+     * @return int Number of remaining characters in buffer
+     */
+    void Process_character();
+
+    /**
      * @brief Process line (after entering enter), run command
      *
      * @return int Status of operation

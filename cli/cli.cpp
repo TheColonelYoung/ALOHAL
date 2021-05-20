@@ -1,7 +1,8 @@
 #include "cli.hpp"
 
-#include "globals.hpp"
 #include "filesystem/filesystem.hpp"
+#include "device/device.hpp"
+#include "globals.hpp"
 
 void CLI::Connect(Serial_line *connection){
     serial_connection = connection;
@@ -16,21 +17,27 @@ void CLI::Start(){
 }
 
 void CLI::Char_load(){
+    while (serial_connection->Buffer_size() > 0) {
+        Process_character();
+    }
+}
+
+void CLI::Process_character(){
     char received_char = serial_connection->Read(1)[0];
 
-    if (escape_sequency_remaining > 1){
+    if (escape_sequency_remaining > 1) {
         escape_sequency_remaining--;
         return;
     }
 
     // Newline (picocom - \r)
-    if (received_char == 13){
+    if (received_char == 13) {
         Process_line();
         Clear_line();
         return;
     }
     // Escape sequence -> skip next character [, after that use arrow sign
-    else if(received_char == 27){
+    else if (received_char == 27) {
         escape_sequency_remaining = 2;
         return;
     }
@@ -42,72 +49,72 @@ void CLI::Char_load(){
         }
     }
     // Handle escape sequence for arrows
-    else if(escape_sequency_remaining == 1){
-        if (History()){
+    else if (escape_sequency_remaining == 1) {
+        if (History()) {
             // History arrow up
-            if(received_char == 65){
+            if (received_char == 65) {
                 Set_line(command_history->Up());
             }
             // History arrow down
-            else if(received_char == 66){
+            else if (received_char == 66) {
                 Set_line(command_history->Down());
             }
         }
         escape_sequency_remaining = 0;
     }
     // Autocomplete
-    else if(received_char == 9){
+    else if (received_char == 9) {
         // If nothing on line skip autocomplete
         if ((actual_line.back() != ' ') or (actual_line != filesystem_prefix + line_opening)){
             // Autocomplete for string between last space and and of line
-            Autocomplete(actual_line.substr(actual_line.find_last_of(" ")+1, actual_line.length()));
+            Autocomplete(actual_line.substr(actual_line.find_last_of(" ") + 1, actual_line.length()));
         }
     }
     // Any other printable character
-    else if(isprint(received_char)) {
-        actual_line += string(1,received_char);
+    else if (isprint(received_char)) {
+        actual_line += string(1, received_char);
     }
     Redraw_line();
-}
+} // CLI::Process_character
 
 int CLI::Process_line(){
     size_t position = actual_line.find(line_opening);
     string cmd_line = actual_line.substr(position + line_opening.length(), actual_line.length() - position - line_opening.length());
 
     // only Enter is pressed
-    if(cmd_line == ""){
+    if (cmd_line == "") {
         Print("\r\n");
         Clear_line();
-        if (History()){
+        if (History()) {
             command_history->Reset_pointer();
         }
         return 0;
     }
 
     // Add new record to history if is enabled
-    if (History()){
+    if (History()) {
         command_history->Update(cmd_line);
     }
 
     // parse command line into vector of strings (first is command, next are arguments)
     vector<string> args;
-    while ((position = cmd_line.find(" ")) != string::npos){
-        string cmd = cmd_line.substr(0,position);
-        if (cmd.find_first_not_of(' ') != std::string::npos){
+    while ((position = cmd_line.find(" ")) != string::npos) {
+        string cmd = cmd_line.substr(0, position);
+        if (cmd.find_first_not_of(' ') != std::string::npos) {
             args.emplace_back(cmd);
         }
-        cmd_line.erase(0,position+1);
+        cmd_line.erase(0, position + 1);
     }
     args.emplace_back(cmd_line);
 
-    if (args.size() < 1){
+    if (args.size() < 1) {
         return -1;
     }
     Print("\r\r\n");
 
     // Run registred command
-    for(auto &command:commands){
-        if(args[0] == command->Get_command()){
+    for (auto &command:commands) {
+        if (args[0] == command->Get_command()) {
             int ret = command->Invoke(args);
             actual_line = line_opening;
             Clear_line();
@@ -116,10 +123,10 @@ int CLI::Process_line(){
     }
 
     // Run executable from filesystem if exists
-    if (fs){
+    if (fs) {
         string path = args[0];
         unsigned int position = path.find_last_of("/");
-        if (position != string::npos){
+        if (position != string::npos) {
             args[0] = path.substr(position + 1);
         }
         return fs->Execute(path, args);
@@ -141,8 +148,8 @@ int CLI::Enable_filesystem_executable(Filesystem* fs){
 int CLI::Redraw_line(){
     // Actual_line is text which will be now printed
     int missing_spaces = last_printed_line.length() - actual_line.length();
-    if (missing_spaces > 0){
-        Print("\r" + string(last_printed_line.length(),' ') + "\r" + actual_line);
+    if (missing_spaces > 0) {
+        Print("\r" + string(last_printed_line.length(), ' ') + "\r" + actual_line);
     } else {
         Print("\r" + actual_line);
     }
@@ -151,7 +158,7 @@ int CLI::Redraw_line(){
 }
 
 int CLI::Set_line(string text){
-    actual_line = filesystem_prefix + line_opening + text;
+    actual_line = line_prefix + line_opening + text;
     return actual_line.size();
 }
 
@@ -175,7 +182,7 @@ int CLI::Print(const string text){
 }
 
 int CLI::Enable_history(uint size_of_history){
-    if (command_history != nullptr){
+    if (command_history != nullptr) {
         return -1;
     }
     command_history = new CLI_history(size_of_history);
@@ -183,17 +190,19 @@ int CLI::Enable_history(uint size_of_history){
 }
 
 int CLI::Help(vector<string> args){
-    if(args.size() == 1){ // only help without parametr
+    if (args.size() == 1) { // only help without parametr
         string output_line = "Available commands - " + to_string(commands.size()) + "\r\n";
-        for(auto &cmd:commands){
+        for (auto &cmd:commands) {
             output_line += cmd->Get_command() + "\r\n";
         }
         Print(output_line);
-    } else {    // help with additional command as parametr
-        for(auto &cmd:commands){
-            if (cmd->Get_command() == args[1]){
+    } else { // help with additional command as parametr
+        for (auto &cmd:commands) {
+            if (cmd->Get_command() == args[1]) {
                 Print(cmd->Get_command() + " - " + cmd->Get_help() + "\r\n");
-                return commands.size();;
+                return commands.size();
+
+                ;
             }
         }
         Print("Parameter was not found\r\n");
@@ -202,18 +211,18 @@ int CLI::Help(vector<string> args){
 }
 
 int CLI::Build_info(vector<string> args){
-    string output = "Build date: " + string(__DATE__) + " " +  string(__TIME__) +"\r\n";
+    string output = "Build date: " + string(__DATE__) + " " + string(__TIME__) + "\r\n";
     output += "Compiler: arm-none-eabi-g++ \r\n";
-    output += "Compiler version: "  + string(__VERSION__) + "\r\n";
-    output += "C++ standard: "  + to_string(__cplusplus) + "\r\n";
-    Print( output );
+    output += "Compiler version: " + string(__VERSION__) + "\r\n";
+    output += "C++ standard: " + to_string(__cplusplus) + "\r\n";
+    Print(output);
     return 0;
 }
 
 int CLI::Autocomplete(string to_complete){
-    //Print("To complete: " + to_complete + "\r\n");
+    // Print("To complete: " + to_complete + "\r\n");
 
-    if (!fs){
+    if (!fs) {
         // Cannot perform autocomplete, FS is not available
         return -1;
     }
@@ -223,22 +232,20 @@ int CLI::Autocomplete(string to_complete){
 
     vector<string> candidate_names;
 
-    for(auto &entry:all_names){
-        if (entry.find(to_complete) == 0){
+    for (auto &entry:all_names) {
+        if (entry.find(to_complete) == 0) {
             candidate_names.push_back(entry);
         }
     }
 
-    if (candidate_names.size() > 1)
-    {
+    if (candidate_names.size() > 1) {
         Print("\r\n");
-        for(auto &candidate:candidate_names){
+        for (auto &candidate:candidate_names) {
             Print(candidate + "\r\n");
         }
-    } else if (candidate_names.size() == 1){
-        actual_line += candidate_names.front().substr(to_complete.length(),candidate_names.front().length());
+    } else if (candidate_names.size() == 1) {
+        actual_line += candidate_names.front().substr(to_complete.length(), candidate_names.front().length());
     }
 
     return 0;
 }
-
