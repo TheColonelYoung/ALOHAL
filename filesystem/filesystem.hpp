@@ -36,6 +36,7 @@ public:
     int Command_cd(vector<string> args);
     int Command_cat(vector<string> args);
     int Command_pwd(vector<string> args);
+    int Command_fg(vector<string> args);
 
     /**
      * @brief   Creates empty directory at given path

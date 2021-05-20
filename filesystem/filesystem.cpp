@@ -102,6 +102,29 @@ int Filesystem::Command_pwd(vector<string> args){
     return 0;
 }
 
+int Filesystem::Command_fg(vector<string> args){
+    if(args.size() != 2){
+        cli->Print("Invalid arguments\r\n");
+        return -1;
+    }
+
+    string filename = args[1];
+
+    Executable *target_file = static_cast<Executable *>(Get_entry(filename));
+    if (target_file == nullptr) {
+        cli->Print("Target location is unreachable\r\n");
+        return ENOENT;
+    }
+
+    if (target_file->Type_of() != FS_entry::Type::Executable) {
+        cli->Print("Target location is not an executable \r\n");
+        return EISDIR;
+    }
+
+    cli->Start_foreground_application(filename);
+    return 0;
+}
+
 string Filesystem::Command_check(vector<string> args) const {
     if (args.size() > 2) {
         cli->Print("Invalid parameters \r\n");
