@@ -154,11 +154,10 @@ public:
     bool Entry_exists(vector<string> path) const;
 
     /**
-     * @brief Test if entry exists on given path
+     * @brief   Determinate type of entry
      *
-     * @param filename  Names of folders from root
-     * @return true     Entry exist in filesystem and can be accessed
-     * @return false    Entry with this name does not exists
+     * @param filename          Path to fs record
+     * @return FS_entry::Type   Type of record at path
      */
     FS_entry::Type Entry_type(string filename) const;
 

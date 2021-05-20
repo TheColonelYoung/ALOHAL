@@ -206,6 +206,14 @@ bool Filesystem::Entry_exists(string filename) const {
     return Entry_exists(Create_entry_path(filename));
 }
 
+FS_entry::Type Filesystem::Entry_type(string filename) const{
+    if (Entry_exists(filename)){
+        return Get_entry(filename)->Type_of();
+    } else {
+        return FS_entry::Type::Undefined;
+    }
+}
+
 bool Filesystem::Entry_exists(vector<string> path) const {
     FS_entry *target = Get_entry(path);
     if (target != nullptr) {
