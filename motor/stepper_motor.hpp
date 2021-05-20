@@ -31,7 +31,7 @@ public:
         Forward = 1,
     };
 
-private:
+protected:
     uint speed;
 
     /**
