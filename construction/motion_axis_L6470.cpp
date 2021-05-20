@@ -5,7 +5,7 @@ Motion_axis_L6470::Motion_axis_L6470(L6470 *stepper_motor, double ratio, Motion_
 
 
 bool Motion_axis_L6470::Move(double shift){
-    double steps = round(shift/ratio);
+    double steps = round(shift/ratio*stepper_motor->Microsteps());
     if(valid_position){
         position += shift;
     }
@@ -32,7 +32,9 @@ void Motion_axis_L6470::Run(double speed){
     if (speed > 0){
         stepper_motor->Run(Default_direction(), static_cast<unsigned int>(speed/ratio));
     } else if (speed < 0){
-        stepper_motor->Run(Flip_direction(Default_direction()), static_cast<unsigned int>(speed/ratio));
+        stepper_motor->Run(Flip_direction(Default_direction()), static_cast<unsigned int>((speed*-1)/ratio));
+    } else if (speed == 0){
+        stepper_motor->Release();
     }
 }
 
