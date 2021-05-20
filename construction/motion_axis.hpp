@@ -17,10 +17,11 @@
  */
 class Motion_axis : public Loggable
 {
-protected:
+public:
 
     typedef Stepper_motor::Direction Direction;
 
+protected:
     /**
      * @brief Actual position of motor, invalid until homing
      */
