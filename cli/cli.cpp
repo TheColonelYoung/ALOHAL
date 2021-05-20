@@ -42,9 +42,8 @@ void CLI::Process_character(){
         return;
     }
     // Backspace (screen - DEL)
-    else if (received_char == 127){ // backspace (screen - DEL)
-        if (actual_line.length() > (line_opening.length() + filesystem_prefix.length()))
-        {
+    else if (received_char == 127) { // backspace (screen - DEL)
+        if (actual_line.length() > (line_opening.length() + line_prefix.length())) {
             actual_line = actual_line.substr(0, actual_line.length() - 1);
         }
     }
@@ -65,7 +64,7 @@ void CLI::Process_character(){
     // Autocomplete
     else if (received_char == 9) {
         // If nothing on line skip autocomplete
-        if ((actual_line.back() != ' ') or (actual_line != filesystem_prefix + line_opening)){
+        if ((actual_line.back() != ' ') or (actual_line != line_prefix + line_opening)) {
             // Autocomplete for string between last space and and of line
             Autocomplete(actual_line.substr(actual_line.find_last_of(" ") + 1, actual_line.length()));
         }
@@ -112,6 +111,14 @@ int CLI::Process_line(){
     }
     Print("\r\r\n");
 
+    // Handle input for foreground application
+    if (fs and foreground_application) {
+        // Insert name of app as first argument to adhere to conventions
+        args.insert(args.begin(), foreground_application->Name());
+        Process_foreground_application(args);
+        return 0;
+    }
+
     // Run registred command
     for (auto &command:commands) {
         if (args[0] == command->Get_command()) {
@@ -134,11 +141,38 @@ int CLI::Process_line(){
 
     Print("Command \"" + args[0] + "\" was not found\r\n");
     return -1;
+} // CLI::Process_line
+
+bool CLI::Start_foreground_application(string path_to_application){
+    if (fs and fs->Entry_exists(path_to_application)) {
+        if (fs->Entry_type(path_to_application) == FS_entry::Type::Executable) {
+            foreground_application = static_cast<Executable *>(fs->Get_entry(path_to_application));
+            Set_line_prefix("$" + foreground_application->Name());
+            return true;
+        }
+    }
+    return false;
 }
 
-int CLI::Enable_filesystem_executable(Filesystem* fs){
+void CLI::Stop_foreground_application(){
+    foreground_application = nullptr;
+    if (fs) {
+        // Refresh line opening for filesystem when exiting foreground application
+        fs->Set_location(".");
+    }
+}
+
+void CLI::Process_foreground_application(vector<string> args){
+    if (args[1] == "exit") {
+        Stop_foreground_application();
+    } else {
+        foreground_application->Run(args);
+    }
+}
+
+int CLI::Enable_filesystem_executable(Filesystem *fs){
     int ret = 0;
-    if (this->fs != nullptr){
+    if (this->fs != nullptr) {
         ret = 1;
     }
     this->fs = fs;
@@ -162,17 +196,17 @@ int CLI::Set_line(string text){
     return actual_line.size();
 }
 
-void CLI::Set_filesystem_prefix(const string prefix){
-    filesystem_prefix = prefix;
-    if(filesystem_prefix.back() == '/' && filesystem_prefix.length() > 1){
-        filesystem_prefix.erase(filesystem_prefix.length()-1);
+void CLI::Set_line_prefix(const string prefix){
+    line_prefix = prefix;
+    if (line_prefix.back() == '/' && line_prefix.length() > 1) {
+        line_prefix.erase(line_prefix.length() - 1);
     }
-    filesystem_prefix = "\u001b[34;1m" + filesystem_prefix + "\u001b[0m";
+    line_prefix = "\u001b[34;1m" + line_prefix + "\u001b[0m";
     Clear_line();
 }
 
 void CLI::Clear_line(){
-    actual_line = filesystem_prefix + line_opening;
+    actual_line = line_prefix + line_opening;
     Redraw_line();
 }
 

@@ -6,6 +6,7 @@
 #include "uart/serial_line.hpp"
 #include "command.hpp"
 #include "history.hpp"
+#include "filesystem/executable.hpp"
 
 class Filesystem;
 
@@ -43,7 +44,7 @@ private:
      * @brief   Prefix before line opening, contains location inside filesystem, updated with every usage of command cd
      *          Used before line opening on new line
      */
-    string filesystem_prefix = "";
+    string line_prefix = "";
 
     /**
      * @brief   List of command which can be used inside CLI
@@ -63,6 +64,11 @@ private:
      *              for command history browsing
      */
     unsigned short escape_sequency_remaining = 0;
+
+    /**
+     * @brief Pointer to executable in foreground of application
+     */
+    Executable * foreground_application = nullptr;
 
 public:
     CLI() =default;
@@ -116,12 +122,11 @@ public:
 
     /**
      * @brief   Save prefix which will be printed before line opening,
-     *          This prefix means current location inside filesystem
-     *          Called by filesystem everytime when 'cd' command is used
+     *          This prefix means current location inside filesystem ot primary application
      *
-     * @param prefix    Position in filesystem
+     * @param prefix    Prefix vefore line opening
      */
-    void Set_filesystem_prefix(const string prefix);
+    void Set_line_prefix(const string prefix);
 
     /**
      * @brief Register method of some object as CLI command
@@ -136,6 +141,22 @@ public:
     void Register_command(string command, string help, registrator_class *object, int (registrator_class::*method)(vector<string> args)){
         commands.emplace_back(new Command<registrator_class>(command, help, object, method));
     }
+
+    /**
+     * @brief   Sets given application into foreground of CLI
+     *          When application is in foreground every line is used as argument and new
+     *              instance of application is executed
+     *
+     * @param path_to_application   Path where is application located in filesystem
+     * @return true     Valid application exists at path
+     * @return false    No valid executable on path
+     */
+    bool Start_foreground_application(string path_to_application);
+
+    /**
+     * @brief   Disables foreground app and set CLI into default state
+     */
+    void Stop_foreground_application();
 
 private:
 
@@ -173,6 +194,12 @@ private:
      * @return int Status of operation
      */
     int Process_line();
+
+    /**
+     * @brief   Handles line procesing if foreground application is running
+     *          Executes foreground app and pass arguments into it
+     */
+    void Process_foreground_application(vector<string> args);
 
     /**
      * @brief CLI command, show available command or help for commands
