@@ -9,8 +9,14 @@ int USB_CDC::Send(string message){
     return status;
 }
 
-int USB_CDC::Receive(uint8_t* Buf, unsigned int Len){
-    RX_buffer.push_back(Buf[0]);
+int USB_CDC::Receive(uint8_t *Buf, unsigned int Len){
+    if (Len == 1) {
+        RX_buffer.push_back(Buf[0]);
+    } else if (Len > 1) {
+        RX_buffer.append(string((char *) Buf));
+    } else {
+        return 0;
+    }
     IRQ->Notify();
     return 0;
 }
@@ -23,7 +29,7 @@ int USB_CDC::Resend(){
     return TX_buffer.size();
 }
 
-void USB_VCP_RX_Callback(uint8_t* Buf, uint32_t Len){
+void USB_VCP_RX_Callback(uint8_t *Buf, uint32_t Len){
     device()->mcu->USB_port->Receive(Buf, Len);
 }
 
