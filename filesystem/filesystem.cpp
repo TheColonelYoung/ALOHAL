@@ -6,7 +6,8 @@ Filesystem::Filesystem(CLI *cli) :
     cli->Register_command("cd", "cd as in Linux", this, &Filesystem::Command_cd);
     cli->Register_command("pwd", "pwd as in Linux", this, &Filesystem::Command_pwd);
     cli->Register_command("cat", "cat as in Linux", this, &Filesystem::Command_cat);
-    cli->Set_filesystem_prefix(actual_position->Path());
+    cli->Register_command("fg", "set application to foreground", this, &Filesystem::Command_fg);
+    cli->Set_line_prefix(actual_position->Path());
     root->Set_parent(root);
 }
 
@@ -46,7 +47,7 @@ int Filesystem::Set_location(string path){
     }
 
     actual_position = target_directory;
-    cli->Set_filesystem_prefix(actual_position->Path());
+    cli->Set_line_prefix(actual_position->Path());
     return 0;
 }
 
