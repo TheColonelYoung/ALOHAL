@@ -49,7 +49,7 @@ void CLI::Process_character(){
     }
     // Handle escape sequence for arrows
     else if (escape_sequency_remaining == 1) {
-        if (History()) {
+        if (command_history) {
             // History arrow up
             if (received_char == 65) {
                 Set_line(command_history->Up());
