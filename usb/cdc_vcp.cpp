@@ -13,7 +13,7 @@ int USB_CDC::Receive(uint8_t *Buf, unsigned int Len){
     if (Len == 1) {
         RX_buffer.push_back(Buf[0]);
     } else if (Len > 1) {
-        RX_buffer.append(string((char *) Buf));
+        RX_buffer.append(string((char *) Buf, Len));
     } else {
         return 0;
     }
