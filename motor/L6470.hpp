@@ -436,7 +436,7 @@ private:
      * @param data  Data to send to L6470
      * @return int  Validity of action
      */
-    int Send(vector<uint8_t> data);
+    int Send(const vector<uint8_t> &data) const;
 
     /**
      * @brief   Send one byte of data to driver
@@ -444,7 +444,7 @@ private:
      * @param data  Data to send to L6470
      * @return int  Validity of action
      */
-    int Send(uint8_t data);
+    int Send(const uint8_t data) const ;
 
     /**
      * @brief Set given register of L6470 to value

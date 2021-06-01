@@ -133,7 +133,7 @@ int L6470::Run(Direction dir, unsigned int speed){
     Log_line(Log_levels::Notice, name + ": Speed: " + to_string(Speed()));
     speed = round((speed * (250 * pow(10, -9))) / pow(2, -28));
     vector<uint8_t> data(4);
-    data[0]  = static_cast<uint8_t>(command::Run);
+    data[0] = static_cast<uint8_t>(command::Run);
     if(dir == Stepper_motor::Direction::Forward){
         data[0] |= 1UL;
     }
@@ -179,12 +179,12 @@ int L6470::Reset(){
     return 0;
 }
 
-int L6470::Send(uint8_t data){
+int L6470::Send(const uint8_t data) const{
     Transmit(vector<uint8_t> { data });
     return 0;
 }
 
-int L6470::Send(vector<uint8_t> data){
+int L6470::Send(const vector<uint8_t> &data) const{
     for (auto &byte:data) {
         Transmit(vector<uint8_t> { byte });
     }
