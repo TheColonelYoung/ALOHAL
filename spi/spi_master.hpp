@@ -47,7 +47,7 @@ public:
      * @param cs_active Logic level in which is chip select signal of target device enabled
      * @return uint Success = 0, Error - 1, Busy - 2, Timeout - 3
      */
-    uint Transmit_poll(Pin &chip_select, const vector<uint8_t> &data, bool cs_active = false);
+    uint Transmit_poll(Pin &chip_select, const vector<uint8_t> &data, bool cs_active = false) const;
 
     /**
      * @brief Receive data from device on bus in polling mode

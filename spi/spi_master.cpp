@@ -5,7 +5,7 @@ SPI_master::SPI_master(SPI_HandleTypeDef *handler, uint speed)
 {
 }
 
-uint SPI_master::Transmit_poll(Pin &chip_select,const vector<uint8_t> &data, bool cs_active)
+uint SPI_master::Transmit_poll(Pin &chip_select,const vector<uint8_t> &data, bool cs_active) const
 {
     uint status;
     chip_select.Set(cs_active);

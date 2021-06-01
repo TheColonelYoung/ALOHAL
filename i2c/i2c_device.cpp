@@ -5,7 +5,7 @@ I2C_device::I2C_device(I2C_master &master, unsigned char address):
 
 }
 
-uint I2C_device::Transmit(const vector<uint8_t> &data){
+uint I2C_device::Transmit(const vector<uint8_t> &data) const{
     return master.Transmit_poll(address, data);
 }
 

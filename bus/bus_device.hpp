@@ -26,7 +26,7 @@ private:
      * @param data Data to be send
      * @return uint Status of transmition
      */
-    virtual uint Transmit(const vector<uint8_t> &data) = 0;
+    virtual uint Transmit(const vector<uint8_t> &data) const = 0;
 
     /**
      * @brief Function for generic transfer from bus device to master

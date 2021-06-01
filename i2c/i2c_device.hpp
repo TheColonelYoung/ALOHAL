@@ -50,7 +50,7 @@ protected:
      * @param data      Data to be send by bus
      * @return uint     Status code of transmittion
      */
-    uint Transmit(const vector<uint8_t> &data) override;
+    uint Transmit(const vector<uint8_t> &data) const override;
 
     /**
      * @brief Receive data from device on bus
