@@ -10,6 +10,7 @@
 #include "globals.hpp"
 #include "configuration/config.cpp"
 #include "mcu/configuration/settings.hpp"
+#include "mcu/configuration/externs.hpp"
 #include "gpio/pin.hpp"
 #include "timer/timer.hpp"
 
@@ -78,6 +79,10 @@ public:
     // Peripherals
 
     IRQ_multi_handler<int> *EXT_IRQ = nullptr;
+
+    #ifdef I_WDG_EN
+    Independent_watchdog* I_WDG = new Independent_watchdog();
+    #endif
 
     // ADC
     #ifdef ADC_1_EN

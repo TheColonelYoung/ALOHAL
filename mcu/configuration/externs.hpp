@@ -48,6 +48,12 @@ class USB_CDC;
 extern USB_CDC USB_port;
 #endif
 
+class Independent_watchdog;
+#ifdef I_WDG_EN
+# include "mcu/independent_watchdog.hpp"
+extern Independent_watchdog I_WDG;
+#endif
+
 class UART;
 #if defined(UART_1_EN) || defined(UART_2_EN) || defined(UART_1_EN) || defined(UART_3_EN)
 # include "uart/uart.hpp"
