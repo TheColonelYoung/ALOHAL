@@ -1,16 +1,16 @@
 #include "irq_handler.hpp"
 
-int IRQ_handler::Notify(){
-    for (unsigned int i = 0; i < observers.size(); i++) {
-        observers[i]->Run();
-        //RTOS::Create_thread("IRQ_notify", observers[i], &IRQ_observer_base::Run);
-    }
+#include "rtos/irq_director.hpp"
+#include "rtos/thread_creator.hpp"
 
-    return 0;
+
+void IRQ_handler::Notify(){
+    if(observer){
+        RTOS::Add_thread("UART_IRQ",observer);
+    }
+    RTOS::IRQ_Signal(this);
 }
 
 void IRQ_handler::Register(void (*function_pointer_set)(void)){
-    IRQ_observer<string> *obs = new IRQ_observer<string>();
-    obs->Register(function_pointer_set);
-    observers.emplace_back(obs);
+    observer = new Invocation_wrapper<void, void, void>(new function<void()>(function_pointer_set));
 }
