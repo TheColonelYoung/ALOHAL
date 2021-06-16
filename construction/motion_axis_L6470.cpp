@@ -24,7 +24,7 @@ bool Motion_axis_L6470::GoTo(double target_position){
     if(!valid_position){
         return -1;
     }
-    double shift = position - target_position;
+    double shift = target_position - position;
     return Move(shift);
 }
 
@@ -43,7 +43,7 @@ void Motion_axis_L6470::Home(){
 
     tasker()->Poll_until<true>(
         new Invocation_wrapper<L6470, bool, void>(stepper_motor, &L6470::Switch_status),
-        100 * 1000,
+        1000 * 1000,
         new Invocation_wrapper<void, void, void>(
             new function<void()>(
                 [this]() -> void{
@@ -53,10 +53,12 @@ void Motion_axis_L6470::Home(){
             )
         )
     );
+    position = 0;
+    valid_position = true;
 }
 
 void Motion_axis_L6470::Release_switch(){
-    stepper_motor->ReleaseSW(Motion_axis::Direction::Forward);
+    stepper_motor->ReleaseSW(Flip_direction(home_direction));
 }
 
 void Motion_axis_L6470::Hard_stop(){
