@@ -8,19 +8,43 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
+
+#include "FreeRTOS.h"
+#include "cmsis_os2.h"
 
 #include "global_includes.hpp"
-#include "cmsis_os2.h"
-#include "FreeRTOS.h"
 #include "misc/invocation_wrapper.hpp"
 
 using namespace std;
 
+/**
+ * @brief   Redefinition of operator new to use FreeRTOS API
+ *
+ * @param size      Number of bytes to allocate
+ * @return void*    Pointer to allocated memory
+ */
 void * operator new( size_t size);
+
+/**
+ * @brief   Redefinition of operator new to use FreeRTOS API
+ *
+ * @param size      Number of bytes to allocate
+ * @return void*    Pointer to allocated memory
+ */
 void * operator new[]( size_t size);
 
+/**
+ * @brief       Redefinition of operator delete to use FreeRTOS API
+ *
+ * @param ptr   Pointer to memory which will be freed
+ */
 void operator delete( void * ptr);
+
+/**
+ * @brief       Redefinition of operator delete to use FreeRTOS API
+ *
+ * @param ptr   Pointer to memory which will be freed
+ */
 void operator delete[]( void * ptr);
 
 namespace RTOS {
@@ -36,53 +60,29 @@ enum class Priority {
     Error       = osPriorityError,
 };
 
-class RTOS_semaphore {
-public:
-    osSemaphoreId_t semaphore;
-
-    RTOS_semaphore(uint32_t max_tokens = 1, uint32_t init_tokens = 1){
-        semaphore = osSemaphoreNew(max_tokens, init_tokens, NULL);
-    }
-
-    void Wait(){
-        osSemaphoreAcquire(semaphore, osWaitForever);
-    }
-
-    void Fire(){
-        osSemaphoreRelease(semaphore);
-    }
-};
-
-/**
- * @brief Wrapper for object and his method which will be start point of thread
- */
-/*
-struct Thread_seed_base {
-    Thread_seed_base() = default;
-    virtual ~Thread_seed_base() = default;
-    virtual void Run() const{};
-};*/
-
 /**
  * @brief Wrapper for object and his method which will be start point of thread
  *
  * @tparam class_T Class from which is object
  */
-struct Thread_seed{
+class Thread_seed{
 
     Invocation_wrapper_base<void, void> *iw;
 
     bool delete_iw = false;
 
-    osThreadAttr_t config;
-
-
+public:
     Thread_seed() = default;
-    Thread_seed(Invocation_wrapper_base<void, void> *iw, bool delete_iw = false) : iw(iw){ };
 
+    Thread_seed(Invocation_wrapper_base<void, void> *iw, bool delete_iw = false) : iw(iw), delete_iw(delete_iw){ };
 
-    //template <typename>
-    void Run() const {
+    ~Thread_seed(){
+        if(delete_iw){
+            delete iw;
+        }
+    }
+
+    inline void Run() const {
         iw->Invoke();
         if(delete_iw){
             delete iw;
@@ -96,43 +96,33 @@ struct Thread_seed{
  *          From object and his method is created Thread_seed which is passed to lambda.
  *          Cannot be called from ISR(IRQ) -> Thread starter must be used.
  *
- * @tparam class_T Class of object
- * @param name          Name of thread, for identification by hash
+ * @tparam class_T      Class of object
+ * @param name          Name of thread
  * @param object        Object on which is thread started
  * @param method        Method to start as thread entrance point
  * @param priority      RTOS priority of thread
  * @param stack_size    Stack size of thread
+ * @param delete_iw     Delete iw after thread is exited?
  * @return osThreadId_t ThreadID
  */
-
-
 template <typename class_T>
-inline osThreadId_t  Create_thread(string name, class_T *object, void (class_T::*method) (void), bool delete_iw = false, Priority priority = Priority::Normal, uint8_t stack_size = 128){
-    //auto seed      = new Thread_seed<class_T>(object, method);
+osThreadId_t  Create_thread(string name, class_T *object, void (class_T::*method) (void), Priority priority = Priority::Normal, uint16_t stack_size = 128, bool delete_iw = true){
 
     auto *iw = new Invocation_wrapper<class_T, void, void>(object, method);
 
-    return Create_thread(name, iw,true, priority, stack_size);
+    return Create_thread(name, iw, priority, stack_size, delete_iw);
 }
 
-inline osThreadId_t  Create_thread(string name, Invocation_wrapper_base<void, void> * iw,  bool delete_iw = false, Priority priority = Priority::Normal, uint8_t stack_size = 128){
+/**
+ * @brief   Create RTOS thread from invocation wrapper
+ *
+ * @param name          Name of thread
+ * @param iw            Invocation wrapper which is executed inside thread
+ * @param priority      RTOS priority of thread
+ * @param stack_size    Stack size of thread
+ * @param delete_iw     Delete iw after thread is exited?
+ * @return osThreadId_t ThreadID
+ */
+osThreadId_t  Create_thread(string name, Invocation_wrapper_base<void, void> * iw, Priority priority = Priority::Normal, uint16_t stack_size = 256, bool delete_iw = false);
 
-    auto * seed = new Thread_seed(iw);
-
-    seed->config = {
-        .name       = name.c_str(),
-        .stack_size = stack_size,
-    };
-
-    return osThreadNew(
-        [](void *seed_void) -> void {
-            auto seed = reinterpret_cast<Thread_seed *>(seed_void);
-            seed->Run();
-            delete seed;
-            osThreadExit();
-        },
-        seed, NULL);
-
-}
-
-}
+};
