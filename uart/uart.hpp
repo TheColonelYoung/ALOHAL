@@ -34,9 +34,9 @@
 #include "gpio/pin.hpp"
 #include "irq/irq_handler.hpp"
 #include "uart/serial_line.hpp"
-#include "rtos/thread.hpp"
 
 #include "cmsis_os.h"
+#include "FreeRTOS.h"
 
 using namespace std;
 
@@ -59,7 +59,7 @@ private:
     unsigned char UART_buffer_temp[2];
 
     /**
-     * @brief Vector of messages which are wainting to be send over UART
+     * @brief Circular buffer of messages which are wainting to be send over UART
      */
     vector<string> TX_buffer;
 
@@ -68,7 +68,18 @@ private:
      */
     bool busy = false;
 
-    RTOS::RTOS_semaphore *sem = new RTOS::RTOS_semaphore();
+    const unsigned short buffer_size = 5;
+
+    /**
+     * @brief   Determinates first populated position in buffer
+     *          This string is transmitted as first or already in transmittion
+     */
+    unsigned short buffer_index_begin = 0;
+
+    /**
+     * @brief Determinates first empty position in buffer
+     */
+    unsigned short buffer_index_end = 0;
 
 public:
     /**
@@ -106,9 +117,17 @@ public:
      *          Must be public method because is called from HAL IRQ handler HAL_UART_TxCpltCallback,
      *              which is outside of namespace of this class
      *
-     * @return int  Actual size of transmitt buffer
      */
-    int Resend();
+    void Resend();
+
+private:
+    /**
+     * @brief Add new message to buffer
+     *
+     * @param message           Message to save into buffer
+     * @return unsigned short   Remaining space in buffer
+     */
+    unsigned short Add_to_buffer(string &message);
 };
 
 /**
