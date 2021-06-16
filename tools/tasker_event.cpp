@@ -20,6 +20,8 @@ bool Tasker_event::Run(){
 
     if(repetition > 0){
         repetition--;
+    } else if (repetition == 0){
+        return true;
     }
 
     execution_target->Invoke();
@@ -29,5 +31,4 @@ bool Tasker_event::Run(){
     }
 
     return true;
-
 }

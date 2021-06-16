@@ -11,6 +11,17 @@ Tasker::Tasker(Timer *timer) :
     timer->Optimize(true);
 }
 
+Tasker* Tasker::Instance(Timer *timer){
+    if (instance == nullptr){
+        instance = new Tasker(timer);
+    }
+    return instance;
+}
+
+Tasker* Tasker::Instance(){
+    return instance;
+}
+
 void Tasker::_Start(){
     running = true;
 
@@ -32,15 +43,15 @@ void Tasker::_Update(unsigned long time_past){
         event->Update(time_past);
     }
 
-    for (auto it = events.begin(); it != events.end();) {
-        if ((*it)->Remaining_time() <= 0) {
+    for (auto event_it = events.begin(); event_it != events.end();) {
+        if ((*event_it)->Remaining_time() <= 0) {
             // Execute event, based on return value it can be last run of event
-            if ((*it)->Run()) {
+            if ((*event_it)->Run()) {
                 // Delete event when is depleted
-                delete (*it);
-                events.erase(it);
+                delete (*event_it);
+                events.erase(event_it);
                 // Descrease iterator, due to removing one element
-                it--;
+                event_it--;
                 // Stop Tasker if there are no events
                 if (events.size() == 0) {
                     _Stop();
@@ -49,7 +60,7 @@ void Tasker::_Update(unsigned long time_past){
             }
         }
         // Increase iterator, move to another element in list
-        it++;
+        event_it++;
     }
 
     _Sort();

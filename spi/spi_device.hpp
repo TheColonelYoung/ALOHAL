@@ -47,7 +47,7 @@ public:
      * @param chip_select Pin to which is connected chip_select input of device
      * @param cs_active Logic level of chip_select in which is device active
      */
-    SPI_device(SPI_master master, Pin *chip_select, bool cs_active = false);
+    SPI_device(SPI_master &master, Pin *chip_select, bool cs_active = false);
 
     /**
      * @brief Transmit data to device
@@ -55,7 +55,7 @@ public:
      * @param data Data to be send by bus
      * @return uint Status code of transmittion
      */
-    uint Transmit(vector<uint8_t> data) override;
+    uint Transmit(const vector<uint8_t> &data) const override;
 
     /**
      * @brief Receive data from device on bus

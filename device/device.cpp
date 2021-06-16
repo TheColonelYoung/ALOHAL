@@ -11,6 +11,10 @@ Device* Device::Instance(){
     return instance;
 }
 
+Device::Device(){
+    Init();
+}
+
 void Device::Init(){
     mcu->Init();
 }

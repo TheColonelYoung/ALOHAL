@@ -93,6 +93,13 @@ public:
     string Read(string delimiter);
 
     /**
+     * @brief   Return number of characters in RX buffer
+     *
+     * @return int  Number of characters in RX buffer
+     */
+    unsigned int Buffer_size() const {return RX_buffer.size();}
+
+    /**
      * @brief   Clear input buffer of serial line
      *
      * @return int  Original size of buffer

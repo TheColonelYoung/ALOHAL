@@ -104,6 +104,12 @@ public:
      * @return long Remaining time to execution
      */
     long Remaining_time() {return remaning_time;};
+
+    /**
+     * @brief   Sets repetition to zero and later is deleted
+     *          When repetition is set to zero event is removed after appers on top of Tasker scheduler
+     */
+    void Erase() {repetition = 0;};
 };
 
 

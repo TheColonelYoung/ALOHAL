@@ -6,7 +6,8 @@ Filesystem::Filesystem(CLI *cli) :
     cli->Register_command("cd", "cd as in Linux", this, &Filesystem::Command_cd);
     cli->Register_command("pwd", "pwd as in Linux", this, &Filesystem::Command_pwd);
     cli->Register_command("cat", "cat as in Linux", this, &Filesystem::Command_cat);
-    cli->Set_filesystem_prefix(actual_position->Path());
+    cli->Register_command("fg", "set application to foreground", this, &Filesystem::Command_fg);
+    cli->Set_line_prefix(actual_position->Path());
     root->Set_parent(root);
 }
 
@@ -46,7 +47,7 @@ int Filesystem::Set_location(string path){
     }
 
     actual_position = target_directory;
-    cli->Set_filesystem_prefix(actual_position->Path());
+    cli->Set_line_prefix(actual_position->Path());
     return 0;
 }
 
@@ -98,6 +99,29 @@ int Filesystem::Command_pwd(vector<string> args){
         return E2BIG;
     }
     cli->Print(actual_position->Path() + "\r\n");
+    return 0;
+}
+
+int Filesystem::Command_fg(vector<string> args){
+    if(args.size() != 2){
+        cli->Print("Invalid arguments\r\n");
+        return -1;
+    }
+
+    string filename = args[1];
+
+    Executable *target_file = static_cast<Executable *>(Get_entry(filename));
+    if (target_file == nullptr) {
+        cli->Print("Target location is unreachable\r\n");
+        return ENOENT;
+    }
+
+    if (target_file->Type_of() != FS_entry::Type::Executable) {
+        cli->Print("Target location is not an executable \r\n");
+        return EISDIR;
+    }
+
+    cli->Start_foreground_application(filename);
     return 0;
 }
 
@@ -180,6 +204,14 @@ vector<string> Filesystem::Create_entry_path(string filename) const {
 
 bool Filesystem::Entry_exists(string filename) const {
     return Entry_exists(Create_entry_path(filename));
+}
+
+FS_entry::Type Filesystem::Entry_type(string filename) const{
+    if (Entry_exists(filename)){
+        return Get_entry(filename)->Type_of();
+    } else {
+        return FS_entry::Type::Undefined;
+    }
 }
 
 bool Filesystem::Entry_exists(vector<string> path) const {

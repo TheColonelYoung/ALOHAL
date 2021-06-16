@@ -26,12 +26,12 @@ public:
         Constant_speed  = 3
     };
 
-    enum Direction{
+    enum Direction: bool{
         Reverse = 0,
         Forward = 1,
     };
 
-private:
+protected:
     uint speed;
 
     /**
@@ -106,11 +106,14 @@ public:
     virtual int Run(Direction dir, uint speed = 0) = 0;
 
     /**
-     * @brief       Set motor into sleep state, High impedance state of MOSFETs
+     * @brief       Disable motor MOSFETs, low power consumption and heating
+     *              In this state motor can freefly move, is disengage
+     *              This can lead to position loss
+     *              This mode is sometimes called Sleep
      *
      * @return int  0 if is it possible, -1 if not (disabled sleep state)
      */
-    virtual int Sleep() = 0;
+    virtual int Release() = 0;
 
     /**
      * @brief       Reset target stepper motor driver

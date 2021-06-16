@@ -18,7 +18,7 @@ using namespace std;
  *          Current is set in procentage of maximal current or by value
  */
 class LED_Driver : public Component {
-    
+
 protected:
     /**
      * @brief Current at 100% power
@@ -69,14 +69,14 @@ public:
      *
      * @param power Percentage of maximal power
      */
-    virtual double Power(float power);
+    double Power(float power);
 
     /**
      * @brief           Return how much power was setup
      *
      * @return float    Actual power level
      */
-    virtual double Power() const;
+    double Power() const;
 
     /**
      * @brief       Return value of power limit in percentage of maximal power
@@ -84,26 +84,35 @@ public:
      *
      * @return float    Percentage of maximal current output, which is allowed
      */
-    virtual double Power_limit() const;
+    double Power_limit() const;
 
     /**
      * @brief           Set current in uA
      *
      * @param current   Output current in uA
      */
-    virtual uint Current(uint current_ua) = 0;
+    uint Current(uint current_ua);
 
     /**
      * @brief       Read the set current
      *
      * @return uint Actual current in uA
      */
-    virtual uint Current() const {return actual_current;};
+    uint Current() const {return actual_current;};
 
     /**
      * @brief       Read the set current
      *
      * @return uint Maximal allowed current in uA
      */
-    virtual uint Current_limit() const {return allowed_current;};
+    uint Current_limit() const {return allowed_current;};
+
+private:
+    /**
+     * @brief   Method defined by child object
+     *
+     * @param current_ua    Current in ua throught LED
+     * @return uint         Current which was set
+     */
+    virtual uint Set_output_current(uint current_ua) = 0;
 };

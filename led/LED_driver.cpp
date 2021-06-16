@@ -22,6 +22,13 @@ double LED_Driver::Power(float power){
     return Power();
 }
 
+uint LED_Driver::Current(uint current_ua){
+    uint output_current = min(current_ua, allowed_current);
+    output_current = Set_output_current(output_current);
+    actual_current = output_current;
+    return output_current;
+}
+
 double LED_Driver::Power() const{
     return 100 * (static_cast<double>(actual_current) / maximal_current);
 }
