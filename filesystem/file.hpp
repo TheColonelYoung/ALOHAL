@@ -37,8 +37,8 @@ private:
      * @brief   Holds pointer to Incovation wrapper which serves as obtainer for data of virtual file
      *          This obtainer can returns text or numerical value
      */
-    Invocation_wrapper<class_T, string, void> *virtual_obtainer_text      = nullptr;
-    Invocation_wrapper<class_T, double, void> *virtual_obtainer_numerical = nullptr;
+    Invocation_wrapper_base<string, void> *virtual_obtainer_text      = nullptr;
+    Invocation_wrapper_base<double, void> *virtual_obtainer_numerical = nullptr;
 
     Location location = Location::RAM;
 
@@ -83,7 +83,7 @@ public:
      * @param object    Pointer to object which will provide data for virtual file
      * @param method    Method of object which will provide data
      */
-    File(string name, class_T *object, string (class_T::*method) (void)) :
+    File(string name, class_T *object, string(class_T::*method) (void)) :
         virtual_obtainer_text(new Invocation_wrapper<class_T, string, void>(object, method)),
         location(Location::Virtual){
         this->type = Type::File;
@@ -98,8 +98,38 @@ public:
      * @param object    Pointer to object which will provide data for virtual file
      * @param method    Method of object which will provide data
      */
-    File(string name, class_T *object, double (class_T::*method) (void)) :
+    File(string name, class_T *object, double(class_T::*method) (void)) :
         virtual_obtainer_numerical(new Invocation_wrapper<class_T, double, void>(object, method)),
+        location(Location::Virtual){
+        this->type = Type::File;
+        this->name = name;
+    }
+
+    /**
+     * @brief   Construct a new File object which is virtual type
+     *          Used for function which returns text value (string)
+     *          Mainly used for lambdas inside Invocation wrapper
+     *
+     * @param name  Name of file
+     * @param iw    Invocation wrapper with lambda
+     */
+    File(string name, Invocation_wrapper<void, string, void> *iw)
+        : virtual_obtainer_text(iw),
+        location(Location::Virtual){
+        this->type = Type::File;
+        this->name = name;
+    }
+
+    /**
+     * @brief   Construct a new File object which is virtual type
+     *          Used for function which returns numerical value (double)
+     *          Mainly used for lambdas inside Invocation wrapper
+     *
+     * @param name  Name of file
+     * @param iw    Invocation wrapper with lambda
+     */
+    File(string name, Invocation_wrapper<void, double, void> *iw)
+        : virtual_obtainer_numerical(iw),
         location(Location::Virtual){
         this->type = Type::File;
         this->name = name;
