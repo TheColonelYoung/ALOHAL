@@ -44,7 +44,15 @@ int Device::Enable_Filesystem(){
     fs->Make_directory("/apps");
     fs->Make_directory("/components");
     fs->Make_directory("/mcu");
+    fs->Make_directory("/rtos");
     fs->Make_directory("/tools");
+
+    auto iw = new Invocation_wrapper<void, string, void>(new std::function<string()>([](){return RTOS::Thread_summary();}));
+    fs->Make_file("/rtos/threads", iw);
+
+    iw = new Invocation_wrapper<void, string, void>(new std::function<string()>([](){return RTOS::Memory_summary();}));
+    fs->Make_file("/rtos/memory", iw);
+
     mcu->Filesystem_interface_initialization();
     return 0;
 }

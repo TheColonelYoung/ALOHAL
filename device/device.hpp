@@ -13,12 +13,14 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 #include "mcu/mcu.hpp"
 #include "cli/cli.hpp"
 #include "filesystem/filesystem.hpp"
 #include "gpio/pin.hpp"
 #include "events/planner/planner.hpp"
+#include "rtos/stats.hpp"
 #include "cmsis_os.h"
 
 class Component;
