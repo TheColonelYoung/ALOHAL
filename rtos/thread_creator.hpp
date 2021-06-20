@@ -40,10 +40,10 @@ class Thread_creator : Loggable {
          * @param stack_size    Stack size of thread
          * @param priority      Priority of thread
          */
-        Thread_record(string name, Invocation_wrapper_base<void, void> *iw, uint16_t stack_size, Priority priority) : name(name), iw(iw), stack_size(stack_size), priority(priority){ };
+        Thread_record(string name, Invocation_wrapper_base<void, void> *iw, uint16_t stack_size, Priority priority) : name(name.substr(0,configMAX_TASK_NAME_LEN-1)), iw(iw), stack_size(stack_size), priority(priority){ };
 
-        Invocation_wrapper_base<void, void> *iw;
         string                               name;
+        Invocation_wrapper_base<void, void> *iw;
         uint16_t                             stack_size;
         Priority                             priority;
     };
@@ -108,6 +108,6 @@ extern Thread_creator Thread_creator_entity;
  * @param stack_size    Stack size of thread
  * @param priority      Priority of thread
  */
-inline void Add_thread(string name, Invocation_wrapper_base<void, void> *iw, uint16_t stack_size = 256, Priority priority = Priority::Normal);
+void Add_thread(string name, Invocation_wrapper_base<void, void> *iw, uint16_t stack_size = 256, Priority priority = Priority::Normal);
 
 };
