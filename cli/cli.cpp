@@ -6,7 +6,6 @@
 
 void CLI::Connect(Serial_line *connection){
     serial_connection = connection;
-    serial_connection->IRQ->Register(this, &CLI::Char_load);
     serial_connection->Send("\r\n");
 }
 
@@ -14,17 +13,19 @@ void CLI::Start(){
     Register_command("help", "Print available commands or help for given command, example: help, help build", this, &CLI::Help);
     Register_command("build_info", "Print information about compilation as compiler version and date of compilation", this, &CLI::Build_info);
     Clear_line();
+    RTOS::Create_thread("CLI", this, &CLI::Char_load, RTOS::Priority::BelowNormal, 4096);
 }
 
 void CLI::Char_load(){
-    while (serial_connection->Buffer_size() > 0) {
-        Process_character();
+    while(true){
+        RTOS::IRQ_Wait(serial_connection->IRQ);
+        while (serial_connection->Buffer_size() > 0) {
+            Process_character(serial_connection->Read(1)[0]);
+        }
     }
 }
 
-void CLI::Process_character(){
-    char received_char = serial_connection->Read(1)[0];
-
+void CLI::Process_character(char received_char){
     if (escape_sequency_remaining > 1) {
         escape_sequency_remaining--;
         return;

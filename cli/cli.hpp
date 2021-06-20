@@ -7,6 +7,8 @@
 #include "command.hpp"
 #include "history.hpp"
 #include "filesystem/executable.hpp"
+#include "rtos/irq_director.hpp"
+#include "rtos/thread.hpp"
 
 class Filesystem;
 
@@ -88,8 +90,6 @@ public:
 
     /**
      * @brief   Load next available char from Serial_line, eventually start processing of line
-     *          Called from IRQ Handler
-     *
      */
     void Char_load();
 
@@ -184,9 +184,9 @@ private:
     /**
      * @brief Process one input character of command line
      *
-     * @return int Number of remaining characters in buffer
+     * @param received_char Character to process
      */
-    void Process_character();
+    void Process_character(char received_char);
 
     /**
      * @brief Process line (after entering enter), run command
