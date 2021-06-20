@@ -290,16 +290,18 @@ int Filesystem::Add_entry(string path, FS_entry *entry){
 
 }
 
-int Filesystem::Execute(string &path, vector<string> &args){
+int Filesystem::Execute(string &path, vector<string> args){
     FS_entry* exec_file = Get_entry(path);
 
     if (exec_file == nullptr){
         cli->Print("Command or executable with name: \"" + args[0] + "\" was not found\r\n");
+        return -1;
     }
 
     if (exec_file->Type_of() == FS_entry::Type::Executable){
-        return exec_file->Run(args);
+        exec_file->Run(args);
+        return 0;
     }
-    return -1;
+    return -2;
 }
 

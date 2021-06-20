@@ -17,6 +17,7 @@
 #include <cerrno>
 #include <string>
 #include <vector>
+#include <functional>
 
 using namespace std;
 
@@ -68,6 +69,32 @@ public:
     int Make_file(string path, class_T *object, string (class_T::*method) (void)){
         string filename = path.substr(path.find_last_of("/") + 1);
         File<class_T> *new_file = new File<class_T>(filename, object, method);
+        return Add_entry(path, new_file);
+    }
+
+    /**
+     * @brief       Create virtual file inside filesystem
+     *
+     * @param path  Location at which will be file created
+     * @param iw    Invocation wrapper with function(lambda) which supply content of file
+     * @return int  Error number
+     */
+    int Make_file(string path, Invocation_wrapper<void, string, void> * iw){
+        string filename = path.substr(path.find_last_of("/") + 1);
+        File<string> *new_file = new File<string>(filename, iw);
+        return Add_entry(path, new_file);
+    }
+
+    /**
+     * @brief       Create virtual file inside filesystem
+     *
+     * @param path  Location at which will be file created
+     * @param iw    Invocation wrapper with function(lambda) which supply content of file
+     * @return int  Error number
+     */
+    int Make_file(string path, Invocation_wrapper<void, double, void> * iw){
+        string filename = path.substr(path.find_last_of("/") + 1);
+        File<string> *new_file = new File<string>(filename, iw);
         return Add_entry(path, new_file);
     }
 
@@ -177,7 +204,7 @@ public:
      * @param args  Arguments for executable
      * @return int  Return code of executable
      */
-    int Execute(string &path, vector<string> &args);
+    int Execute(string &path, vector<string> args);
 
     /**
      * @brief Delete entry from filesystem
