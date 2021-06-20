@@ -40,7 +40,7 @@ string RTOS::Thread_summary(){
 
     string text;
     text += string(80, '-') + "\r\n";
-    text += "Name\t\t\tState\t\tStack_size\tStack_min_free\tCPU_Usage\r\n";
+    text += "Name\t\t\tState\t\tStack_min_free\tCPU_Usage\r\n";
     text += string(80, '-') + "\r\n";
     for(auto &task:thread_handles){
         string name = string(task.pcTaskName);
@@ -48,8 +48,8 @@ string RTOS::Thread_summary(){
         int fill = 3-(name.length()/8);
         text += string(fill, '\t');
         text += Task_state_translation.at(task.eCurrentState);
-        uint16_t stack_size = uxTaskGetStackSize(task.xHandle);
-        text += "\t\t" + to_string(stack_size);
+        //uint16_t stack_size = uxTaskGetStackSize(task.xHandle);
+        //text += "\t\t" + to_string(stack_size);
         text += "\t\t" + to_string(uxTaskGetStackHighWaterMark(task.xHandle) * 4);
         text += "\t\t" + to_string((task.ulRunTimeCounter/(double)runtime) * 100) + "%";
         text += "\r\n";
