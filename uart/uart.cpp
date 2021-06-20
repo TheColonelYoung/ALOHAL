@@ -30,11 +30,8 @@ unsigned short UART::Add_to_buffer(string &message){
     if (buffer_index_begin == ((buffer_index_end + 1) % buffer_size)) {
         return 0;
     }
-    // Block possible TX IRQ which could
-    taskENTER_CRITICAL();
     TX_buffer[buffer_index_end] = message;
     buffer_index_end = (buffer_index_end + 1) % buffer_size;
-    taskEXIT_CRITICAL();
     return abs(buffer_index_begin - buffer_index_end - 1);
 }
 

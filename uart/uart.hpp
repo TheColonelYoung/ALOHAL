@@ -68,7 +68,7 @@ private:
      */
     bool busy = false;
 
-    const unsigned short buffer_size = 5;
+    const unsigned short buffer_size = 20;
 
     /**
      * @brief   Determinates first populated position in buffer
