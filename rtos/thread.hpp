@@ -84,9 +84,6 @@ public:
 
     inline void Run() const {
         iw->Invoke();
-        if(delete_iw){
-            delete iw;
-        }
     };
 };
 
