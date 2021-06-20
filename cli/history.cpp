@@ -36,6 +36,7 @@ int CLI_history::Update(string new_command){
     } else {
         // Skip update if last command is same as new_command
         if (new_command == cmd_history[begin]){
+            pointer = begin;
             return 1;
         }
         begin = (begin + 1) % size;
