@@ -11,7 +11,7 @@ void RTOS::IRQ_director::Signal(uint16_t irq_id){
 
 void RTOS::IRQ_director::Wait(uint16_t irq_id){
     uint16_t event_group_index = irq_id / 31;
-    if(event_groups.size() < event_group_index+1){
+    if(event_groups.size() < static_cast<uint16_t>(event_group_index+1)){
         event_groups.resize(event_group_index+1);
     }
     if (event_groups[event_group_index] == nullptr) {
