@@ -3,10 +3,9 @@
 #include "rtos/irq_director.hpp"
 #include "rtos/thread_creator.hpp"
 
-
 void IRQ_handler::Notify(){
     if(observer){
-        RTOS::Add_thread("UART_IRQ",observer);
+        RTOS::Add_thread("IRQ", observer);
     }
     RTOS::IRQ_Signal(this);
 }

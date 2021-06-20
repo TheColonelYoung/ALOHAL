@@ -119,5 +119,3 @@ public:
      */
     void Notify();
 };
-
-#include "rtos/irq_director.hpp"
