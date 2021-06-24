@@ -13,20 +13,19 @@ typedef unsigned int uint;
 using namespace std;
 
 /**
- * @brief Generic pure virtual class for stepper motor
- *
+ * @brief Generic virtual class for stepper motor
  */
 class Stepper_motor
 {
 public:
-    enum Status{
+    enum class Status: short{
         Stopped         = 0,
         Acceleration    = 1,
         Deceleration    = 2,
         Constant_speed  = 3
     };
 
-    enum Direction: bool{
+    enum class Direction: bool{
         Reverse = 0,
         Forward = 1,
     };
@@ -121,6 +120,34 @@ public:
      * @return int  0 if is it possible, -1 if not (target did not supports reset)
      */
     virtual int Reset() = 0;
+
+    /**
+     * @brief Current maximal speed of motor
+     *
+     * @return unsigned int Current maximal speed of motor
+     */
+    virtual unsigned int Max_speed(){return max_speed;};
+
+    /**
+     * @brief Currently set minimal speed of motor
+     *
+     * @return unsigned int Currently set minimal speed of motor
+     */
+    virtual unsigned int Min_speed(){return min_speed;};
+
+    /**
+     * @brief Currently set acceleration of motor
+     *
+     * @return unsigned int Currently set acceleration of motor
+     */
+    virtual unsigned int Acceleration(){return acceleration;};
+
+    /**
+     * @brief Currently set deceleration of motor
+     *
+     * @return unsigned int Currently set deceleration of motor
+     */
+    virtual unsigned int Deceleration(){return deceleration;};
 
 };
 
