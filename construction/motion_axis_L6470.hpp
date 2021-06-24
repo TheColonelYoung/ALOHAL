@@ -14,14 +14,20 @@
 #include "tools/tasker.hpp"
 #include "rtos/utils.hpp"
 
+/**
+ * @brief Version of motion axis, which is powered by stepper motor driven by L6470 driver
+ */
 class Motion_axis_L6470: protected Motion_axis{
 private:
+    /**
+     * @brief   Pointer to L6470 stepper motor driver which drives axis
+     */
     L6470 * stepper_motor = nullptr;
 
-    double max_position;
-
-    double min_position;
-
+    /**
+     * @brief   Speed used for homing of axis
+     *          Speed is in units of axis per second
+     */
     double homing_speed;
 
 public:
@@ -47,6 +53,26 @@ public:
      */
     void Release_switch();
 
+    /**
+     * @brief   Perform homing on axis which have endstop inside track of axis and not on its end
+     */
     void Home_bidirectional();
 
+    /**
+     * @brief   Update position from stepper driver and use it as current position
+     *          This method i used when axis is driven via speed commands
+     *
+     * @return double   Updated position
+     */
+    double Update_position();
+
+    /**
+     * @brief   Checks if is safe to run from actual position
+     *          If valid position is not established, then all Run commands are allowed
+     *
+     * @param speed     Requested speed
+     * @return true     Run command can be executed
+     * @return false    Run command cannot be executed
+     */
+    bool Run_boundary_check(double speed);
 };
