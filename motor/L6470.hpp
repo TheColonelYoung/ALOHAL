@@ -448,10 +448,12 @@ public:
      * @param phase_resistance          Resistance of phase in motor in Ohms
      * @param phase_inductance          Resistance of phase in motor in mH
      * @param motor_electric_constant   Coefficient describing how relates motor speed and BEMF amplitude
+     * @param hold_current_mult         Multiplier for hold current (recommended range 0-1.0)
+     * @param acc_dec_current_mult      Multiplier for hold acceleration and deceleration (recommended range 1.0-1.4)
      * @return true     Tunning is possible and values are written to correspoding registers
      * @return false    With input parameters valid settings cannot be reached
      */
-    bool Autotune(double motor_voltage, double target_current, double phase_resistance, double phase_inductance, double motor_electric_constant);
+    bool Autotune(double motor_voltage, double target_current, double phase_resistance, double phase_inductance, double motor_electric_constant, double hold_current_mult = 1.0, double acc_dec_current_mult = 1.0);
 
 /***** Communication *****/
 

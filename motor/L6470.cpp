@@ -265,16 +265,20 @@ bool L6470::Stall(double stall_threshold){
     return (status_register.STEP_LOSS_A | status_register.STEP_LOSS_B);
 }
 
-bool L6470::Autotune(double motor_voltage, double target_current, double phase_resistance, double phase_inductance, double motor_electric_constant){
+bool L6470::Autotune(double motor_voltage, double target_current, double phase_resistance, double phase_inductance, double motor_electric_constant, double hold_current_mult, double acc_dec_current_mult){
     unsigned int K_VAL = phase_resistance * target_current / motor_voltage * pow(2, 8);
     if ((K_VAL > 255) or (K_VAL == 0)) {
         Log_line(Log_levels::Error, name + ": Autotune failed KVAL out of range (" + to_string(K_VAL) + ")");
         return false;
     }
-    Set_param(register_map::KVAL_HOLD, static_cast<uint32_t>(K_VAL), 8);
+
+    uint32_t K_VAL_HOLD = max(static_cast<int32_t>(K_VAL) * hold_current_mult, 0.0);
+    uint32_t K_VAL_ACC_DEC = min(static_cast<int32_t>(K_VAL) * hold_current_mult, 255.0);
+
+    Set_param(register_map::KVAL_HOLD, K_VAL_HOLD, 8);
     Set_param(register_map::KVAL_RUN, static_cast<uint32_t>(K_VAL), 8);
-    Set_param(register_map::KVAL_ACC, static_cast<uint32_t>(K_VAL), 8);
-    Set_param(register_map::KVAL_DEC, static_cast<uint32_t>(K_VAL), 8);
+    Set_param(register_map::KVAL_ACC, K_VAL_ACC_DEC, 8);
+    Set_param(register_map::KVAL_DEC, K_VAL_ACC_DEC, 8);
 
     // NOTE: Calculation of intersect speed are little bit confusing in AN4144 (example not corelates with formulas), needs to be verified
     unsigned int intersect_speed = (4 * phase_resistance / (2 * M_PI * (phase_inductance / 1000))) * pow(2, 26) * 250 * pow(10, -9);
