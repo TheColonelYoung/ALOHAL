@@ -12,9 +12,11 @@ using namespace std;
 #include <string>
 #include <functional>
 
-#include "irq_observer.hpp"
 #include "misc/invocation_wrapper.hpp"
 
+#include "rtos/irq_director.hpp"
+#include "rtos/thread_creator.hpp"
+#include "rtos/thread.hpp"
 /**
  * @brief   Generic class for handling of interputs
  *          When MCU IRQ occurs notification is send to this class via Notify

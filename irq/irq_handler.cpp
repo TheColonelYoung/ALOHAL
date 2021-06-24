@@ -1,11 +1,8 @@
 #include "irq_handler.hpp"
 
-#include "rtos/irq_director.hpp"
-#include "rtos/thread_creator.hpp"
-
 void IRQ_handler::Notify(){
     if(observer){
-        RTOS::Add_thread("IRQ", observer);
+        RTOS::Add_thread(string("IRQ"), observer, 2048, RTOS::Priority::High);
     }
     RTOS::IRQ_Signal(this);
 }
