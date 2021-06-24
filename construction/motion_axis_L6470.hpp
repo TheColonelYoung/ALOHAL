@@ -10,14 +10,22 @@
 #include "globals.hpp"
 #include "motion_axis.hpp"
 #include "motor/L6470.hpp"
+#include "motor/stepper_motor.hpp"
 #include "tools/tasker.hpp"
+#include "rtos/utils.hpp"
 
 class Motion_axis_L6470: protected Motion_axis{
 private:
     L6470 * stepper_motor = nullptr;
 
+    double max_position;
+
+    double min_position;
+
+    double homing_speed;
+
 public:
-    Motion_axis_L6470(L6470 * stepper_motor, double ratio, Motion_axis::Direction home_direction = Motion_axis::Direction::Reverse);
+    Motion_axis_L6470(L6470 * stepper_motor, double ratio, double max_position, double homing_speed, Motion_axis::Direction home_direction = Motion_axis::Direction::Reverse, double min_position = 0);
 
     virtual bool Move(double shift) override final;
 
@@ -38,5 +46,7 @@ public:
      *          Direction of movement is opposite to home direction
      */
     void Release_switch();
+
+    void Home_bidirectional();
 
 };
