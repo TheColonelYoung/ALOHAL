@@ -24,8 +24,13 @@ string CLI_history::Down(){
     if (pointer == begin){ // Begining of history
         return "";
     } else {
-        pointer = (pointer + 1) % size;
-        return cmd_history[pointer];
+        if (pointer == end){
+            pointer = (pointer + 1) % size;
+            return cmd_history[pointer];
+        } else {
+            pointer = (pointer + 1) % size;
+            return cmd_history[(pointer + 1) % size];
+        }
     }
 }
 
