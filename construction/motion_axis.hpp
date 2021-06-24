@@ -44,8 +44,19 @@ protected:
      */
     Motion_axis::Direction home_direction;
 
+    /**
+     * @brief Maximal position of axis, if minimal position is 0 then this is length of axis
+     */
+    double max_position;
+
+    /**
+     * @brief   Minimal position of axis, If endstop is on the end of axis, then this should be 0
+     *          If axis can move to negative position (behind endstop), then this is length of axis behind endstop
+     */
+    double min_position;
+
 public:
-    Motion_axis(double ratio, Motion_axis::Direction home_direction = Motion_axis::Direction::Reverse);
+    Motion_axis(double ratio, double max_position, double min_position = 0, Motion_axis::Direction home_direction = Motion_axis::Direction::Reverse);
 
     /**
      * @brief   Produce motion in given direction, works with relative position
