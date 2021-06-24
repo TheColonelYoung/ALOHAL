@@ -191,6 +191,11 @@ public:
     void GoHome(Direction dir);
 
     /**
+     * @brief   Sets current pocition as Home position (ABS_POS = 0)
+     */
+    void SetHome();
+
+    /**
      * @brief   Run motor with minimal speed in given direction until switch is released
      *
      *
@@ -262,6 +267,20 @@ public:
     void Busy_IRQ();
 
     /**
+     * @brief Calculate current speed of motor based on SPEED register
+     *
+     * @return unsigned int     Speed in steps
+     */
+    double Speed();
+
+    /**
+     * @brief Determinate current position based on ABS_POS register
+     *
+     * @return unsigned int     Current position in steps/microsteps
+     */
+    double Position();
+
+    /**
      * @brief   Determinates if endstop switch is active or inactive
      *
      * @return true     Endstop switch is triggered
@@ -279,6 +298,16 @@ public:
      */
     bool Switch_event();
 
+    /**
+     * @brief Enable switch event to execute HardStop at switch hit
+     */
+    void Switch_enable();
+
+    /**
+     * @brief   Disable switch event to execute HardStop at switch hit
+     */
+    void Switch_disable();
+
 /***** Configuration *****/
 
 public:
@@ -292,15 +321,13 @@ public:
 
     void Init();
 
-    unsigned int Speed();
-
     /**
      * @brief   Set parametr MAX_SPEED in driver
      *          The register value is calculated according to the formula in datasheet page 43.
      *
      * @param max_speed     New maximal speed of motor in steps/microsteps per second
      */
-    void Max_speed(unsigned int max_speed = 0);
+    void Max_speed(unsigned int max_speed);
 
     /**
      * @brief   Set parametr MIN_SPEED in driver
@@ -346,7 +373,7 @@ public:
      *
      * @param acceleration  New acceleration of motor in steps per second^2
      */
-    void Acceleration(unsigned int acceleration = 0);
+    void Acceleration(unsigned int acceleration);
 
     /**
      * @brief   Set parametr DEC in driver
@@ -354,7 +381,7 @@ public:
      *
      * @param acceleration  New acceleration of motor in steps/microsteps per second^2
      */
-    void Deceleration(unsigned int deceleration = 0);
+    void Deceleration(unsigned int deceleration);
 
     /**
      * @brief Set microsteping of driver

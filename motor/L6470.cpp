@@ -7,6 +7,8 @@ L6470::L6470(SPI_master &master, Pin *chip_select, bool cs_active, Pin *flag_pin
     busy_pin(busy_pin){
     if (device()->Filesystem_available()) {
         Create_virtual_file("status", this, &L6470::Status_formated);
+        Create_virtual_file("speed", this, &L6470::Speed);
+        Create_virtual_file("position", this, &L6470::Position);
     }
 }
 
@@ -51,11 +53,27 @@ void L6470::Init(){
     Log_line(Log_levels::Debug, name + ": Initialized")
 } // L6470::Init
 
-unsigned int L6470::Speed(){
+double L6470::Speed(){
     auto read_value = Get_param(register_map::SPEED, 20);
     uint32_t register_speed = read_value[0] << 16 |read_value[1] << 8 | read_value[2];
-    float speed = register_speed * pow(2, -28) / (250 * pow(10, -9));
+    double speed = register_speed * pow(2, -28) / (250 * pow(10, -9));
     return speed;
+}
+
+double L6470::Position(){
+    auto register_value = Get_param(register_map::ABS_POS, 22);
+    uint32_t value = (register_value[0] << 16) |(register_value[1] << 8) | register_value[2];
+    int position;
+    if (value & (1 << 21)){
+        value |= 0xffc00000;
+        value = ~value;
+        value += 1;
+        position = value *-1;
+    } else{
+        position = value;
+    }
+
+    return static_cast<double>(position);
 }
 
 void L6470::Max_speed(unsigned int max_speed){
@@ -121,7 +139,7 @@ int L6470::Move(Direction dir, unsigned int steps, unsigned int speed){
 
     vector<uint8_t> data(4);
     data[0] = static_cast<uint8_t>(command::Move);
-    data[0] |= dir;
+    data[0] |= static_cast<uint8_t>(dir);
     data[1] = 0x3f & (steps >> 16);
     data[2] = 0xff & (steps >> 8);
     data[3] = 0xff & (steps);
@@ -130,7 +148,6 @@ int L6470::Move(Direction dir, unsigned int steps, unsigned int speed){
 }
 
 int L6470::Run(Direction dir, unsigned int speed){
-    Log_line(Log_levels::Notice, name + ": Speed: " + to_string(Speed()));
     speed = round((speed * (250 * pow(10, -9))) / pow(2, -28));
     vector<uint8_t> data(4);
     data[0] = static_cast<uint8_t>(command::Run);
@@ -146,6 +163,10 @@ int L6470::Run(Direction dir, unsigned int speed){
 
 void L6470::GoHome(Direction dir){
     Run(dir);
+}
+
+void L6470::SetHome(){
+    Send(static_cast<uint8_t>(command::ResetPos));
 }
 
 void L6470::ReleaseSW(Direction dir){
@@ -315,6 +336,15 @@ bool L6470::Switch_event(){
     return Status().SW_EVN;
 }
 
+void L6470::Switch_enable(){
+    Set_param(register_map::CONFIG, standard_configuration, 16);
+}
+
+void L6470::Switch_disable(){
+    uint16_t config = 0b0001111010010000;
+    Set_param(register_map::CONFIG, config, 16);
+}
+
 void L6470::Flag_IRQ(){
     Log_line(Log_levels::Debug, name + "Flag IRQ activated");
 }
@@ -375,7 +405,7 @@ string L6470::Status_formated(){
     message += new_line;
 
     message += "Motor status: ";
-    switch (stat.MOT_STATUS) {
+    switch (static_cast<uint8_t>(stat.MOT_STATUS)) {
         case 0: message += "Stopped";
             break;
         case 1: message += "Acceleration";
@@ -388,7 +418,7 @@ string L6470::Status_formated(){
     message += new_line;
 
     message += "Motor direction: ";
-    stat.DIR ? message += "Forward" : message += "Reverse";
+    static_cast<uint8_t>(stat.DIR) ? message += "Forward" : message += "Reverse";
     message += new_line;
 
     message += "Switch event: ";
