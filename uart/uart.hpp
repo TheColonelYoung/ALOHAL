@@ -68,6 +68,9 @@ private:
      */
     bool busy = false;
 
+    /**
+     * @brief Size of buffer in number of string which can be saved before are send via serial line
+     */
     const unsigned short buffer_size = 20;
 
     /**
