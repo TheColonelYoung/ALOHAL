@@ -3,10 +3,17 @@
 #include "globals.hpp"
 #include "device/device.hpp"
 
+USB_CDC::USB_CDC(){
+    RX_buffer.reserve(APP_RX_DATA_SIZE);
+}
+
 int USB_CDC::Send(string message){
+    if (message.length() == 0) {
+        return 0;
+    }
+
     transmitting = message;
-    uint8_t status = CDC_Transmit_FS((uint8_t *) transmitting.c_str(), transmitting.length());
-    return status;
+    return CDC_Transmit_FS((uint8_t *) transmitting.c_str(), transmitting.length());
 }
 
 int USB_CDC::Receive(uint8_t *Buf, unsigned int Len){
@@ -21,22 +28,8 @@ int USB_CDC::Receive(uint8_t *Buf, unsigned int Len){
     return 0;
 }
 
-unsigned short USB_CDC::Add_to_buffer(string &message){
-    if (buffer_index_begin == ((buffer_index_end + 1) % buffer_size)) {
-        return 0;
-    }
-    TX_buffer[buffer_index_end] = message;
-    buffer_index_end = (buffer_index_end + 1) % buffer_size;
-    return abs(buffer_index_begin - buffer_index_end - 1);
-}
-
 int USB_CDC::Resend(){
-    buffer_index_begin = (buffer_index_begin + 1) % buffer_size;
-    if (buffer_index_begin != buffer_index_end) {
-        string &message = TX_buffer[buffer_index_begin];
-        CDC_Transmit_FS((uint8_t *) TX_buffer.front().c_str(), TX_buffer.front().length());
-    }
-    return TX_buffer.size();
+    return 0;
 }
 
 void USB_VCP_RX_Callback(uint8_t *Buf, uint32_t Len){
@@ -44,5 +37,6 @@ void USB_VCP_RX_Callback(uint8_t *Buf, uint32_t Len){
 }
 
 void USB_VCP_TX_Callback(){
+    // Unused due to issue with HAL
     //device()->mcu->USB_port->Resend();
 }

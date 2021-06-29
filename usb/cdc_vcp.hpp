@@ -39,37 +39,16 @@ class USB_CDC : public Serial_line
 private:
 
     /**
-     * @brief Vector of messages which are wainting to be send over USB CDC VCP
-     */
-    vector<string> TX_buffer;
-
-    /**
      * @brief String which is now transmitted
      */
     string transmitting;
-
-    /**
-     * @brief Size of buffer in number of string which can be saved before are send via serial line
-     */
-    const unsigned short buffer_size = 20;
-
-    /**
-     * @brief   Determinates first populated position in buffer
-     *          This string is transmitted as first or already in transmittion
-     */
-    unsigned short buffer_index_begin = 0;
-
-    /**
-     * @brief Determinates first empty position in buffer
-     */
-    unsigned short buffer_index_end = 0;
 
 public:
 
     /**
      * @brief Construct a new usb cdc object
      */
-    USB_CDC() = default;
+    USB_CDC();
 
     /**
      * @brief Transmitt C++ string over USB CDC char by char
@@ -106,14 +85,6 @@ public:
      */
     int Resend();
 
-private:
-    /**
-     * @brief Add new message to buffer
-     *
-     * @param message           Message to save into buffer
-     * @return unsigned short   Remaining space in buffer
-     */
-    unsigned short Add_to_buffer(string &message);
 };
 
 /**
