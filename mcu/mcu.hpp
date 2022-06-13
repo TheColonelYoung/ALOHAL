@@ -113,6 +113,10 @@ public:
     UART *UART_4 = nullptr;
     #endif
 
+    #ifdef LPUART_1_EN
+    UART *LPUART_1 = nullptr;
+    #endif
+
     // I2C
     #ifdef I2C_1_EN
     I2C_master *I2C_1 = nullptr;

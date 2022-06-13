@@ -69,6 +69,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
         return;
     }
     #endif
+    #ifdef LPUART_1_EN
+    if (huart->Instance == LPUART1) {
+        device()->mcu->LPUART_1->Receive();
+        device()->mcu->LPUART_1->IRQ->Notify();
+        return;
+    }
+    #endif
+
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
@@ -93,6 +101,12 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
     #ifdef UART_4_EN
     if (huart->Instance == USART4) {
         device()->mcu->UART_4->Resend();
+        return;
+    }
+    #endif
+    #ifdef LPUART_1_EN
+    if (huart->Instance == LPUART1) {
+        device()->mcu->LPUART_1->Resend();
         return;
     }
     #endif

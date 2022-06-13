@@ -112,6 +112,10 @@ void MCU::Init_peripherals(){
     UART_4 = new UART(&huart4);
     #endif
 
+    #ifdef UART_4_EN
+    LPUART_1 = new UART(&hlpuart1);
+    #endif
+
     // DAC
     #ifdef DAC_1_EN
     DAC_1 = new DA_C(&hdac, 2);

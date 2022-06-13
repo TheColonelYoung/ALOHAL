@@ -55,7 +55,7 @@ extern Independent_watchdog I_WDG;
 #endif
 
 class UART;
-#if defined(UART_1_EN) || defined(UART_2_EN) || defined(UART_1_EN) || defined(UART_3_EN)
+#if defined(UART_1_EN) || defined(UART_2_EN) || defined(UART_3_EN) || defined(UART_4_EN) || defined(LPUART_1_EN)
 # include "uart/uart.hpp"
 #endif
 
@@ -69,6 +69,10 @@ extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
 #endif
 #ifdef UART_4_EN
+extern UART_HandleTypeDef huart4;
+#endif
+
+#ifdef LPUART_1EN
 extern UART_HandleTypeDef huart4;
 #endif
 
