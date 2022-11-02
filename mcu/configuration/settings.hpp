@@ -19,6 +19,9 @@
 #elif defined(STM32G071xx)
     #define MCU_MODEL_NAME "STM32G071"
     #define MCU_FAMILY_STM32_G0
+#elif defined(STM32L072xx)
+    #define MCU_MODEL_NAME "STM32L072"
+    #define MCU_FAMILY_STM32_L0
 #endif
 
 // Default family selection, mainly used due to linter, because, selection of family is made during compilation

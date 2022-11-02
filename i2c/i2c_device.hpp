@@ -43,7 +43,7 @@ public:
      */
     I2C_device(I2C_master &master, unsigned char address);
 
-protected:
+public:
     /**
      * @brief           Transmit data to device
      *

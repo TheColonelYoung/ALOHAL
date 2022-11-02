@@ -10,6 +10,7 @@
 #include "globals.hpp"
 #include "timer/TIM_channel.hpp"
 #include "irq/irq_handler.hpp"
+#include "LoRaTracker_batterycharger.h"
 
 /**
  * @brief   Timer have specified modes in which can be used. This modes are defined more by an usage then by
