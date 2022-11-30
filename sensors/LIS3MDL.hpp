@@ -22,43 +22,43 @@ class LIS3MDL : public I2C_device, public Sensor, public Loggable
 {
 public:
     enum class Registers: uint8_t {
-        WHO_AM_I = 0x0f,
-        CTRL1    = 0x20,
-        CTRL2    = 0x21,
-        CTRL3    = 0x22,
-        CTRL4    = 0x23,
-        CTRL5    = 0x24,
-        STATUS  = 0x27,
-        OUT_X_L = 0x28,
-        OUT_X_H = 0x29,
-        OUT_Y_L = 0x2a,
-        OUT_Y_H = 0x2b,
-        OUT_Z_L = 0x2c,
-        OUT_Z_H = 0x2d,
-        TEMP_OUT_L   = 0x2e,
-        TEMP_OUT_H   = 0x2f,
-        INT_CFG   = 0x30,
-        INT_SRC   = 0x31,
-        INT_THS_L   = 0x32,
-        INT_THS_H   = 0x33
+        WHO_AM_I   = 0x0f,
+        CTRL1      = 0x20,
+        CTRL2      = 0x21,
+        CTRL3      = 0x22,
+        CTRL4      = 0x23,
+        CTRL5      = 0x24,
+        STATUS     = 0x27,
+        OUT_X_L    = 0x28,
+        OUT_X_H    = 0x29,
+        OUT_Y_L    = 0x2a,
+        OUT_Y_H    = 0x2b,
+        OUT_Z_L    = 0x2c,
+        OUT_Z_H    = 0x2d,
+        TEMP_OUT_L = 0x2e,
+        TEMP_OUT_H = 0x2f,
+        INT_CFG    = 0x30,
+        INT_SRC    = 0x31,
+        INT_THS_L  = 0x32,
+        INT_THS_H  = 0x33
     };
 
     enum class Data_rate: uint8_t {
-        ODR_0_65    = 0b000,
-        ODR_1_25    = 0b001,
-        ODR_2_5     = 0b010,
-        ODR_5       = 0b011,
-        ODR_10      = 0b100,
-        ODR_20      = 0b101,
-        ODR_40      = 0b110,
-        ODR_80      = 0b111,
+        ODR_0_65 = 0b000,
+        ODR_1_25 = 0b001,
+        ODR_2_5  = 0b010,
+        ODR_5    = 0b011,
+        ODR_10   = 0b100,
+        ODR_20   = 0b101,
+        ODR_40   = 0b110,
+        ODR_80   = 0b111,
     };
 
     enum class Axis_mode: uint8_t {
-        LP      = 0b00, // Low-power mode
-        MP      = 0b00, // Medium-performance mode
-        HP      = 0b00, // High-performance mode
-        UHP     = 0b00, // Ultra-high-performance mode
+        LP  = 0b00, // Low-power mode
+        MP  = 0b00, // Medium-performance mode
+        HP  = 0b00, // High-performance mode
+        UHP = 0b00, // Ultra-high-performance mode
     };
 
     struct __attribute__((packed)) __attribute__((__may_alias__)) CTRL1{
@@ -70,10 +70,10 @@ public:
     };
 
     enum class Full_scale: uint8_t {
-        G4      = 0b00, // ±4 gauss
-        G8      = 0b01, // ±8 gauss
-        G12     = 0b10, // ±12 gauss
-        G16     = 0b11  // ±16 gauss
+        G4  = 0b00, // ±4 gauss
+        G8  = 0b01, // ±8 gauss
+        G12 = 0b10, // ±12 gauss
+        G16 = 0b11  // ±16 gauss
     };
 
     struct __attribute__((packed)) __attribute__((__may_alias__)) CTRL2{
@@ -85,10 +85,10 @@ public:
     };
 
     enum class System_operation_mode: uint8_t {
-        Continuous_conversion   = 0b00, // Continuous-conversion mode
-        Single_conversion       = 0b01, // Single-conversion mode has to be used with sampling frequency from 0.625 Hz to 80Hz.
-        Power_down              = 0b10, //Power-down mode
-        Power_down              = 0b11, //Power-down mode
+        Continuous_conversion = 0b00, // Continuous-conversion mode
+        Single_conversion     = 0b01, // Single-conversion mode has to be used with sampling frequency from 0.625 Hz to 80Hz.
+        Power_down            = 0b10, // Power-down mode
+        Power_down2            = 0b11, // Power-down mode
     };
 
     struct __attribute__((packed)) __attribute__((__may_alias__)) CTRL3{
@@ -131,7 +131,7 @@ public:
      * @param register_name Name of register
      * @param value New value of register
      */
-    uint Register(LIS3MDL::Registers register_name, uint8_t &value);
+    uint Register(LIS3MDL::Registers register_name, uint8_t & value);
 
     /**
      * @brief Read value for register
@@ -142,4 +142,6 @@ public:
     uint8_t Register(LIS3MDL::Registers register_name);
 
 
-    array<int16_t, 3> LIS3MDL::Magnetic_field_intensity();
+    array<int16_t, 3> Magnetic_field_intensity();
+
+};
