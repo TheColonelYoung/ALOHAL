@@ -10,3 +10,7 @@ uint SPI_device::Transmit(const vector<uint8_t> &data) const{
 vector<uint8_t> SPI_device::Receive(uint length){
     return master.Receive_poll(*chip_select, length, cs_active);
 }
+
+vector<uint8_t> SPI_device::Transmit_and_Receive(const vector<uint8_t> &data){
+    return master.Transmit_and_Receive_poll(*chip_select, data, cs_active);
+}

@@ -58,5 +58,7 @@ public:
      * @return vector<uint8_t> Received data
      */
     vector<uint8_t> Receive_poll(Pin &chip_select, uint length = 1, bool cs_active = false);
+
+    vector<uint8_t> Transmit_and_Receive_poll(Pin &chip_select, const vector<uint8_t> &data, bool cs_active = false);
 };
 

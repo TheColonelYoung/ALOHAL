@@ -22,3 +22,11 @@ vector<uint8_t> SPI_master::Receive_poll(Pin &chip_select, uint length, bool cs_
     chip_select.Set(!cs_active);
     return data;
 }
+
+vector<uint8_t> SPI_master::Transmit_and_Receive_poll(Pin &chip_select, const vector<uint8_t> &data, bool cs_active){
+    vector<uint8_t> received_data(data.size());
+    chip_select.Set(cs_active);
+    HAL_SPI_TransmitReceive(handler, (uint8_t *)data.data(), (uint8_t *)received_data.data(), data.size(), 10);
+    chip_select.Set(!cs_active);
+    return received_data;
+}

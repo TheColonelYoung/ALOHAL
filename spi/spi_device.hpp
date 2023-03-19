@@ -64,4 +64,6 @@ public:
      * @return vector<uint8_t> received data
      */
     vector<uint8_t> Receive(uint length)  override;
+
+    vector<uint8_t> Transmit_and_Receive(const vector<uint8_t> &data);
 };

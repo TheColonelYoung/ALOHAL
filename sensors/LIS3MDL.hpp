@@ -56,9 +56,9 @@ public:
 
     enum class Axis_mode: uint8_t {
         LP  = 0b00, // Low-power mode
-        MP  = 0b00, // Medium-performance mode
-        HP  = 0b00, // High-performance mode
-        UHP = 0b00, // Ultra-high-performance mode
+        MP  = 0b01, // Medium-performance mode
+        HP  = 0b10, // High-performance mode
+        UHP = 0b11, // Ultra-high-performance mode
     };
 
     struct __attribute__((packed)) __attribute__((__may_alias__)) CTRL1{
