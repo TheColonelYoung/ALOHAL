@@ -18,7 +18,6 @@
 #include "cli/cli.hpp"
 #include "filesystem/filesystem.hpp"
 #include "gpio/pin.hpp"
-#include "events/planner/planner.hpp"
 
 class Component;
 class Application;
@@ -39,11 +38,7 @@ public:
 
     map<string, Application *> applications;
 
-    map<string, Tool *> tools;
-
     vector<Component *> components;
-
-    vector<Planner *> planners;
 
 private:
     Device();
@@ -119,46 +114,6 @@ public:
      * @return string       New name of component
      */
     string Register_component(Component *new_component);
-
-    /***************************************************
-    *                TOOLS
-    * *************************************************/
-
-    /**
-     * @brief Add tool to map of known components
-     *
-     * @param new_component Pointer to tool to add
-     * @return string       New name of tool
-     */
-    int Register_tool(Tool *new_tool);
-
-    /***************************************************
-    *                 PLANNERS
-    * *************************************************/
-
-    /**
-     * @brief Register planner
-     *
-     * @param planner   Pointer to planner
-     * @return int      Number of registred planners
-     */
-    int Register_planner(Planner *planner);
-
-    /**
-     * @brief Remove planner from registred planners
-     *
-     * @param planner   Pointer to planner
-     * @return int      Number of registred planners
-     */
-    int Unregister_planner(Planner *planner);
-
-    /**
-     * @brief Return planner designated by name
-     *
-     * @param name      Name of planner
-     * @return Planner* Pointer to planner with given name
-     */
-    Planner * Get_planner(string name);
 
 private:
 

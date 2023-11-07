@@ -1,1 +1,1 @@
-../../../Src/config.hpp
+../../../source/Core/Inc/config.hpp

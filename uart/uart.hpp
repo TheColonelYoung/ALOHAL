@@ -86,6 +86,8 @@ public:
      */
     virtual int Send(string message) override final;
 
+    int Send_pool(string &message);
+
     /**
      * @brief   After IRQ occurs will copy received character from temporal buffer to internal RX buffer
      *
@@ -110,7 +112,7 @@ public:
  *
  * @param huart Reference to handler of UART which triggered the IRQ RX callback
  */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 
 /**
  * @brief   Callback called after buffer is transmitted
@@ -119,4 +121,4 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
  *
  * @param huart Reference to handler of UART which triggered the IRQ TX callback
  */
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart); // Callback called after any send
+//void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart); // Callback called after any send

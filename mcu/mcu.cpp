@@ -10,47 +10,6 @@ float MCU::Uptime(){
     return HAL_GetTick()/1000.0;
 }
 
-void MCU::Enable_CLI_control(Timer * timer){
-    if (!device()->Filesystem_available()){
-        return;
-    }
-
-    device()->fs->Make_directory("/mcu/TIM_" + to_string(timer->Index()));
-
-    auto func = new function<int(vector<string>&)>(
-        [timer](vector<string>& text){
-            if(text.size()>=2){
-                timer->Frequency_set(stof(text[1]), true);
-            }
-            return 0;
-        }
-    );
-
-    auto iw = new Invocation_wrapper<void, int, vector<string>&>(func);
-
-    device()->fs->Make_executable("mcu/TIM_" + to_string(timer->Index()) + "/Frequency",iw);
-}
-
-void MCU::Enable_CLI_control(TIM_channel *timer_channel){
-
-    unsigned short timer_index = timer_channel->parent_timer->Index();
-    unsigned short channel_index = timer_channel->Index();
-
-    auto func = new function<int(vector<string>&)>(
-        [timer_channel](vector<string>& text){
-            if(text.size()>=2){
-                timer_channel->PWM_Generate(stof(text[1]));
-                timer_channel->Start();
-            }
-            return 0;
-        }
-    );
-
-    auto iw = new Invocation_wrapper<void, int, vector<string>&>(func);
-
-    device()->fs->Make_executable("mcu/TIM_" + to_string(timer_index) + "/CH_" + to_string(channel_index) ,iw);
-}
-
 void MCU::Filesystem_interface_initialization(){
     if (!device()->Filesystem_available()){
         return;

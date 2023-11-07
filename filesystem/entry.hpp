@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#define UNUSED_VAR(x) (void)(x)
+
 using namespace std;
 
 class FS_entry {
@@ -88,5 +90,5 @@ public:
      * @param args  Ignored
      * @return int  Always -1
      */
-    virtual int Run(vector<string> &args) const { return -1; };
+    virtual int Run(vector<string> &args) const { UNUSED_VAR(args); return -1; };
 };

@@ -9,6 +9,8 @@
 
 #include <functional>
 
+#define UNUSED_VAR(x) (void)(x)
+
 /**
  * @brief   Base class for Invocation_wrapper, this class is used when inherited class
  *              Invocation_wrapper is saved to vector and have different class template
@@ -22,8 +24,14 @@ class Invocation_wrapper_base {
 public:
     Invocation_wrapper_base() = default;
     virtual ~Invocation_wrapper_base() = default;
-    virtual return_T Invoke(args_T arg) const { return return_T(); };
-    virtual bool operator == (const Invocation_wrapper_base<return_T, args_T> & compare) const { return false; };
+    virtual return_T Invoke(args_T arg) const {
+        UNUSED_VAR(arg);
+        return return_T();
+    };
+    virtual bool operator == (const Invocation_wrapper_base<return_T, args_T> & compare) const {
+        UNUSED_VAR(compare);
+        return false;
+    };
 };
 
 /**
@@ -37,8 +45,13 @@ class Invocation_wrapper_base<return_T, void> {
 public:
     Invocation_wrapper_base() = default;
     virtual ~Invocation_wrapper_base() = default;
-    virtual return_T Invoke() const { return return_T(); };
-    virtual bool operator == (const Invocation_wrapper_base<return_T, void> & compare) const { return false; };
+    virtual return_T Invoke() const {
+        return return_T();
+    };
+    virtual bool operator == (const Invocation_wrapper_base<return_T, void> & compare) const {
+        UNUSED_VAR(compare);
+        return false;
+    };
 };
 
 

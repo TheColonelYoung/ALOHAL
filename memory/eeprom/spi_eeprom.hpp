@@ -8,8 +8,10 @@
 #pragma once
 
 #include <vector>
+#include <array>
 #include <string>
 
+#include "global_includes.hpp"
 #include "spi/spi_device.hpp"
 #include "gpio/pin.hpp"
 
@@ -21,14 +23,22 @@ typedef unsigned int uint;
  *          Only byte write and read is now supported, no page write/read
  *          Suitable and tested EEPROM: M95M02-DR M95M02-DF
  */
-class SPI_EEPROM: public SPI_device
-{
+class SPI_EEPROM{
 private:
+
+    SPI_HandleTypeDef *handler;
+
+    Pin *chip_select = nullptr;
+
     /**
      * @brief Size of memory address in bytes, usually 1-4
      *
      */
     unsigned short address_size = 2;
+
+    bool cs_active;
+
+    uint8_t WREN = 0b00000110;
 
 public:
     /**
@@ -37,7 +47,7 @@ public:
      * @param master    Master SPI from mcu
      * @param address   Address of device
      */
-    SPI_EEPROM(SPI_master &master, Pin *chip_select, short unsigned int address_size, bool cs_active = false);
+    SPI_EEPROM(SPI_HandleTypeDef *handler, Pin *chip_select, short unsigned int address_size, bool cs_active = false);
 
     /**
      * @brief   Write one byte to selected address
@@ -55,5 +65,40 @@ public:
      * @return uint8_t      Data read from memory
      */
     uint8_t Read(uint32_t memory_offset);
+
+    template <size_t size = 1>
+    uint8_t Read_array(uint32_t start_address, std::array<uint8_t, size> &data) const {
+        std::vector<uint8_t> transmission(address_size + 1);
+        transmission[0] = 0b00000011;
+        transmission[3] = start_address & 0x000000ff;
+        transmission[2] = (start_address & 0x0000ff00) >> 8;
+        transmission[1] = (start_address & 0x00ff0000) >> 16;
+
+        chip_select->Set(cs_active);
+        HAL_SPI_Transmit(handler, (uint8_t *)transmission.data(), transmission.size(), 10);
+        HAL_SPI_Receive(handler, data.data(), data.size(), 10);
+        chip_select->Set(!cs_active);
+        return data.size();
+    }
+
+    template <size_t size = 1>
+    void Write_array(uint32_t start_address, std::array<uint8_t, size> &data){
+
+        chip_select->Set(cs_active);
+        HAL_SPI_Transmit(handler, &WREN, 1, 10);
+        chip_select->Set(!cs_active);
+
+        std::vector<uint8_t> transmission(address_size + 1);
+        transmission[0] = 0b00000010;
+        transmission[3] = start_address & 0x000000ff;
+        transmission[2] = (start_address & 0x0000ff00) >> 8;
+        transmission[1] = (start_address & 0x00ff0000) >> 16;
+
+        chip_select->Set(cs_active);
+        HAL_SPI_Transmit(handler, (uint8_t *)transmission.data(), transmission.size(), 100);
+        HAL_SPI_Transmit(handler, data.data(), data.size(), 100);
+        chip_select->Set(!cs_active);
+        return;
+    }
 };
 

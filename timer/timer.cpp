@@ -183,9 +183,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
         return;
     }
     #endif
-
     if (htim->Instance == TIM22)
     {
         BSP_BC_CmdMng();
     }
+
 } // HAL_TIM_PeriodElapsedCallback

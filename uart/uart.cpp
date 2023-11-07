@@ -5,7 +5,7 @@
 UART::UART(UART_HandleTypeDef *UART_Handler_set){
     UART_Handler = UART_Handler_set;
 
-    HAL_UART_Receive_IT(UART_Handler_set, UART_buffer_temp, 1);
+    //HAL_UART_Receive_IT(UART_Handler_set, UART_buffer_temp, 1);
 }
 
 int UART::Send(string message){
@@ -39,7 +39,7 @@ int UART::Resend(){
     }
     return TX_buffer.size();
 }
-
+/*
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
     #ifdef UART_1_EN
     if (huart->Instance == USART1) {
@@ -97,3 +97,4 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
     }
     #endif
 }
+*/

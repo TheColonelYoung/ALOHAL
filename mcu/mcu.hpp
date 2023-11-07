@@ -12,7 +12,8 @@
 #include "mcu/configuration/settings.hpp"
 #include "mcu/configuration/externs.hpp"
 #include "gpio/pin.hpp"
-#include "timer/timer.hpp"
+
+// #include "timer/timer.hpp"
 
 #include <string>
 
@@ -53,20 +54,6 @@ public:
      *          This method is called during setting up of filesystem of device
      */
     void Filesystem_interface_initialization();
-
-    /**
-     * @brief Enable to configure timer frequency throught CLI
-     *
-     * @param timer Timer for CLI configuration
-     */
-    void Enable_CLI_control(Timer *timer);
-
-    /**
-     * @brief Enable to configure timer channel pulse throught CLI
-     *
-     * @param timer_channel Timer channel for CLI configuration
-     */
-    void Enable_CLI_control(TIM_channel *timer_channel);
 
     /**
      * @brief Initialize peripherals with their parameters

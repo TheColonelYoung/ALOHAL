@@ -10,7 +10,7 @@
 #include <vector>
 #include <string>
 
-#include "irq/irq_handler.hpp"
+//#include "irq/irq_handler.hpp"
 
 using namespace std;
 
@@ -30,7 +30,7 @@ public:
     /**
      * @brief IRQ handler which activates on Receive IRQ
      */
-    IRQ_handler *IRQ = new IRQ_handler();
+    //IRQ_handler *IRQ = new IRQ_handler();
 
     /**
      * @brief Construct a new Serial_line object

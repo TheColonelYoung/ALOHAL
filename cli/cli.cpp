@@ -6,7 +6,7 @@
 
 void CLI::Connect(Serial_line *connection){
     serial_connection = connection;
-    serial_connection->IRQ->Register(this, &CLI::Char_load);
+    //serial_connection->IRQ->Register(this, &CLI::Char_load);
     serial_connection->Send("\r\n");
 }
 

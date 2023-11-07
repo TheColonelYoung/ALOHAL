@@ -2,7 +2,6 @@
 
 #include "device/component.hpp"
 #include "device/application.hpp"
-#include "device/tool.hpp"
 
 Device* Device::Instance(){
     if (instance == nullptr){
@@ -76,53 +75,10 @@ string Device::Register_component(Component* new_component){
     return new_name;
 }
 
-int Device::Register_tool(Tool *new_tool){
-    // Test if tool with same name already exists
-    for( auto &[name, tool]: tools){
-        if (tool->Name() == new_tool->Name()){
-            return -1;
-        }
-    }
-    tools.insert(make_pair(new_tool->Name() ,new_tool));
-    if(Filesystem_available()){
-        fs->Make_directory("/tools/" + new_tool->Name());
-    }
-    return 0;
-}
-
 string Device::New_component_name(string original_name){
     int same_name_prefix = count_if(components.begin(), components.end(),
         [original_name](Component* comp){
             return comp->Name().substr(0, original_name.length()) == original_name;
         });
     return original_name + "_#" + to_string(same_name_prefix);
-}
-
-int Device::Register_planner(Planner *planner){
-    for(auto p:planners){
-        if (planner->Name() == p->Name()){
-            return -1;
-        }
-    }
-    planners.emplace_back(planner);
-    return planners.size();
-}
-
-int Device::Unregister_planner(Planner *planner){
-    for(auto p:planners){
-        if (planner == p){
-            delete p;
-            planners.erase(remove(planners.begin(), planners.end(), p), planners.end());
-        }
-    }
-    return planners.size();
-}
-
-Planner * Device::Get_planner(string name){
-    for(auto planner:planners){
-        if (planner->Name() == name){
-            return planner;
-        }
-    }
-    return nullptr;
 }
